@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("db_conn")
+}
+
+model Stores{
+  id           BigInt      @id @default(autoincrement())
+  name         String      @unique
+  users        Users[]
+  productStore ProductStore[]
+  Invoices     Invoice[]
+}
+
+model Users{
+  id           BigInt  @id @default(autoincrement())
+  userName     String  @unique
+  password     String 
+  authorityId  Int
+  storeId      BigInt
+  store        Stores  @relation(fields: [storeId], references: [id])
+}
+
+model ProductStore{
+  productId        BigInt             @id @unique
+  price            Int    
+  rawPrice         Int    
+  Location         String
+  Description      String
+  storeId          BigInt
+  InvoicePurchases InvoicePurchases[]
+  store            Stores             @relation(fields: [storeId], references: [id])
+  Product          Product            @relation(fields: [productId],references: [id])
+}
+
+model Product{
+  id           BigInt     @id @default(autoincrement())
+  name         String     @unique  
+  barcode      String     @unique
+  Category     String  
+  mass         String
+  ProductStore ProductStore?
+}
+
+model Invoice{
+  id               BigInt            @id @default(autoincrement())
+  storeId          BigInt
+  installmentId    BigInt?         
+  dateTime         DateTime
+  store            Stores           @relation(fields: [storeId], references: [id])
+  Installments     Installments?    @relation(fields: [installmentId],references: [id],onDelete: SetNull)
+  InvoicePurchases InvoicePurchases[]
+}
+
+model Installments{
+  id           BigInt   @id  @default(autoincrement())
+  customerName String   @unique
+  Invoice      Invoice[]
+}
+
+model InvoicePurchases{
+  invoiceId      BigInt       @id
+  productStoreId BigInt
+  ProductStore   ProductStore @relation(fields: [productStoreId], references: [productId]) 
+  Invoice        Invoice      @relation(fields: [invoiceId],references: [id],onDelete: Cascade)
+}

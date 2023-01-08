@@ -1,0 +1,197 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Libre+Franklin:wght@300;400;500&family=Prompt:wght@400;500;600;700;800;900&family=Source+Sans+Pro:wght@200;300;400&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+	--nav-size: 64px;
+}
+h2 {
+	font-size: 1.5rem;
+	color: white;
+}
+p {
+	@apply text-white;
+}
+h3,
+.nav-button {
+	@apply text-white;
+	font-family: "Inter";
+	font-style: normal;
+	font-weight: 400;
+	font-size: 20px;
+	line-height: 24px;
+}
+.btn-group,
+.theme {
+	justify-content: center;
+	align-items: center;
+	display: flex;
+	gap: 1rem;
+}
+.nav-button {
+	min-width: 20px;
+}
+.btn-group {
+	/* margin-left: auto; */
+	/* flex-grow: 1; */
+	margin-right: 3rem;
+}
+.theme {
+	margin-right: 1rem;
+}
+.search-bar {
+	margin: 0 2.5rem;
+	flex-grow: 1;
+	position: relative;
+	display: flex;
+}
+#search {
+	@apply bg-gray-300;
+	border-radius: 13px;
+	min-width: 10rem;
+	width: 100%;
+	min-height: calc(var(--nav-size) - 30px);
+	margin: auto 0;
+	padding: 0 3rem 0 1rem;
+}
+.search-btn {
+	@apply bg-blue-500;
+	min-height: 30px;
+	max-height: calc(var(--nav-size) - 30px);
+	position: absolute;
+	right: -1px;
+	top: 0;
+	bottom: 0;
+	margin: auto 0;
+	border-radius: 0px 13px 13px 0px;
+	/* overflow: hidden; */
+	padding: 0.5rem 1rem;
+}
+.search-btn img {
+	display: block;
+	object-fit: contain;
+	max-height: 100%;
+}
+
+.page {
+	@apply flex;
+	min-height: calc(100vh - var(--nav-size));
+}
+.card {
+	flex-grow: 1;
+	min-height: 300px;
+	min-width: 30%;
+	box-shadow: 0px 0px 6px 6px #1e3a8a;
+}
+.nav {
+	max-height: var(--nav-size);
+	position: sticky;
+	top: 0;
+	z-index: 30;
+}
+.icon {
+	@apply bg-blue-800;
+	height: 100%;
+	max-height: 50px;
+	aspect-ratio: 1/1;
+	justify-content: center;
+	align-items: center;
+	display: flex;
+	border-radius: 50%;
+}
+.icon img {
+	display: block;
+}
+.side {
+	justify-content: flex-start !important;
+}
+.scan {
+	width: 64px;
+	height: 64px;
+	z-index: 30;
+	bottom: 2rem;
+	right: 2rem;
+}
+.scan img {
+	margin: auto;
+}
+.button {
+	@apply bg-sky-800;
+	@apply text-white;
+	padding: 0.5rem 1rem;
+	max-height: 64px;
+}
+
+.dropdown {
+	@apply bg-blue-700;
+	padding: 1.5rem;
+	display: flex;
+	gap: 3rem;
+	flex-direction: column;
+	width: min(10rem, 100%);
+	top: var(--nav-size);
+	right: 5rem;
+}
+.float {
+	font-family: "Inter";
+	font-style: normal;
+	@apply bg-slate-900;
+	position: absolute;
+	padding: 5px;
+	top: -20px;
+	left: 1rem;
+	z-index: 1;
+}
+
+.group {
+	@apply z-10;
+	@apply flex;
+	@apply gap-4;
+	@apply flex-wrap;
+}
+.group label {
+	min-width: 120px;
+	max-width: 120px;
+	@apply text-white;
+}
+.group input {
+	@apply bg-gray-300;
+	@apply p-1;
+	flex-grow: 1;
+	border-radius: 6px;
+}
+.red {
+	@apply bg-red-500 !important;
+}
+.scan-btn {
+	@apply z-20;
+	@apply text-white;
+	@apply bg-sky-800;
+	border-radius: 0 6px 6px 0;
+	position: absolute;
+	max-height: 32px;
+	min-height: 32px;
+	padding: 0 1rem;
+	right: 0;
+	top: 0;
+}
+h4 {
+	@apply text-white;
+}
+
+.info h5 {
+	@apply text-white;
+}
+.info h4 {
+	min-width: 150px;
+	max-width: 150px;
+	overflow: hidden;
+	font-weight: bold;
+}
+.info h4::after {
+	content: ":";
+	max-width: 50px;
+}
+.total h4 {
+	@apply text-xl;
+}

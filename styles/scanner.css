@@ -1,0 +1,35 @@
+#scanner-region__scan_region img {
+	display: none;
+}
+
+#scanner-region {
+	border: none !important;
+	max-width: 100%;
+	max-height: 100%;
+}
+#scanner-region__dashboard_section button,
+#scanner-region__dashboard_section a {
+	@apply bg-sky-800;
+	@apply text-white;
+	padding: 0.5rem 1rem;
+	max-height: 64px;
+}
+#html5-qrcode-anchor-scan-type-change {
+	display: none !important;
+}
+
+#scanner-region__scan_region {
+	min-width: inherit !important;
+	min-height: 300px !important;
+}
+
+#scanner-region__scan_region video {
+	margin: 0 !important;
+	width: 100% !important;
+	/* height: 100px; */
+	height: 100%;
+	max-height: 300px;
+}
+#scanner-region__header_message {
+	border: none !important;
+}
