@@ -11,6 +11,7 @@ h2 {
 }
 p {
 	@apply text-white;
+	@apply text-sm;
 }
 h3,
 .nav-button {
@@ -194,4 +195,40 @@ h4 {
 }
 .total h4 {
 	@apply text-xl;
+}
+.trash {
+	fill: white;
+}
+.products {
+	@apply overflow-auto;
+	height: calc(100vh - 20rem - var(--nav-size));
+}
+.green {
+	@apply bg-green-500 !important;
+}
+input[type="radio"][name="PaymentOption"] {
+	display: none;
+}
+label[for="Installment"],
+label[for="Cash"] {
+	@apply bg-sky-800;
+	padding: 5px 10px;
+	border: 1px solid #e0e0e0;
+	border-radius: 3px;
+	max-width: 50%;
+	text-align: center;
+}
+input[type="radio"][name="PaymentOption"]:checked + label {
+	@apply bg-sky-900;
+}
+.checkout.group > label {
+	max-width: 130px !important;
+	min-width: 130px !important;
+	margin: auto;
+}
+.customer:disabled {
+	@apply opacity-50 !important;
+}
+h3.checkout {
+	@apply bg-slate-700 !important;
 }

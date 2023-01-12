@@ -3,12 +3,12 @@
 import { useEffect, useMemo, useState } from "react"
 import Button from "../../components/Button"
 import Scanner from "../../components/Scanner"
-import product from "./product"
+import Product from "./Product"
+import product from "./Product"
 function page() {
-	const [products, setProducts] = useState(["test"])
-	const [quantity, setQuantity] = useState(1)
+	const [products, setProducts] = useState(new Array(30).fill(0))
+	const [quantity, setQuantity] = useState(99)
 	const [barcode, setBarcode] = useState("none")
-
 	const Total = useMemo(() => {
 		return products
 			.map((product, i) => {
@@ -34,9 +34,20 @@ function page() {
 				<div className="relative flex flex-grow flex-col gap-4 border border-solid border-white p-4">
 					<h3 className="float">Product</h3>
 					<div className="z-10 flex h-full w-full flex-col">
-						<div className="products flex-grow">
+						<div className="products flex flex-grow flex-col gap-2 md:gap-4">
 							{products.map((product, i) => {
-								return <div key={i}>product</div>
+								return (
+									<Product
+										product="product Name with a long long name"
+										price={30}
+										qty={quantity}
+										key={i}
+										onDelete={() => {
+											setProducts((prev) => prev.filter((product, index) => i !== index))
+											console.log(`delete ${i}`)
+										}}
+									/>
+								)
 							})}
 						</div>
 						<div className="total mt-auto  flex border-t p-4">

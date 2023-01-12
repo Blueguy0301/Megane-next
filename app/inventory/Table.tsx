@@ -84,7 +84,7 @@ function Table() {
 					</div>
 				</div>
 			</div>
-			<TablePagination shown={3} total={3} current={1} />
+			<TablePagination shown={50} total={50} current={1} />
 		</>
 	)
 }

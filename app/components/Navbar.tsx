@@ -7,7 +7,6 @@ import type { MouseEvent } from "react"
 const Navbar = () => {
 	const checkSize = (e?: UIEvent) => {
 		const width = window.innerWidth
-		console.log(width)
 		if (width >= 768) {
 			setModalOptions(false)
 			setNavOptions(true)
