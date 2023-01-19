@@ -1,36 +1,44 @@
 "use client"
-import { ReactNode } from "react"
+import { MouseEventHandler, ReactNode } from "react"
 import { useState } from "react"
 import Button from "./Button"
 
 type Props = {
 	title: string
 	children: ReactNode
+	onAccept?: MouseEventHandler
+	confirmText?: string | number
 	[x: string]: any
 }
 
 const useModal = () => {
 	const [isOpen, setIsOpen] = useState(false)
 	const handleClick = () => setIsOpen(!isOpen)
-	const Open = () => (
+	const Open = (props: {
+		className?: string
+		onClick?: MouseEventHandler
+		children: ReactNode
+	}) => (
 		<Button
 			onClick={(e) => {
 				e.preventDefault()
 				setIsOpen(!isOpen)
 			}}
+			className={props.className ?? ""}
 		>
-			Test button
+			{props.children}
 		</Button>
 	)
+
 	const Modal = (props: Props) => (
 		<div
-			className={`fixed top-0 left-0 z-50 flex h-full w-full items-center justify-center bg-black/50 p-4 ${
+			className={`fixed top-0 left-0 z-50 flex h-full w-full items-center justify-center  bg-black/50  p-4 ${
 				isOpen ? "" : "hidden"
 			}`}
 			onClick={handleClick}
 		>
 			<div
-				className={` max-h-full w-full min-w-0 overflow-auto rounded-md bg-slate-700 p-4 md:w-3/5 ${
+				className={` max-h-full w-full min-w-0 gap-4 overflow-auto rounded-md bg-slate-700 p-4 md:w-3/5 md:p-5  ${
 					props.className && props.className
 				}`}
 				onClick={(e) => e.stopPropagation()}
@@ -40,7 +48,15 @@ const useModal = () => {
 					{props.children}
 				</div>
 				<div className=" flex w-full flex-row justify-center gap-3 md:justify-end">
-					<Button className="green">for onAccept</Button>
+					<Button
+						className="green"
+						onClick={(e) => {
+							if (props.onAccept) props.onAccept(e)
+							handleClick()
+						}}
+					>
+						{props.confirmText ?? "Confirm"}
+					</Button>
 					<Button onClick={handleClick} className="red">
 						Close
 					</Button>

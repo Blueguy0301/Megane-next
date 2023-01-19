@@ -180,8 +180,18 @@ h4 {
 	@apply text-white;
 }
 
+.info {
+	max-width: 100%;
+	overflow: auto;
+	flex-wrap: wrap;
+}
 .info h5 {
 	@apply text-white;
+	flex-grow: 1;
+	max-width: calc(50vw - 5rem);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .info h4 {
 	min-width: 150px;
@@ -231,4 +241,19 @@ input[type="radio"][name="PaymentOption"]:checked + label {
 }
 h3.checkout {
 	@apply bg-slate-700 !important;
+}
+span.checkout {
+	width: 100%;
+}
+span.checkout h4 {
+	min-width: 130px !important	;
+	max-width: 130px !important;
+}
+span.checkout h5 {
+	flex-grow: 1;
+	margin: auto;
+	width: 8.5ch;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
 }

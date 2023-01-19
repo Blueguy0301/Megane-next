@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState, Fragment } from "react"
 import Button from "../../components/Button"
 import Scanner from "../../components/Scanner"
 import Product from "./Product"
-import product from "./Product"
+import useModal from "../../components/useModal"
+import ModalForm from "./Modal"
 function page() {
+	const { Modal, Open } = useModal()
 	const [products, setProducts] = useState(new Array(30).fill(0))
 	const [quantity, setQuantity] = useState(99)
 	const [barcode, setBarcode] = useState("none")
@@ -20,7 +22,7 @@ function page() {
 			}, 0)
 	}, [products])
 	useEffect(() => {
-		let scanButton = document.getElementsByClassName("scan")[0] as HTMLElement
+		const scanButton = document.getElementsByClassName("scan")[0] as HTMLElement
 		scanButton.style.opacity = "0"
 		scanButton.style.visibility = "hidden"
 		return () => {
@@ -30,6 +32,7 @@ function page() {
 	}, [])
 	return (
 		<div className="page flex-col-reverse flex-wrap md:flex-row md:flex-nowrap">
+			<ModalForm Modal={Modal} Total={Total} />
 			<div className="min-w-1/2 flex flex-grow flex-col p-4 md:max-w-[50%]">
 				<div className="relative flex flex-grow flex-col gap-4 border border-solid border-white p-4">
 					<h3 className="float">Product</h3>
@@ -57,7 +60,7 @@ function page() {
 					</div>
 				</div>
 				<div className="flex w-full flex-wrap gap-4 pt-3">
-					<Button className="flex-grow">Checkout</Button>
+					<Open className="green flex-grow">Checkout</Open>
 					<Button className="flex-grow">Manual Add</Button>
 					<Button className=" red flex-grow">Cancel</Button>
 				</div>
@@ -83,7 +86,8 @@ function page() {
 						-
 					</Button>
 				</div>
-				<Scanner />
+				<Scanner setLastCode={setBarcode} />
+				<h4> Last barcode : {barcode}</h4>
 			</div>
 		</div>
 	)
