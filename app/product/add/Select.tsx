@@ -5,7 +5,7 @@ type formData = {
 	Category: string
 	price: number | string
 	location: string
-	mass: string
+	mass: number | string
 	description: string
 }
 type props = {
@@ -23,7 +23,13 @@ const Select = (props: props) => {
 		})
 	}
 	return (
-		<select onChange={handleChange} value={selected} name={name} id={id}>
+		<select
+			onChange={handleChange}
+			value={selected}
+			name={name}
+			id={id}
+			className="flex-grow"
+		>
 			<optgroup label="Cigarettes">
 				<option value="stick">Stick</option>
 				<option value="pack">Pack</option>

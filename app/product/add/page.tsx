@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import type { ChangeEvent } from "react"
+import { ChangeEvent, useEffect } from "react"
 import { useState } from "react"
 import Button from "../../components/Button"
 import useModal from "../../components/useModal"
@@ -11,7 +11,7 @@ type formData = {
 	Category: string
 	price: number | string
 	location: string
-	mass: string
+	mass: number | string
 	description: string
 }
 export default function page() {
@@ -20,11 +20,16 @@ export default function page() {
 		Category: "",
 		price: (0).toFixed(2),
 		location: "",
-		mass: "",
+		mass: (0).toFixed(2),
 		description: "",
 	})
 	const [Scanned, setScanned] = useState("none")
-	const unit = formData.Category === "bottle" ? "weight" : "Volume"
+	const unit =
+		formData.Category === "weight"
+			? "Weight"
+			: formData.Category === "volume"
+			? "Volume"
+			: "Quantity"
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target
 		setFormData((prev) => {
@@ -68,18 +73,18 @@ export default function page() {
 							</div>
 						</div>
 						<div className="group">
-							<label htmlFor="category">Category</label>
+							<label htmlFor="Category">Category</label>
 							<Select
 								selected={formData.Category}
 								setSelected={setFormData}
-								name="category"
-								id="category"
+								name="Category"
+								id="Category"
 							/>
 						</div>
 						<div className="group">
 							<label htmlFor="unit">{unit}</label>
 							<input
-								type="text"
+								type="number"
 								value={formData.mass}
 								onChange={handleChange}
 								name="mass"
@@ -132,7 +137,7 @@ export default function page() {
 				</div>
 			</form>
 			{/* product information */}
-			<div className="flex max-w-[100%] flex-grow  p-4 md:min-w-[50%] md:max-w-[50%]">
+			<div className="flex w-full max-w-[100%] flex-grow  p-4 md:min-w-[50%] md:max-w-[50%]">
 				<div className="relative box-border flex flex-grow border border-solid border-white">
 					<h3 className="float">Product Information</h3>
 					{formData.name !== "" && (

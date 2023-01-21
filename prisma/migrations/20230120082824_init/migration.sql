@@ -43,7 +43,7 @@ CREATE TABLE "Product" (
 CREATE TABLE "Invoice" (
     "id" INT8 NOT NULL DEFAULT unique_rowid(),
     "storeId" INT8 NOT NULL,
-    "installmentId" INT8 NOT NULL,
+    "installmentId" INT8,
     "dateTime" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Invoice_pkey" PRIMARY KEY ("id")
@@ -93,7 +93,7 @@ ALTER TABLE "ProductStore" ADD CONSTRAINT "ProductStore_productId_fkey" FOREIGN 
 ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Stores"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_installmentId_fkey" FOREIGN KEY ("installmentId") REFERENCES "Installments"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_installmentId_fkey" FOREIGN KEY ("installmentId") REFERENCES "Installments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "InvoicePurchases" ADD CONSTRAINT "InvoicePurchases_productStoreId_fkey" FOREIGN KEY ("productStoreId") REFERENCES "ProductStore"("productId") ON DELETE RESTRICT ON UPDATE CASCADE;
