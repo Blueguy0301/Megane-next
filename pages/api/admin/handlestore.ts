@@ -1,13 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import prisma from "../db"
-import { checkCredentials } from "../middleware"
+import { checkCredentials, testNumber } from "../middleware"
 //? personal note : big int is not recognizable, make sure to convert it to string or BITINT.
 //todo : add checkers if valid or not
-const numberRegex = /^\d+$/
 type body = { storeId: string; storeName: string }
 function checkIfValid({ storeId, storeName }: body, res: NextApiResponse) {
 	if (!storeId || !storeName) return res.json({ error: "no data found" })
-	if (!numberRegex.test(storeId)) return res.json({ error: "invalid arguments" })
+	if (!testNumber(storeId)) return res.json({ error: "invalid arguments" })
 }
 export default async function handleStore(req: NextApiRequest, res: NextApiResponse) {
 	const verb = req.method

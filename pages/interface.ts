@@ -14,7 +14,7 @@ export interface productStore extends product {
 export type user = {
 	userName: string
 	password: string
-	storeId: string | bigint
+	storeId: string
 }
 export interface userData extends user {
 	authorityId: number
@@ -22,8 +22,19 @@ export interface userData extends user {
 }
 
 export type Invoice = {
-	storeId: string | bigint
-	installmentId?: bigint | string
+	storeId: bigint
+	installmentId?: bigint
 	dateTime: Date
-	purchases: bigint[]
+}
+export type InvoicePurchase = {
+	productStoreId: bigint | string
+}
+
+export interface userData extends user {
+	authorityId: number
+	error?: string
+}
+
+export type error = {
+	error: string
 }

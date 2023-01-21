@@ -1,20 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import Jwt from "jsonwebtoken"
+import { error, userData } from "../interface"
 const secret = "your-256-bit-secret"
 const numberRegex = /^\d+$/
-type user = {
-	userName: string
-	password: string
-	storeId: string
-}
-interface userData extends user {
-	authorityId: number
-	error?: string
-}
 
-type error = {
-	error: string
-}
 export const onlyGet = (req: NextApiRequest, res: NextApiResponse, next: Function) => {
 	if (req.method === "GET") {
 		next()
@@ -54,4 +43,12 @@ export async function checkCredentials(
 	if (user.authorityId < minAutorithy)
 		return res.status(401).json({ error: "Unauthorized" })
 	return user
+}
+/**
+ *
+ * @param number
+ * @returns true if the string number has other characters
+ */
+export const testNumber = (number: string) => {
+	return !numberRegex.test(number)
 }

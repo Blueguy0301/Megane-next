@@ -1,14 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import prisma from "../db"
-import Jwt from "jsonwebtoken"
-import { checkCredentials } from "../middleware"
+import { checkCredentials, testNumber } from "../middleware"
 import type { user, userData } from "../../interface"
-const secret = "your-256-bit-secret"
-const numberRegex = /^\d+$/
 
 function checkIfValid({ userName, password, storeId }: user, res: NextApiResponse) {
 	if (!userName || !password || !storeId) return res.json({ error: "no data found" })
-	if (!numberRegex.test(storeId) || userName.length > 20)
+	if (!testNumber(storeId) || userName.length > 20)
 		return res.json({ error: "invalid arguments" })
 }
 export default async function handleUser(req: NextApiRequest, res: NextApiResponse) {

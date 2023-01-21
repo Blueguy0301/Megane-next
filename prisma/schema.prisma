@@ -55,10 +55,9 @@ model Invoice {
   id               BigInt             @id @default(autoincrement())
   storeId          BigInt
   installmentId    BigInt?
-  dateTime         DateTime
-
+  dateTime         DateTime           @default(now())
   store            Stores             @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  Installment      Installments?       @relation(fields: [installmentId], references: [id], onDelete: SetNull)
+  Installment      Installments?      @relation(fields: [installmentId], references: [id], onDelete: SetNull)
   InvoicePurchases InvoicePurchases[]
 }
 
