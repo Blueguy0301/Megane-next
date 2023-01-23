@@ -1,8 +1,8 @@
 export type product = {
 	name: string
-	barcode: string | number
+	barcode: string
 	category: string
-	mass: number | string
+	mass: string
 }
 export interface productStore extends product {
 	productId?: bigint | string

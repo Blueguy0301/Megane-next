@@ -14,3 +14,4 @@ export default async function createproductstore(
 	// if (verb === "DELETE") return deleteProduct(req, res, credentials)
 	else return res.status(405).end()
 }
+const deleteProduct = async () => {}

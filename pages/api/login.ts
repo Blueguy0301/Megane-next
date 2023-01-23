@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from "next"
-import { onlyPost } from "./middleware"
 import prisma from "./db"
 type Data = {}
 export default async function login(req: NextApiRequest, res: NextApiResponse<Data>) {
@@ -11,11 +10,4 @@ export default async function login(req: NextApiRequest, res: NextApiResponse<Da
 		where: { userName: userName },
 	})
 	res.status(200).json({ body: req.body })
-}
-export const config = {
-	api: {
-		bodyParser: true,
-		handler: (req: NextApiRequest, res: NextApiResponse<Data>) =>
-			onlyPost(req, res, login),
-	},
 }

@@ -1,32 +1,9 @@
-import type { NextApiRequest, NextApiResponse } from "next"
+import type { NextApiResponse } from "next"
 import Jwt from "jsonwebtoken"
 import { error, userData } from "../interface"
 const secret = "your-256-bit-secret"
 const numberRegex = /^\d+$/
 
-export const onlyGet = (req: NextApiRequest, res: NextApiResponse, next: Function) => {
-	if (req.method === "GET") {
-		next()
-	} else {
-		res.status(405).json({ message: "Method Not Allowed" })
-	}
-}
-
-export const onlyPost = (req: NextApiRequest, res: NextApiResponse, next: Function) => {
-	if (req.method === "POST") {
-		next()
-	} else {
-		res.status(405).json({ message: "Method Not Allowed" })
-	}
-}
-
-export const onlyPut = (req: NextApiRequest, res: NextApiResponse, next: Function) => {
-	if (req.method === "PUT") {
-		next()
-	} else {
-		res.status(405).json({ message: "Method Not Allowed" })
-	}
-}
 export async function checkCredentials(
 	authorization: string,
 	res: NextApiResponse,
@@ -49,6 +26,19 @@ export async function checkCredentials(
  * @param number
  * @returns true if the string number has other characters
  */
-export const testNumber = (number: string) => {
-	return !numberRegex.test(number)
+export const testNumber = (number: string) => !numberRegex.test(number)
+
+/**
+ *
+ * @param args[]
+ * @returns true if all the args are not empty.
+ */
+export function checkIfValid(args: string | number | object | Array<any>) {
+	const data = arguments
+	for (let i = 0; i < data.length; i++) {
+		const element = data[i]
+		if (!element) return false
+		continue
+	}
+	return true
 }

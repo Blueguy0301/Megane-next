@@ -1,3 +1,4 @@
+//* done and checked
 import type { NextApiRequest, NextApiResponse } from "next"
 import prisma from "../db"
 import { checkCredentials, testNumber } from "../middleware"
@@ -7,6 +8,7 @@ function checkIfValid({ userName, password, storeId }: user, res: NextApiRespons
 	if (!userName || !password || !storeId) return res.json({ error: "no data found" })
 	if (!testNumber(storeId) || userName.length > 20)
 		return res.json({ error: "invalid arguments" })
+	return true
 }
 export default async function handleUser(req: NextApiRequest, res: NextApiResponse) {
 	//* if statement for request method. only update, post and delete methods are allowed
@@ -21,7 +23,8 @@ export default async function handleUser(req: NextApiRequest, res: NextApiRespon
 }
 const addUser = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { userName, password, storeId, authorityId }: userData = req.body
-	checkIfValid({ userName, password, storeId }, res)
+	if (!checkIfValid({ userName, password, storeId }, res)) return
+
 	const create = await prisma.users
 		.create({
 			data: {

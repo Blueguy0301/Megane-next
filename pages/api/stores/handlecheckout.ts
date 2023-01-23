@@ -118,6 +118,6 @@ const deleteCheckOut = async (req: NextApiRequest, res: NextApiResponse) => {
 		.then(() => ({
 			success: true,
 		}))
-		.catch((e) => ({ error: e }))
+		.catch((e) => ({ error: e, success: false }))
 	return res.json(deleteCheckOut)
 }

@@ -1,12 +1,12 @@
+//*checked
 import type { NextApiRequest, NextApiResponse } from "next"
 import prisma from "../db"
 import { checkCredentials, testNumber } from "../middleware"
-//? personal note : big int is not recognizable, make sure to convert it to string or BITINT.
-//todo : add checkers if valid or not
 type body = { storeId: string; storeName: string }
 function checkIfValid({ storeId, storeName }: body, res: NextApiResponse) {
 	if (!storeId || !storeName) return res.json({ error: "no data found" })
 	if (!testNumber(storeId)) return res.json({ error: "invalid arguments" })
+	return true
 }
 export default async function handleStore(req: NextApiRequest, res: NextApiResponse) {
 	const verb = req.method
@@ -35,11 +35,11 @@ const addStore = async (req: NextApiRequest, res: NextApiResponse) => {
 			if (e.code === "P2002") return `${storeName} already exists`
 			else return e.code
 		})
-	res.json({ result: createStore })
+	return res.json({ result: createStore })
 }
 const updateStore = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { storeId, storeName } = req.body
-	checkIfValid({ storeId, storeName }, res)
+	if (!checkIfValid({ storeId, storeName }, res)) return
 	const updateStore = await prisma.stores
 		.update({
 			where: {
@@ -55,7 +55,7 @@ const updateStore = async (req: NextApiRequest, res: NextApiResponse) => {
 }
 const deleteStore = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { storeId, storeName } = req.body
-	checkIfValid({ storeId, storeName }, res)
+	if (!checkIfValid({ storeId, storeName }, res)) return
 	const removeStore = await prisma.stores
 		.deleteMany({
 			where: {
