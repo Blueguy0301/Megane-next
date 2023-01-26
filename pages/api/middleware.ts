@@ -26,14 +26,14 @@ export async function checkCredentials(
  * @param number
  * @returns true if the string number has other characters
  */
-export const testNumber = (number: string) => !numberRegex.test(number)
+export const testNumber = (number: any) => !numberRegex.test(number)
 
 /**
  *
  * @param args[]
  * @returns true if all the args are not empty.
  */
-export function checkIfValid(args: string | number | object | Array<any>) {
+export function checkIfValid(...args: any[]) {
 	const data = arguments
 	for (let i = 0; i < data.length; i++) {
 		const element = data[i]
@@ -41,4 +41,10 @@ export function checkIfValid(args: string | number | object | Array<any>) {
 		continue
 	}
 	return true
+}
+
+export function filter(data: object) {
+	return Object.entries(data)
+		.filter(([, value]) => value !== undefined)
+		.reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {})
 }

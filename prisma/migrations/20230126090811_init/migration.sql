@@ -19,13 +19,14 @@ CREATE TABLE "Users" (
 
 -- CreateTable
 CREATE TABLE "ProductStore" (
+    "id" INT8 NOT NULL DEFAULT unique_rowid(),
     "productId" INT8 NOT NULL,
     "price" INT4 NOT NULL,
     "Location" STRING NOT NULL,
     "Description" STRING NOT NULL,
     "storeId" INT8 NOT NULL,
 
-    CONSTRAINT "ProductStore_pkey" PRIMARY KEY ("productId")
+    CONSTRAINT "ProductStore_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -44,7 +45,7 @@ CREATE TABLE "Invoice" (
     "id" INT8 NOT NULL DEFAULT unique_rowid(),
     "storeId" INT8 NOT NULL,
     "installmentId" INT8,
-    "dateTime" TIMESTAMP(3) NOT NULL,
+    "dateTime" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Invoice_pkey" PRIMARY KEY ("id")
 );
@@ -87,7 +88,7 @@ ALTER TABLE "Users" ADD CONSTRAINT "Users_storeId_fkey" FOREIGN KEY ("storeId") 
 ALTER TABLE "ProductStore" ADD CONSTRAINT "ProductStore_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Stores"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProductStore" ADD CONSTRAINT "ProductStore_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ProductStore" ADD CONSTRAINT "ProductStore_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Stores"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -96,7 +97,7 @@ ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_storeId_fkey" FOREIGN KEY ("storeI
 ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_installmentId_fkey" FOREIGN KEY ("installmentId") REFERENCES "Installments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "InvoicePurchases" ADD CONSTRAINT "InvoicePurchases_productStoreId_fkey" FOREIGN KEY ("productStoreId") REFERENCES "ProductStore"("productId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "InvoicePurchases" ADD CONSTRAINT "InvoicePurchases_productStoreId_fkey" FOREIGN KEY ("productStoreId") REFERENCES "ProductStore"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "InvoicePurchases" ADD CONSTRAINT "InvoicePurchases_invoiceId_fkey" FOREIGN KEY ("invoiceId") REFERENCES "Invoice"("id") ON DELETE CASCADE ON UPDATE CASCADE;

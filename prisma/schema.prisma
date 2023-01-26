@@ -30,14 +30,14 @@ model Users {
 }
 
 model ProductStore {
-  productId        BigInt             @id
+  id               BigInt             @id @default(autoincrement())
+  productId        BigInt            
   price            Int
   Location         String
   Description      String
-  storeId          BigInt
-
+  storeId          BigInt            
   store            Stores             @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  Product          Product            @relation(fields: [productId], references: [id])
+  Product          Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
   InvoicePurchases InvoicePurchases[]
 }
 
@@ -71,7 +71,6 @@ model Installments {
 model InvoicePurchases {
   invoiceId      BigInt       @id
   productStoreId BigInt
-  
-  ProductStore   ProductStore @relation(fields: [productStoreId], references: [productId])
+  ProductStore   ProductStore @relation(fields: [productStoreId], references: [id])
   Invoice        Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 }
