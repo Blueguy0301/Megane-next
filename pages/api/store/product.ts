@@ -1,4 +1,3 @@
-//* checked  but getProduct is still in progress
 import { NextApiRequest, NextApiResponse } from "next"
 import { checkCredentials, checkIfValid, filter, testNumber } from "../middleware"
 import type { product, productStore, userData } from "../../interface"
@@ -11,7 +10,6 @@ type query = {
 	productId?: number | string
 }
 export default async function handleProducts(req: NextApiRequest, res: NextApiResponse) {
-	//* if statement for request method. only update, post and delete methods are allowed
 	const verb = req.method
 	const authorization = req.headers.authorization as string
 	const credentials = await checkCredentials(authorization, res)
