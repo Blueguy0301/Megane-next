@@ -43,5 +43,5 @@ export type productQuery = {
 	isStoreNew?: boolean
 	storeSearch?: boolean
 	onlyStore?: boolean
-	productId?: number | string
+	pId?: number | string
 }

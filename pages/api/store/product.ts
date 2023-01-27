@@ -6,14 +6,13 @@ export default async function handleProducts(req: NextApiRequest, res: NextApiRe
 	const verb = req.method
 	const authorization = req.headers.authorization as string
 	const credentials = await checkCredentials(authorization, res)
-	const { isNew, isStoreNew, storeSearch, onlyStore, productId } =
+	const { isNew, isStoreNew, storeSearch, onlyStore, pId } =
 		req.query as unknown as productQuery
 	if (!credentials) return
 	if (verb === "GET" && storeSearch) return getProductStore(req, res)
 	if (verb === "GET") return getProduct(req, res)
 	if (verb === "POST" && isNew) return addProduct(req, res, isStoreNew)
-	if (verb === "POST" && isStoreNew && productId)
-		return addProductStore(req, res, productId)
+	if (verb === "POST" && isStoreNew && pId) return addProductStore(req, res, pId)
 	if (verb === "PUT" && onlyStore) return updateProductStore(req, res)
 	if (verb === "PUT") return updateProduct(req, res)
 	if (verb === "DELETE" && onlyStore) return deleteProductStore(req, res)
@@ -79,14 +78,14 @@ const updateProduct = async (req: NextApiRequest, res: NextApiResponse) => {
 		}))
 	return res.json({ result: updateProduct })
 }
-
+//* tested
 const deleteProduct = async (req: NextApiRequest, res: NextApiResponse) => {
-	const { productId } = req.body
-	if (!productId) return res.json({ error: "no data found" })
+	const { pId } = req.body
+	if (!pId || testNumber(pId)) return res.json({ error: "no data found" })
 	const deleteProduct = await prisma.product
 		.delete({
 			where: {
-				id: productId,
+				id: BigInt(pId),
 			},
 		})
 		.then(() => ({
@@ -116,13 +115,14 @@ const getProduct = async (req: NextApiRequest, res: NextApiResponse) => {
 		}))
 	return res.json(getProduct)
 }
-//* test pass 1/2
+//* test pass 2/2
 const addProductStore = async (
 	req: NextApiRequest,
 	res: NextApiResponse,
 	productId: string | number | undefined
 ) => {
 	const { price, location, description, storeId } = req.body as productStore
+	console.log(productId)
 	if (
 		(!productId && !checkIfValid(price, location, description)) ||
 		testNumber(productId as string) ||
@@ -179,19 +179,17 @@ const updateProductStore = async (req: NextApiRequest, res: NextApiResponse) => 
 		.catch((e) => e)
 	return res.json({ result: updateProduct })
 }
+//* tested
 const deleteProductStore = async (req: NextApiRequest, res: NextApiResponse) => {
-	const { id } = req.body
-	if (!id || !testNumber(id)) return res.json({ error: "invalid arguments" })
-	const Delete = prisma.productStore
-		.delete({
-			where: {
-				id: BigInt(id),
-			},
-		})
-		.then((d) => ({ success: d ? true : false }))
-		.catch((e) => e)
+	const { pId } = req.body
+	if (!pId || testNumber(pId)) return res.json({ error: "invalid arguments" })
+	const Delete = await prisma.productStore
+		.delete({ where: { id: BigInt(pId) } })
+		.then(() => ({ success: true }))
+		.catch((e) => ({ error: e?.meta?.cause, success: false }))
 	return res.json({ result: Delete })
 }
+
 const getProductStore = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { id } = req.body
 	const { storeId, barcode } = req.body
