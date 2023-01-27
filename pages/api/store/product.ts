@@ -1,31 +1,26 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { checkCredentials, checkIfValid, filter, testNumber } from "../middleware"
-import type { product, productStore, userData } from "../../interface"
+import type { product, productQuery, productStore } from "../../interface"
 import prisma from "../db"
-type query = {
-	isNew?: boolean
-	isStoreNew?: boolean
-	storeSearch?: boolean
-	onlyStore?: boolean
-	productId?: number | string
-}
 export default async function handleProducts(req: NextApiRequest, res: NextApiResponse) {
 	const verb = req.method
 	const authorization = req.headers.authorization as string
 	const credentials = await checkCredentials(authorization, res)
 	const { isNew, isStoreNew, storeSearch, onlyStore, productId } =
-		req.query as unknown as query
+		req.query as unknown as productQuery
 	if (!credentials) return
 	if (verb === "GET" && storeSearch) return getProductStore(req, res)
 	if (verb === "GET") return getProduct(req, res)
 	if (verb === "POST" && isNew) return addProduct(req, res, isStoreNew)
-	if (verb === "POST" && isStoreNew) return addProductStore(req, res, productId)
+	if (verb === "POST" && isStoreNew && productId)
+		return addProductStore(req, res, productId)
 	if (verb === "PUT" && onlyStore) return updateProductStore(req, res)
 	if (verb === "PUT") return updateProduct(req, res)
 	if (verb === "DELETE" && onlyStore) return deleteProductStore(req, res)
 	if (verb === "DELETE") return deleteProduct(req, res)
 	else return res.status(405).end()
 }
+//* tested
 const addProduct = async (
 	req: NextApiRequest,
 	res: NextApiResponse,
@@ -34,50 +29,57 @@ const addProduct = async (
 	const { barcode, name, category, mass } = req.body as product
 	if (!checkIfValid(barcode, name, category, mass))
 		return res.json({ error: "an error occured" })
-	const exists = await prisma.product.count({
-		where: {
-			barcode: barcode,
-			name: name,
-		},
-	})
-	if (exists && !isStoreNew) return
-	const addProduct = await prisma.product
-		.create({
-			data: {
-				name: name,
-				barcode: barcode,
-				Category: category,
-				mass: mass,
-			},
-		})
-		.then((v) => ({ ...v, id: v.id.toString() }))
-	if (isStoreNew) return addProductStore(req, res, addProduct.id)
-
-	return { result: addProduct }
-}
-const updateProduct = async (req: NextApiRequest, res: NextApiResponse) => {
-	const { barcode, name, category, mass } = req.body as product
-	if (!checkIfValid(barcode, name, category, mass))
-		return res.json({ error: "an error occured" })
-	const updateProduct = await prisma.product
-		.update({
+	const exists = await prisma.product
+		.findFirst({
 			where: {
 				barcode: barcode,
-			},
-			data: {
 				name: name,
-				barcode: barcode,
-				Category: category,
-				mass: mass,
+			},
+			select: {
+				id: true,
 			},
 		})
+		.then((e) => ({ id: e?.id.toString() }))
+	if (exists.id && !isStoreNew) return
+	const addProduct = !exists.id
+		? await prisma.product
+				.create({
+					data: {
+						name: name,
+						barcode: barcode,
+						Category: category,
+						mass: mass,
+					},
+				})
+				.then((v) => ({ ...v, id: v.id.toString(), error: false }))
+				.catch((e) => {
+					console.log(e)
+					if (e.code === "P2002") {
+						return { error: true, context: "barcode or name already exists" }
+					}
+					return { error: true, ...e }
+				})
+		: { id: exists?.id, error: false }
+	if (isStoreNew && !addProduct.error) return addProductStore(req, res, addProduct.id)
+	return res.json({ result: addProduct })
+}
+//* tested
+const updateProduct = async (req: NextApiRequest, res: NextApiResponse) => {
+	const { barcode, name, category, mass } = req.body as product
+	if (!checkIfValid(barcode)) return res.json({ error: "an error occured" })
+	const data = filter({ barcode, name, Category: category, mass })
+	if (!data) return res.json({ error: "no data found" })
+	const updateProduct = await prisma.product
+		.update({ where: { barcode: barcode }, data })
 		.then((d) => ({
 			name: d.name,
 			barcode: d.barcode,
 			Category: d.Category,
 			mass: d.mass,
 		}))
+	return res.json({ result: updateProduct })
 }
+
 const deleteProduct = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { productId } = req.body
 	if (!productId) return res.json({ error: "no data found" })
@@ -114,42 +116,55 @@ const getProduct = async (req: NextApiRequest, res: NextApiResponse) => {
 		}))
 	return res.json(getProduct)
 }
-
+//* test pass 1/2
 const addProductStore = async (
 	req: NextApiRequest,
 	res: NextApiResponse,
 	productId: string | number | undefined
 ) => {
-	const tempData = req.body
-	if ((!productId && !tempData) || testNumber(productId as string))
+	const { price, location, description, storeId } = req.body as productStore
+	if (
+		(!productId && !checkIfValid(price, location, description)) ||
+		testNumber(productId as string) ||
+		testNumber(storeId as unknown as string)
+	)
 		return res.json({ error: "an error occured" })
 	const createProductStore = await prisma.productStore
 		.create({
 			data: {
 				productId: BigInt(productId as string),
-				price: Number(tempData.price),
-				Location: "",
-				Description: "",
-				storeId: BigInt(0),
+				price: Number(price),
+				Location: location,
+				Description: description ?? "",
+				storeId: BigInt(storeId ?? 0),
 			},
 		})
 		.then((d) => ({
 			...d,
 			productId: d.productId.toString(),
 			storeId: d.storeId.toString(),
+			id: d.id.toString(),
 		}))
-		.catch((e) => e)
+		.catch((e) => {
+			return e
+		})
+	// error here.
 	return res.json({ result: createProductStore })
 }
+//* tested
 const updateProductStore = async (req: NextApiRequest, res: NextApiResponse) => {
-	const { id, price, location, description } = req.body
-	const data = filter({ price, location, description })
+	const { pId, price, location, description } = req.body
+	if (!pId) return res.json({ error: "invalid arguments" })
+	const data = filter({
+		price: !testNumber(price) ? Number(price) : undefined,
+		Location: location,
+		Description: description,
+	})
 	if (!data) return res.json({ error: "no data found" })
-	if (!id) return res.json({ error: "no data found" })
 	const updateProduct = await prisma.productStore
 		.update({
 			where: {
-				id: id,
+				id: BigInt(pId),
 			},
 			data: {
 				...data,

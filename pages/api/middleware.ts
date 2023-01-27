@@ -24,7 +24,7 @@ export async function checkCredentials(
 /**
  *
  * @param number
- * @returns false if the string number has other characters
+ * @returns true if the number has other characters
  */
 export const testNumber = (number: any) => !numberRegex.test(number)
 
@@ -44,7 +44,13 @@ export function checkIfValid(...args: any[]) {
 }
 
 export function filter(data: object) {
-	return Object.entries(data)
-		.filter(([, value]) => value !== undefined)
-		.reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {})
+	return Object.entries(data).reduce(
+		(acc, [key, value]) => ({
+			...acc,
+			[key]: value !== "" ? value : undefined,
+		}),
+		{}
+	)
 }
+
+// true && number.isNan("Hatdog")

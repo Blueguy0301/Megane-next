@@ -6,10 +6,10 @@ export type product = {
 }
 export interface productStore extends product {
 	productId?: bigint | string
-	storeId: bigint
+	storeId?: bigint
 	price: number
 	location: string
-	description: string
+	description?: string
 }
 export type user = {
 	userName: string
@@ -37,4 +37,11 @@ export interface userData extends user {
 
 export type error = {
 	error: string
+}
+export type productQuery = {
+	isNew?: boolean
+	isStoreNew?: boolean
+	storeSearch?: boolean
+	onlyStore?: boolean
+	productId?: number | string
 }

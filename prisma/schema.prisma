@@ -35,6 +35,7 @@ model ProductStore {
   Location         String
   Description      String
   storeId          BigInt            
+  
   store            Stores             @relation(fields: [storeId], references: [id], onDelete: Cascade)
   Product          Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
   InvoicePurchases InvoicePurchases[]
