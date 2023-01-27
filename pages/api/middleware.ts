@@ -1,9 +1,10 @@
 import type { NextApiResponse } from "next"
+import bcrypt from "bcryptjs"
 import Jwt from "jsonwebtoken"
 import { error, userData } from "../interface"
 const secret = process.env.secret_key as string
 const numberRegex = /^\d+$/
-
+const salt = bcrypt.genSaltSync()
 export async function checkCredentials(
 	authorization: string,
 	res: NextApiResponse,
@@ -11,10 +12,8 @@ export async function checkCredentials(
 ) {
 	const token = authorization?.replace("Bearer ", "") as string
 	const user = Jwt.verify(token, secret, (err, decoded) => {
-		if (err) {
-			return { error: "token not valid" } as error
-		}
-		return decoded as userData
+		if (err) return { error: "token not valid" } as error
+		else return decoded as userData
 	}) as unknown as userData
 	if (user?.error) return res.status(401).json({ error: "invalid credentials" })
 	if (user.authorityId < minAutorithy)
@@ -52,5 +51,23 @@ export function filter(data: object) {
 		{}
 	)
 }
-
-// true && number.isNan("Hatdog")
+/**
+ *
+ * @param data the new payload
+ * @returns new token
+ */
+export async function renewToken(data: object) {
+	try {
+		const token = Jwt.sign(
+			{ data: data, cty: "application/json", iat: Date.now() },
+			secret,
+			{ expiresIn: "30d" }
+		)
+		return token
+	} catch (e) {
+		return {}
+	}
+}
+export const hash = (password: string) => bcrypt.hashSync(password, salt)
+export const compare = (password: string, passwordDB: string) =>
+	bcrypt.compareSync(password, passwordDB)
