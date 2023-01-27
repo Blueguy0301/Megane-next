@@ -1,4 +1,3 @@
-//* done and checked
 import type { NextApiRequest, NextApiResponse } from "next"
 import prisma from "../db"
 import { checkCredentials, testNumber } from "../middleware"
@@ -6,8 +5,11 @@ import type { user, userData } from "../../interface"
 
 function checkIfValid({ userName, password, storeId }: user, res: NextApiResponse) {
 	if (!userName || !password || !storeId) return res.json({ error: "no data found" })
-	if (!testNumber(storeId) || userName.length > 20)
+	if (testNumber(storeId) || userName.length > 20) {
+		console.log(!testNumber(storeId), userName.length > 20)
+		console.log("pasok")
 		return res.json({ error: "invalid arguments" })
+	}
 	return true
 }
 export default async function handleUser(req: NextApiRequest, res: NextApiResponse) {
@@ -21,17 +23,17 @@ export default async function handleUser(req: NextApiRequest, res: NextApiRespon
 	if (verb === "DELETE") return deleteUser(req, res)
 	else return res.status(405).end()
 }
+//* tested
 const addUser = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { userName, password, storeId, authorityId }: userData = req.body
 	if (!checkIfValid({ userName, password, storeId }, res)) return
-
 	const create = await prisma.users
 		.create({
 			data: {
 				userName: userName,
 				password: password,
 				storeId: BigInt(storeId),
-				authorityId: authorityId ?? 1,
+				authorityId: Number(authorityId) ?? 2,
 			},
 		})
 		.then((v) => ({
@@ -43,13 +45,14 @@ const addUser = async (req: NextApiRequest, res: NextApiResponse) => {
 	return res.json({ result: create })
 }
 const updateUser = (req: NextApiRequest, res: NextApiResponse) => {}
+
+//* tested
 const deleteUser = async (req: NextApiRequest, res: NextApiResponse) => {
-	const { userName, id } = req.body
+	const { userName, id, storeId } = req.body
 	const removeUser = await prisma.users
 		.deleteMany({
 			where: {
-				id: BigInt(id),
-				userName: userName,
+				AND: [{ id: BigInt(id) }, { storeId: BigInt(storeId) }, { userName: userName }],
 			},
 		})
 		.catch((e) => e)

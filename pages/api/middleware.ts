@@ -1,7 +1,7 @@
 import type { NextApiResponse } from "next"
 import Jwt from "jsonwebtoken"
 import { error, userData } from "../interface"
-const secret = "your-256-bit-secret"
+const secret = process.env.secret_key as string
 const numberRegex = /^\d+$/
 
 export async function checkCredentials(
@@ -24,7 +24,7 @@ export async function checkCredentials(
 /**
  *
  * @param number
- * @returns true if the string number has other characters
+ * @returns false if the string number has other characters
  */
 export const testNumber = (number: any) => !numberRegex.test(number)
 

@@ -5,7 +5,7 @@ import { checkCredentials, testNumber } from "../middleware"
 type body = { storeId: string; storeName: string }
 function checkIfValid({ storeId, storeName }: body, res: NextApiResponse) {
 	if (!storeId || !storeName) return res.json({ error: "no data found" })
-	if (!testNumber(storeId)) return res.json({ error: "invalid arguments" })
+	if (testNumber(storeId)) return res.json({ error: "invalid arguments" })
 	return true
 }
 export default async function handleStore(req: NextApiRequest, res: NextApiResponse) {
@@ -18,7 +18,9 @@ export default async function handleStore(req: NextApiRequest, res: NextApiRespo
 	if (verb === "DELETE") return deleteStore(req, res)
 	else return res.status(405).end()
 }
+//* tested
 const addStore = async (req: NextApiRequest, res: NextApiResponse) => {
+	console.log(req.body)
 	const { storeName } = req.body
 	if (!storeName) return res.json({ error: "invalid arguments" })
 	const createStore = await prisma.stores
@@ -37,6 +39,7 @@ const addStore = async (req: NextApiRequest, res: NextApiResponse) => {
 		})
 	return res.json({ result: createStore })
 }
+//* tested
 const updateStore = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { storeId, storeName } = req.body
 	if (!checkIfValid({ storeId, storeName }, res)) return
@@ -53,16 +56,19 @@ const updateStore = async (req: NextApiRequest, res: NextApiResponse) => {
 		.catch((e) => e.meta.cause)
 	return res.json({ result: updateStore })
 }
+//* tested
 const deleteStore = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { storeId, storeName } = req.body
 	if (!checkIfValid({ storeId, storeName }, res)) return
 	const removeStore = await prisma.stores
-		.deleteMany({
+		.delete({
 			where: {
 				id: BigInt(storeId),
-				name: storeName,
 			},
 		})
+		.then(() => ({
+			deleted: true,
+		}))
 		.catch((e) => e)
 	return res.json({ result: removeStore })
 }
