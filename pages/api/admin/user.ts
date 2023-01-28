@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import prisma from "../db"
-import { checkCredentials, testNumber } from "../middleware"
+import { checkCredentials, hash, testNumber } from "../middleware"
 import type { user, userData } from "../../interface"
 
 function checkIfValid({ userName, password, storeId }: user, res: NextApiResponse) {
@@ -19,7 +19,7 @@ export default async function handleUser(req: NextApiRequest, res: NextApiRespon
 	const credentials = await checkCredentials(authorization, res, 3)
 	if (!credentials) return
 	if (verb === "POST") return addUser(req, res)
-	if (verb === "UPDATE") return updateUser(req, res)
+	// if (verb === "UPDATE") return updateUser(req, res)
 	if (verb === "DELETE") return deleteUser(req, res)
 	else return res.status(405).end()
 }
@@ -31,20 +31,24 @@ const addUser = async (req: NextApiRequest, res: NextApiResponse) => {
 		.create({
 			data: {
 				userName: userName,
-				password: password,
+				password: hash(password),
 				storeId: BigInt(storeId),
 				authorityId: Number(authorityId) ?? 2,
 			},
 		})
-		.then((v) => ({
-			...v,
-			storeId: v.storeId.toString(),
-			id: v.id.toString(),
-		}))
-		.catch((e) => e)
-	return res.json({ result: create })
+		.then(() => ({ success: true }))
+		.catch((e) => {
+			if (e.code === "P2002") {
+				return {
+					success: false,
+					error: `${userName} is already taken`,
+				}
+			} else {
+				return e.code
+			}
+		})
+	return res.json(create)
 }
-const updateUser = (req: NextApiRequest, res: NextApiResponse) => {}
 
 //* tested
 const deleteUser = async (req: NextApiRequest, res: NextApiResponse) => {

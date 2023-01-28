@@ -61,11 +61,11 @@ export async function renewToken(data: object) {
 		const token = Jwt.sign(
 			{ data: data, cty: "application/json", iat: Date.now() },
 			secret,
-			{ expiresIn: "30d" }
+			{ expiresIn: "7 days" }
 		)
 		return token
 	} catch (e) {
-		return {}
+		return ""
 	}
 }
 export const hash = (password: string) => bcrypt.hashSync(password, salt)
