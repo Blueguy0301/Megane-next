@@ -80,7 +80,7 @@ const deleteProduct: nextFunction = async (req, res, credentials) => {
 		.catch((e) => ({ error: e, success: false }))
 	return res.json(deleteProduct)
 }
-//todo : if not found in db, return {new: true}
+//todo : same structure as getProductStore
 const getProduct: nextFunction = async (req, res, credentials) => {
 	const { barcode } = req.query as product
 	if (!barcode) return res.json({ error: "no data found" })
@@ -227,21 +227,24 @@ const getProductStore: nextFunction = async (req, res, credentials) => {
 	if (id && !testNumber(id)) {
 		const searchStore = await prisma.productStore
 			.findFirst({
-				where: { id: BigInt(user.storeId) },
+				where: { id: BigInt(id as string) },
 				include: {
 					Product: {
 						select: {
-							barcode: true,
 							name: true,
+							barcode: true,
 						},
 					},
 				},
 			})
 			.then((d) => ({
-				...d,
+				...d?.Product,
+				price: d?.price,
+				Location: d?.Location,
+				Description: d?.Description,
 				id: d?.id.toString(),
 				productId: d?.productId.toString(),
-				...d?.Product,
+				storeId: d?.storeId.toString(),
 			}))
 		return res.json({ result: searchStore })
 	} else return res.json({ error: "invalid arguments" })
