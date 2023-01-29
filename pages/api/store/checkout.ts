@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import type { Invoice, InvoicePurchase, product, productStore } from "../../interface"
+import type { Invoice, InvoicePurchase, nextFunction } from "../../interface"
 import prisma from "../db"
 import { checkCredentials, testNumber } from "../middleware"
 type body = {
@@ -17,13 +17,15 @@ export default async function handleCheckout(req: NextApiRequest, res: NextApiRe
 	const authorization = req.headers.authorization as string
 	const credentials = await checkCredentials(authorization, res)
 	if (!credentials) return
-	if (verb === "POST") return addCheckOut(req, res)
-	if (verb === "DELETE") return deleteCheckOut(req, res)
-	if (verb === "GET") return getCheckOut(req, res)
+	if (verb === "POST") return addCheckOut(req, res, credentials)
+	if (verb === "DELETE") return deleteCheckOut(req, res, credentials)
+	if (verb === "GET") return getCheckOut(req, res, credentials)
 	else return res.status(405).end()
 }
 
-const addCheckOut = async (req: NextApiRequest, res: NextApiResponse) => {
+const addCheckOut: nextFunction = async (req, res, credentials) => {
+	const { data: user } = credentials
+	if (user.authorityId < 2) return res.status(401).end()
 	const { storeId, productList, isCredited } = req.body as body
 	let products: { productStoreId: bigint }[]
 	if (testNumber(storeId)) return res.json({ error: "invalid arguments" })
@@ -62,13 +64,16 @@ const addCheckOut = async (req: NextApiRequest, res: NextApiResponse) => {
 		}))
 	return res.json(invoice)
 }
-const getCheckOut = async (req: NextApiRequest, res: NextApiResponse) => {
-	const { storeId, invoiceId } = req.query as query
-	if (testNumber(storeId) || testNumber(invoiceId))
+const getCheckOut: nextFunction = async (req, res, credentials) => {
+	const { invoiceId } = req.query as query
+	const { data: user } = credentials
+	if (user.authorityId < 2) return res.status(401).end()
+
+	if (testNumber(user.storeId) || testNumber(invoiceId))
 		return res.json({ error: "invalid arguments" })
 	const getCheckOut = await prisma.invoice
 		.findFirst({
-			where: { id: BigInt(invoiceId) },
+			where: { storeId: BigInt(user.storeId), id: BigInt(invoiceId) },
 			include: {
 				InvoicePurchases: {
 					include: {
@@ -105,9 +110,10 @@ const getCheckOut = async (req: NextApiRequest, res: NextApiResponse) => {
 		})
 	return res.json(getCheckOut)
 }
-const deleteCheckOut = async (req: NextApiRequest, res: NextApiResponse) => {
-	const { storeId, invoiceId } = req.body as query
-	if (testNumber(storeId) || testNumber(invoiceId))
+const deleteCheckOut: nextFunction = async (req, res, credentials) => {
+	const { data: user } = credentials
+	const { invoiceId } = req.body as query
+	if (testNumber(user.storeId) || testNumber(invoiceId))
 		return res.json({ error: "invalid arguments" })
 	const deleteCheckOut = await prisma.invoice
 		.delete({

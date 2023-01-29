@@ -1,7 +1,7 @@
 import type { NextApiResponse } from "next"
 import bcrypt from "bcryptjs"
 import Jwt from "jsonwebtoken"
-import { error, userData } from "../interface"
+import type { error, payload, userData } from "../interface"
 const secret = process.env.secret_key as string
 const numberRegex = /^\d+$/
 const salt = bcrypt.genSaltSync()
@@ -14,9 +14,10 @@ export async function checkCredentials(
 	const user = Jwt.verify(token, secret, (err, decoded) => {
 		if (err) return { error: "token not valid" } as error
 		else return decoded as userData
-	}) as unknown as userData
+	}) as unknown as payload
 	if (user?.error) return res.status(401).json({ error: "invalid credentials" })
-	if (user.authorityId < minAutorithy)
+	// console.log("user", user)
+	if (user.data?.authorityId < minAutorithy)
 		return res.status(401).json({ error: "Unauthorized" })
 	return user
 }

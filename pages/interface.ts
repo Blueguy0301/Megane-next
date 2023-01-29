@@ -1,3 +1,5 @@
+import type { NextApiRequest, NextApiResponse } from "next"
+
 export type product = {
 	name: string
 	barcode: string
@@ -18,6 +20,18 @@ export type user = {
 }
 export interface userData extends user {
 	authorityId: number
+	error?: string
+}
+export interface payload {
+	data: {
+		id: string
+		authorityId: number
+		storeId: number
+		userName: string
+	}
+	cty: string
+	iat: bigint
+	exp: bigint
 	error?: string
 }
 
@@ -45,3 +59,9 @@ export type productQuery = {
 	onlyStore?: boolean
 	pId?: number | string
 }
+export type nextFunction = (
+	req: NextApiRequest,
+	res: NextApiResponse,
+	credentials: payload,
+	...others: any[]
+) => any

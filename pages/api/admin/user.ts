@@ -1,13 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import prisma from "../db"
 import { checkCredentials, hash, testNumber } from "../middleware"
-import type { user, userData } from "../../interface"
+import type { nextFunction, user, userData } from "../../interface"
 
 function checkIfValid({ userName, password, storeId }: user, res: NextApiResponse) {
 	if (!userName || !password || !storeId) return res.json({ error: "no data found" })
 	if (testNumber(storeId) || userName.length > 20) {
 		console.log(!testNumber(storeId), userName.length > 20)
-		console.log("pasok")
 		return res.json({ error: "invalid arguments" })
 	}
 	return true
@@ -16,17 +15,19 @@ export default async function handleUser(req: NextApiRequest, res: NextApiRespon
 	//* if statement for request method. only update, post and delete methods are allowed
 	const verb = req.method
 	const authorization = req.headers.authorization as string
-	const credentials = await checkCredentials(authorization, res, 3)
+	const credentials = await checkCredentials(authorization, res, 5)
 	if (!credentials) return
-	if (verb === "POST") return addUser(req, res)
+	if (verb === "POST") return addUser(req, res, credentials)
 	// if (verb === "UPDATE") return updateUser(req, res)
-	if (verb === "DELETE") return deleteUser(req, res)
+	if (verb === "DELETE") return deleteUser(req, res, credentials)
 	else return res.status(405).end()
 }
 //* tested
-const addUser = async (req: NextApiRequest, res: NextApiResponse) => {
+const addUser: nextFunction = async (req, res, credentials) => {
 	const { userName, password, storeId, authorityId }: userData = req.body
+	const { data: user } = credentials
 	if (!checkIfValid({ userName, password, storeId }, res)) return
+	if (user.authorityId < 3) return res.status(401).end()
 	const create = await prisma.users
 		.create({
 			data: {
@@ -51,8 +52,10 @@ const addUser = async (req: NextApiRequest, res: NextApiResponse) => {
 }
 
 //* tested
-const deleteUser = async (req: NextApiRequest, res: NextApiResponse) => {
+const deleteUser: nextFunction = async (req, res, credentials) => {
 	const { userName, id, storeId } = req.body
+	const { data: user } = credentials
+	if (user.authorityId < 3) return res.status(401).end()
 	const removeUser = await prisma.users
 		.deleteMany({
 			where: {
