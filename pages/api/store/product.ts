@@ -28,39 +28,25 @@ const addProduct: nextFunction = async (req, res, credentials, isStoreNew = fals
 	if (user.authorityId < 3) return res.status(401).end()
 	if (!checkIfValid(barcode, name, category, mass))
 		return res.json({ error: "an error occured" })
-	const exists = await prisma.product
-		.findFirst({
-			where: {
-				barcode: barcode,
+	// check if the product already exists
+	const existingProduct = await prisma.product.findFirst({
+		where: { OR: [{ barcode: barcode }, { name: name }] },
+	})
+	if (existingProduct) return res.json({ result: "product or barcode already exists" })
+	const newProduct = await prisma.product
+		.create({
+			data: {
 				name: name,
-			},
-			select: {
-				id: true,
+				barcode: barcode,
+				Category: category,
+				mass: mass,
 			},
 		})
-		.then((e) => ({ id: e?.id.toString() }))
-	if (exists.id && !isStoreNew) return
-	const addProduct = !exists.id
-		? await prisma.product
-				.create({
-					data: {
-						name: name,
-						barcode: barcode,
-						Category: category,
-						mass: mass,
-					},
-				})
-				.then((v) => ({ ...v, id: v.id.toString(), error: false }))
-				.catch((e) => {
-					if (e.code === "P2002") {
-						return { error: true, context: "barcode or name already exists" }
-					}
-					return { error: true, ...e }
-				})
-		: { id: exists?.id, error: false }
-	if (isStoreNew && !addProduct.error)
-		return addProductStore(req, res, credentials, addProduct.id)
-	return res.json({ result: addProduct })
+		.then((d) => ({
+			...d,
+			id: d.id.toString(),
+		}))
+	return res.json({ result: newProduct })
 }
 //* tested
 const updateProduct: nextFunction = async (req, res, credentials) => {
