@@ -65,3 +65,10 @@ export type nextFunction = (
 	credentials: payload,
 	...others: any[]
 ) => any
+
+export enum authority {
+	guest = 1,
+	registered = 2,
+	storeOwner = 3,
+	admin = 4,
+}

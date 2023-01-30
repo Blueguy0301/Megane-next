@@ -100,7 +100,7 @@ const getProduct: nextFunction = async (req, res, credentials) => {
 		.catch((e) => ({
 			error: e,
 		}))
-	return res.json(getProduct)
+	return res.json({ result: getProduct })
 }
 //* test pass 2/2
 const addProductStore: nextFunction = async (
@@ -214,12 +214,13 @@ const getProductStore: nextFunction = async (req, res, credentials) => {
 				if (!d || d?.ProductStore?.length === 0) return "nothing found"
 				else
 					return {
-						...d,
-						ProductStore: {
-							...d?.ProductStore[0],
-							id: d?.ProductStore[0]?.id?.toString(),
-						},
-						id: d?.id?.toString(),
+						name: d?.name,
+						barcode: d?.barcode,
+						price: d.ProductStore[0].price,
+						location: d?.ProductStore[0]?.Location,
+						description: d?.ProductStore[0]?.Description,
+						productStoreId: d?.ProductStore[0]?.id?.toString(),
+						productId: d?.id?.toString(),
 					}
 			})
 		return res.json({ result: productId })
@@ -228,23 +229,28 @@ const getProductStore: nextFunction = async (req, res, credentials) => {
 		const searchStore = await prisma.productStore
 			.findFirst({
 				where: { id: BigInt(id as string) },
-				include: {
+				select: {
+					id: true,
+					storeId: false,
+					price: true,
+					Location: true,
+					Description: true,
 					Product: {
 						select: {
 							name: true,
 							barcode: true,
 						},
 					},
+					productId: true,
 				},
 			})
 			.then((d) => ({
 				...d?.Product,
 				price: d?.price,
-				Location: d?.Location,
-				Description: d?.Description,
-				id: d?.id.toString(),
+				location: d?.Location,
+				description: d?.Description,
+				productStoreId: d?.id.toString(),
 				productId: d?.productId.toString(),
-				storeId: d?.storeId.toString(),
 			}))
 		return res.json({ result: searchStore })
 	} else return res.json({ error: "invalid arguments" })
