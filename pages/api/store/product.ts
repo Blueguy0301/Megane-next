@@ -1,6 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { checkCredentials, checkIfValid, filter, testNumber } from "../middleware"
-import type { nextFunction, product, productQuery, productStore } from "../../interface"
+import {
+	nextFunction,
+	product,
+	productQuery,
+	productStore,
+	authority,
+} from "../../interface"
 import prisma from "../db"
 export default async function handleProducts(req: NextApiRequest, res: NextApiResponse) {
 	const verb = req.method
@@ -20,19 +26,21 @@ export default async function handleProducts(req: NextApiRequest, res: NextApiRe
 	if (verb === "DELETE") return deleteProduct(req, res, credentials)
 	else return res.status(405).end()
 }
-//* tested
-//todo :  you can use upsert here instead. to make it quicker
+//* re test this
 const addProduct: nextFunction = async (req, res, credentials, isStoreNew = false) => {
 	const { barcode, name, category, mass } = req.body as product
 	const { data: user } = credentials
-	if (user.authorityId < 3) return res.status(401).end()
+	if (user.authorityId < authority.storeOwner)
+		return res.status(401).json({ error: "unauthorized" })
 	if (!checkIfValid(barcode, name, category, mass))
 		return res.json({ error: "an error occured" })
-	// check if the product already exists
-	const existingProduct = await prisma.product.findFirst({
-		where: { OR: [{ barcode: barcode }, { name: name }] },
-	})
-	if (existingProduct) return res.json({ result: "product or barcode already exists" })
+	const existingProduct = await prisma.product
+		.findFirst({
+			where: { OR: [{ barcode: barcode }, { name: name }] },
+		})
+		.then((d) => ({ id: d?.id.toString() }))
+	if (existingProduct.id && !isStoreNew)
+		return res.json({ result: "product or barcode already exists" })
 	const newProduct = await prisma.product
 		.create({
 			data: {
@@ -46,6 +54,8 @@ const addProduct: nextFunction = async (req, res, credentials, isStoreNew = fals
 			...d,
 			id: d.id.toString(),
 		}))
+	if (isStoreNew)
+		return addProductStore(req, res, credentials, existingProduct.id ?? newProduct.id)
 	return res.json({ result: newProduct })
 }
 //* tested
@@ -107,20 +117,20 @@ const addProductStore: nextFunction = async (
 	req,
 	res,
 	credentials,
-	productId: string | number | undefined
+	productId: string
 ) => {
 	const { price, location, description } = req.body as productStore
 	const { data: user } = credentials
 	if (
 		(!productId && !checkIfValid(price, location, description)) ||
-		testNumber(productId as string) ||
+		testNumber(productId) ||
 		testNumber(user.storeId)
 	)
 		return res.json({ error: "an error occured" })
 	const createProductStore = await prisma.productStore
 		.create({
 			data: {
-				productId: BigInt(productId as string),
+				productId: BigInt(productId),
 				price: Number(price),
 				Location: location,
 				Description: description ?? "",
@@ -143,7 +153,8 @@ const addProductStore: nextFunction = async (
 const updateProductStore: nextFunction = async (req, res, credentials) => {
 	const { pId, price, location, description } = req.body
 	const { data: user } = credentials
-	if (user.authorityId < 3) return res.status(401).end()
+	if (user.authorityId < authority.storeOwner)
+		return res.status(401).json({ error: "unauthorized" })
 	if (!pId) return res.json({ error: "invalid arguments" })
 	const data = filter({
 		price: !testNumber(price) ? Number(price) : undefined,
@@ -173,7 +184,8 @@ const updateProductStore: nextFunction = async (req, res, credentials) => {
 const deleteProductStore: nextFunction = async (req, res, credentials) => {
 	const { pId } = req.body
 	const { data: user } = credentials
-	if (user.authorityId < 3) return res.status(401).end()
+	if (user.authorityId < authority.storeOwner)
+		return res.status(401).json({ error: "unauthorized" })
 	if (!pId || testNumber(pId)) return res.json({ error: "invalid arguments" })
 	const Delete = await prisma.productStore
 		.delete({ where: { id: BigInt(pId) } })
@@ -183,9 +195,8 @@ const deleteProductStore: nextFunction = async (req, res, credentials) => {
 }
 
 const getProductStore: nextFunction = async (req, res, credentials) => {
-	const { id } = req.query
+	const { id, barcode } = req.query as { [x: string]: string }
 	const { data: user } = credentials
-	const { barcode } = req.query as { [x: string]: string }
 	if (!id && !checkIfValid(user.storeId, barcode))
 		return res.json({ error: "invalid arguments" })
 	if (barcode && user.storeId && !id) {

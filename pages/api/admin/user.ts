@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import prisma from "../db"
 import { checkCredentials, hash, testNumber } from "../middleware"
-import type { nextFunction, user, userData } from "../../interface"
+import { authority, nextFunction, user, userData } from "../../interface"
 
 function checkIfValid({ userName, password, storeId }: user, res: NextApiResponse) {
 	if (!userName || !password || !storeId) return res.json({ error: "no data found" })
@@ -27,7 +27,8 @@ const addUser: nextFunction = async (req, res, credentials) => {
 	const { userName, password, storeId, authorityId }: userData = req.body
 	const { data: user } = credentials
 	if (!checkIfValid({ userName, password, storeId }, res)) return
-	if (user.authorityId < 3) return res.status(401).end()
+	if (user.authorityId < authority.admin)
+		return res.status(401).json({ error: "invalid credentials" })
 	const create = await prisma.users
 		.create({
 			data: {
@@ -55,7 +56,7 @@ const addUser: nextFunction = async (req, res, credentials) => {
 const deleteUser: nextFunction = async (req, res, credentials) => {
 	const { userName, id, storeId } = req.body
 	const { data: user } = credentials
-	if (user.authorityId < 3) return res.status(401).end()
+	if (user.authorityId < authority.admin) return res.status(401).end()
 	const removeUser = await prisma.users
 		.deleteMany({
 			where: {
