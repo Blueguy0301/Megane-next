@@ -58,13 +58,14 @@ model Invoice {
   dateTime         DateTime           @default(now())
   store            Stores             @relation(fields: [storeId], references: [id], onDelete: Cascade)
   Installment      Installments?      @relation(fields: [installmentId], references: [id], onDelete: SetNull)
+  total            Int
   InvoicePurchases InvoicePurchases[]
 }
 
 model Installments {
   id           BigInt    @id @default(autoincrement())
   customerName String    @unique
-
+  total        Int       @default(0)
   Invoice      Invoice[]
 }
 

@@ -61,6 +61,9 @@ const addProduct: nextFunction = async (req, res, credentials, isStoreNew = fals
 //* tested
 const updateProduct: nextFunction = async (req, res, credentials) => {
 	const { barcode, name, category, mass } = req.body as product
+	const { data: user } = credentials
+	if (user.authorityId < authority.storeOwner)
+		return res.status(401).json({ error: "unauthorized" })
 	if (!checkIfValid(barcode)) return res.json({ error: "an error occured" })
 	const data = filter({ barcode, name, Category: category, mass })
 	if (!data) return res.json({ error: "no data found" })
@@ -77,6 +80,9 @@ const updateProduct: nextFunction = async (req, res, credentials) => {
 //* tested
 const deleteProduct: nextFunction = async (req, res, credentials) => {
 	const { pId } = req.body
+	const { data: user } = credentials
+	if (user.authorityId < authority.storeOwner)
+		return res.status(401).json({ error: "unauthorized" })
 	if (!pId || testNumber(pId)) return res.json({ error: "no data found" })
 	const deleteProduct = await prisma.product
 		.delete({
@@ -93,6 +99,9 @@ const deleteProduct: nextFunction = async (req, res, credentials) => {
 //todo : same structure as getProductStore
 const getProduct: nextFunction = async (req, res, credentials) => {
 	const { barcode } = req.query as product
+	const { data: user } = credentials
+	if (user.authorityId < authority.registered)
+		return res.status(401).json({ error: "unauthorized" })
 	if (!barcode) return res.json({ error: "no data found" })
 	const getProduct = await prisma.product
 		.findFirst({
@@ -121,6 +130,8 @@ const addProductStore: nextFunction = async (
 ) => {
 	const { price, location, description } = req.body as productStore
 	const { data: user } = credentials
+	if (user.authorityId < authority.storeOwner)
+		return res.status(401).json({ error: "unauthorized" })
 	if (
 		(!productId && !checkIfValid(price, location, description)) ||
 		testNumber(productId) ||
@@ -197,8 +208,12 @@ const deleteProductStore: nextFunction = async (req, res, credentials) => {
 const getProductStore: nextFunction = async (req, res, credentials) => {
 	const { id, barcode } = req.query as { [x: string]: string }
 	const { data: user } = credentials
+	if (user.authorityId < authority.registered)
+		return res.status(401).json({ error: "unauthorized" })
 	if (!id && !checkIfValid(user.storeId, barcode))
 		return res.json({ error: "invalid arguments" })
+	if (user.authorityId < authority.registered)
+		return res.status(401).json({ error: "unauthorized" })
 	if (barcode && user.storeId && !id) {
 		// todo  : add id of product here
 		const productId = await prisma.product

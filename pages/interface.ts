@@ -39,6 +39,7 @@ export type Invoice = {
 	storeId: bigint
 	installmentId?: bigint
 	dateTime: Date
+	total: number
 }
 export type InvoicePurchase = {
 	productStoreId: bigint | string
@@ -71,4 +72,10 @@ export enum authority {
 	registered = 2,
 	storeOwner = 3,
 	admin = 4,
+}
+export interface installments {
+	id: string
+	customerName: string
+	total: number
+	isAdded: boolean
 }

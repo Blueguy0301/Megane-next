@@ -1,6 +1,6 @@
 //*checked
 import type { NextApiRequest, NextApiResponse } from "next"
-import { nextFunction } from "../../interface"
+import { authority, nextFunction } from "../../interface"
 import prisma from "../db"
 import { checkCredentials, testNumber } from "../middleware"
 type body = { storeId: string; storeName: string }
@@ -12,7 +12,7 @@ function checkIfValid({ storeId, storeName }: body, res: NextApiResponse) {
 export default async function handleStore(req: NextApiRequest, res: NextApiResponse) {
 	const verb = req.method
 	const authorization = req.headers.authorization as string
-	const credentials = await checkCredentials(authorization, res, 5)
+	const credentials = await checkCredentials(authorization, res, authority.admin)
 	if (!credentials) return
 	if (verb === "POST") return addStore(req, res, credentials)
 	if (verb === "PUT") return updateStore(req, res, credentials)

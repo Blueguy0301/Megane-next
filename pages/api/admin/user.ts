@@ -15,7 +15,7 @@ export default async function handleUser(req: NextApiRequest, res: NextApiRespon
 	//* if statement for request method. only update, post and delete methods are allowed
 	const verb = req.method
 	const authorization = req.headers.authorization as string
-	const credentials = await checkCredentials(authorization, res, 5)
+	const credentials = await checkCredentials(authorization, res, authority.admin)
 	if (!credentials) return
 	if (verb === "POST") return addUser(req, res, credentials)
 	// if (verb === "UPDATE") return updateUser(req, res)
@@ -23,19 +23,17 @@ export default async function handleUser(req: NextApiRequest, res: NextApiRespon
 	else return res.status(405).end()
 }
 //* tested
-const addUser: nextFunction = async (req, res, credentials) => {
+const addUser: nextFunction = async (req, res) => {
 	const { userName, password, storeId, authorityId }: userData = req.body
-	const { data: user } = credentials
 	if (!checkIfValid({ userName, password, storeId }, res)) return
-	if (user.authorityId < authority.admin)
-		return res.status(401).json({ error: "invalid credentials" })
+
 	const create = await prisma.users
 		.create({
 			data: {
 				userName: userName,
 				password: hash(password),
 				storeId: BigInt(storeId),
-				authorityId: Number(authorityId) ?? 2,
+				authorityId: Number(authorityId) ?? authority.registered,
 			},
 		})
 		.then(() => ({ success: true }))
@@ -49,14 +47,12 @@ const addUser: nextFunction = async (req, res, credentials) => {
 				return e.code
 			}
 		})
-	return res.json(create)
+	return res.json({ result: create })
 }
 
 //* tested
-const deleteUser: nextFunction = async (req, res, credentials) => {
+const deleteUser: nextFunction = async (req, res) => {
 	const { userName, id, storeId } = req.body
-	const { data: user } = credentials
-	if (user.authorityId < authority.admin) return res.status(401).end()
 	const removeUser = await prisma.users
 		.deleteMany({
 			where: {

@@ -54,3 +54,4 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 1. type safety
 1. scanner api
 1. retest addProduct on `/api/product.ts`
+1. types on all res
