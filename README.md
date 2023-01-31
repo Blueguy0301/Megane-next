@@ -4,7 +4,9 @@ A point of sales system made with NextJs, Prisma and CockroachDB.
 
 ## Features
 
-To be added
+1. Record products with barcodes or not.
+1. Creates and scans qr codes and barcodes based on EAP15 standards using your smartphone.
+1. Track installments and Invoices.
 
 #### This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
@@ -27,9 +29,9 @@ You can start editing the page by modifying `pages/index.tsx`. The page auto-upd
 The API uses the following libraries :
 
 ```json
-		"@prisma/client": "^4.9.0",
-		"bcryptjs": "^2.4.3",
-		"jsonwebtoken": "^9.0.0",
+"@prisma/client": "^4.9.0",
+"bcryptjs": "^2.4.3",
+"jsonwebtoken": "^9.0.0",
 ```
 
 [API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api](http://localhost:3000/api/*). This endpoint can be edited in `pages/api/*`.
@@ -46,12 +48,12 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 4 : User is an admin
 
-## To do
+## To do:
 
-1. Credential checking
-1. installment api
+1. Test installment api
 1. ui overhaul (again)
 1. type safety
-1. scanner api
-1. retest addProduct on `/api/product.ts`
 1. types on all res
+1. Logo
+1. optimize addProduct on `/api/product.ts`. It takes 1.5s to create a product
+1. optimize installments on `/api/installment.ts`. It takes 500ms to create,update and delete an installment

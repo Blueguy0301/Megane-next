@@ -45,7 +45,11 @@ const addCheckOut: nextFunction = async (req, res, credentials) => {
 			.upsert({
 				where: { customerName: customerName },
 				update: { total: { increment: total } },
-				create: { customerName: customerName, total: total },
+				create: {
+					customerName: customerName,
+					total: total,
+					storeId: BigInt(user.storeId),
+				},
 				select: { id: true },
 			})
 			.then((d) => d.id.toString())

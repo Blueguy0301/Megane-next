@@ -1,3 +1,4 @@
+//* retest
 import { NextApiRequest, NextApiResponse } from "next"
 import { checkCredentials, checkIfValid, filter, testNumber } from "../middleware"
 import {
@@ -12,57 +13,55 @@ export default async function handleProducts(req: NextApiRequest, res: NextApiRe
 	const verb = req.method
 	const authorization = req.headers.authorization as string
 	const credentials = await checkCredentials(authorization, res)
-	const { isNew, isStoreNew, storeSearch, onlyStore, pId } =
-		req.query as unknown as productQuery
+	const { isStoreNew, onlyStore, pId } = req.query as unknown as productQuery
 	if (!credentials) return
-	if (verb === "GET" && storeSearch) return getProductStore(req, res, credentials)
-	if (verb === "GET") return getProduct(req, res, credentials)
-	if (verb === "POST" && isNew) return addProduct(req, res, credentials, isStoreNew)
+	if (verb === "GET") return getProductStore(req, res, credentials)
 	if (verb === "POST" && isStoreNew && pId)
 		return addProductStore(req, res, credentials, pId)
+	if (verb === "POST") return addProduct(req, res, credentials, isStoreNew)
 	if (verb === "PUT" && onlyStore) return updateProductStore(req, res, credentials)
 	if (verb === "PUT") return updateProduct(req, res, credentials)
 	if (verb === "DELETE" && onlyStore) return deleteProductStore(req, res, credentials)
 	if (verb === "DELETE") return deleteProduct(req, res, credentials)
 	else return res.status(405).end()
 }
-//* re test this
+//* test pass 2/2
 const addProduct: nextFunction = async (req, res, credentials, isStoreNew = false) => {
 	const { barcode, name, category, mass } = req.body as product
 	const { data: user } = credentials
 	if (user.authorityId < authority.storeOwner)
 		return res.status(401).json({ error: "unauthorized" })
-	if (!checkIfValid(barcode, name, category, mass))
+	if (!checkIfValid(barcode) && !isStoreNew)
 		return res.json({ error: "an error occured" })
-	const existingProduct = await prisma.product
-		.findFirst({
-			where: { OR: [{ barcode: barcode }, { name: name }] },
-		})
-		.then((d) => ({ id: d?.id.toString() }))
-	if (existingProduct.id && !isStoreNew)
-		return res.json({ result: "product or barcode already exists" })
 	const newProduct = await prisma.product
-		.create({
-			data: {
+		.upsert({
+			where: { barcode: barcode },
+			create: {
 				name: name,
 				barcode: barcode,
 				Category: category,
 				mass: mass,
 			},
+			update: {},
 		})
 		.then((d) => ({
 			...d,
 			id: d.id.toString(),
 		}))
-	if (isStoreNew)
-		return addProductStore(req, res, credentials, existingProduct.id ?? newProduct.id)
+		.catch((e) => {
+			if (e.code === "P2002")
+				return { error: `${name} already exists in the database. try using other names` }
+			else return e
+		})
+	if (isStoreNew && newProduct.id)
+		return addProductStore(req, res, credentials, newProduct.id)
 	return res.json({ result: newProduct })
 }
 //* tested
 const updateProduct: nextFunction = async (req, res, credentials) => {
 	const { barcode, name, category, mass } = req.body as product
 	const { data: user } = credentials
-	if (user.authorityId < authority.storeOwner)
+	if (user.authorityId < authority.admin)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!checkIfValid(barcode)) return res.json({ error: "an error occured" })
 	const data = filter({ barcode, name, Category: category, mass })
@@ -81,7 +80,7 @@ const updateProduct: nextFunction = async (req, res, credentials) => {
 const deleteProduct: nextFunction = async (req, res, credentials) => {
 	const { pId } = req.body
 	const { data: user } = credentials
-	if (user.authorityId < authority.storeOwner)
+	if (user.authorityId < authority.admin)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!pId || testNumber(pId)) return res.json({ error: "no data found" })
 	const deleteProduct = await prisma.product
@@ -96,31 +95,7 @@ const deleteProduct: nextFunction = async (req, res, credentials) => {
 		.catch((e) => ({ error: e, success: false }))
 	return res.json(deleteProduct)
 }
-//todo : same structure as getProductStore
-const getProduct: nextFunction = async (req, res, credentials) => {
-	const { barcode } = req.query as product
-	const { data: user } = credentials
-	if (user.authorityId < authority.registered)
-		return res.status(401).json({ error: "unauthorized" })
-	if (!barcode) return res.json({ error: "no data found" })
-	const getProduct = await prisma.product
-		.findFirst({
-			where: {
-				barcode: barcode,
-			},
-		})
-		.then((d) => ({
-			id: d?.id.toString(),
-			name: d?.name,
-			barcode: d?.barcode,
-			Category: d?.Category,
-			mass: d?.mass,
-		}))
-		.catch((e) => ({
-			error: e,
-		}))
-	return res.json({ result: getProduct })
-}
+
 //* test pass 2/2
 const addProductStore: nextFunction = async (
 	req,
@@ -138,6 +113,11 @@ const addProductStore: nextFunction = async (
 		testNumber(user.storeId)
 	)
 		return res.json({ error: "an error occured" })
+	const countProductStore = await prisma.productStore.count({
+		where: { AND: [{ productId: BigInt(productId) }, { storeId: BigInt(user.storeId) }] },
+	})
+	if (countProductStore > 0)
+		return res.json({ error: "product already exists on your store" })
 	const createProductStore = await prisma.productStore
 		.create({
 			data: {
@@ -150,14 +130,14 @@ const addProductStore: nextFunction = async (
 		})
 		.then((d) => ({
 			...d,
+			id: d.id.toString(),
 			productId: d.productId.toString(),
 			storeId: d.storeId.toString(),
-			id: d.id.toString(),
 		}))
 		.catch((e) => {
-			return e
+			if (e.code === "P2003") return { error: `${productId} is not a product` }
+			else return e
 		})
-	// error here.
 	return res.json({ result: createProductStore })
 }
 //* tested

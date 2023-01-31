@@ -16,6 +16,7 @@ model Stores {
   users        Users[]
   productStore ProductStore[]
   Invoices     Invoice[]
+  Installments Installments[]
 }
 
 model Users {
@@ -64,9 +65,13 @@ model Invoice {
 
 model Installments {
   id           BigInt    @id @default(autoincrement())
-  customerName String    @unique
+  customerName String    
   total        Int       @default(0)
+  storeId      BigInt   
+
+  store        Stores             @relation(fields: [storeId], references: [id], onDelete: Cascade)
   Invoice      Invoice[]
+  
 }
 
 model InvoicePurchases {
