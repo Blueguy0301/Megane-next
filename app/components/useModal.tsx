@@ -1,7 +1,7 @@
 "use client"
 import { MouseEventHandler, ReactNode } from "react"
 import { useState } from "react"
-import Button from "./Button"
+import Button from "@components/Button"
 
 type Props = {
 	title: string

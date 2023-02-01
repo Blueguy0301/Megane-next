@@ -32,6 +32,7 @@ The API uses the following libraries :
 "@prisma/client": "^4.9.0",
 "bcryptjs": "^2.4.3",
 "jsonwebtoken": "^9.0.0",
+"next-auth": "^4.18.7",
 ```
 
 [API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api](http://localhost:3000/api/*). This endpoint can be edited in `pages/api/*`.
@@ -50,10 +51,11 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 ## To do:
 
-1. Test installment api
 1. ui overhaul (again)
 1. type safety
 1. types on all res
 1. Logo
 1. optimize addProduct on `/api/product.ts`. It takes 1.5s to create a product
 1. optimize installments on `/api/installment.ts`. It takes 500ms to create,update and delete an installment
+1. front end authentication with next-Auth
+1. seperate server components to client compontents

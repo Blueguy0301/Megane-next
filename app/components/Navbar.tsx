@@ -3,8 +3,10 @@ import Image from "next/image"
 import Link from "next/link"
 import React, { useEffect, useState } from "react"
 import type { MouseEvent } from "react"
-
+import { signOut, useSession } from "next-auth/react"
+//todo : rework.
 const Navbar = () => {
+	const { data: session } = useSession()
 	const checkSize = (e?: UIEvent) => {
 		const width = window.innerWidth
 		if (width >= 768) {
@@ -15,29 +17,24 @@ const Navbar = () => {
 			setNavOptions(false)
 		}
 	}
-	const name = "Robert"
 	useEffect(() => {
 		checkSize()
 		const listener = window.addEventListener("resize", checkSize)
-		return () => {
-			window.removeEventListener("resize", checkSize)
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		return () => window.removeEventListener("resize", checkSize)
 	}, [])
 	const handleDropdown = (e: MouseEvent<HTMLElement>) => {
 		setIsShown(!isShown)
 		e.preventDefault()
-		console.log("dropdown")
 	}
 	const handleClick = (e: MouseEvent<HTMLElement>) => {
+		//search
 		e.preventDefault()
-		console.log("submitted")
 	}
-
 	const [isShown, setIsShown] = useState(false)
 	const [darkMode, setDarkMode] = useState(true)
 	const [navOptions, setNavOptions] = useState<boolean>()
 	const [modalOptions, setModalOptions] = useState<boolean>()
+	if (!session) return <></>
 	return (
 		<div className="nav  flex w-full bg-blue-700">
 			<div className="mr-auto flex flex-row items-center gap-4 p-4">
@@ -70,9 +67,13 @@ const Navbar = () => {
 						<Link className="nav-button" href="/profile">
 							Settings
 						</Link>
-						<Link className="nav-button" href="/profile">
+						<button
+							type="button"
+							className="nav-button text-left"
+							onClick={() => signOut()}
+						>
 							Logout
-						</Link>
+						</button>
 					</div>
 				)}
 				{navOptions && (

@@ -3,7 +3,6 @@ import prisma from "./db"
 import { compare, renewToken } from "./middleware"
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
 	const { userName, password } = req.body
-	if (!userName || !password) return res.status(200).json({ error: "missing parameters" })
 	const user = await prisma.users
 		.findUnique({
 			where: { userName: userName },

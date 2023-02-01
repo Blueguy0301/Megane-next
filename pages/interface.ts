@@ -23,18 +23,19 @@ export interface userData extends user {
 	error?: string
 }
 export interface payload {
-	data: {
-		id: string
-		authorityId: number
-		storeId: number
-		userName: string
-	}
+	data: userDetails
 	cty: string
 	iat: bigint
 	exp: bigint
 	error?: string
 }
-
+export interface userDetails {
+	id: string
+	authorityId: number
+	storeId: number
+	userName: string
+	password?: string
+}
 export type Invoice = {
 	storeId: bigint
 	installmentId?: bigint

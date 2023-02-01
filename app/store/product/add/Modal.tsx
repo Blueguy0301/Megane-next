@@ -1,7 +1,7 @@
 "use client"
 import type { ReactNode, MouseEventHandler, Dispatch, SetStateAction } from "react"
-import Scanner from "../../components/Scanner"
-import Button from "../../components/Button"
+import Scanner from "@components/Scanner"
+import Button from "@components/Button"
 type Props = {
 	Modal: (props: {
 		title: string

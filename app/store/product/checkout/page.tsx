@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 import { useEffect, useMemo, useState, Fragment } from "react"
-import Button from "../../components/Button"
-import Scanner from "../../components/Scanner"
+import Button from "@components/Button"
+import Scanner from "@components/Scanner"
 import Product from "./Product"
-import useModal from "../../components/useModal"
+import useModal from "@components/useModal"
 import ModalForm from "./Modal"
 function page() {
 	const { Modal, Open } = useModal()
