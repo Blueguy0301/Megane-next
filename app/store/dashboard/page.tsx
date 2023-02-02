@@ -1,7 +1,13 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client"
+import Button from "@components/Button"
+import { useSession } from "next-auth/react"
+import { authority } from "../../../pages/interface"
 import Card from "./Card"
 import CardInfo from "./CardInfo"
 export default function page() {
+	const { data: session } = useSession()
+	if (!session) return
 	return (
 		<div className="page flex-row flex-wrap items-center gap-10  p-10">
 			<div className="flex w-full flex-row flex-wrap gap-10">
@@ -41,6 +47,11 @@ export default function page() {
 						title="No. of Products"
 						value="900"
 					/>
+					{session.user.authorityId >= authority.admin && (
+						<Button type="Link" href="/admin">
+							Admin Panel
+						</Button>
+					)}
 				</Card>
 			</div>
 			<Card className="h-[450px] w-full">

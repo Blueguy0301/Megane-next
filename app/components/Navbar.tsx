@@ -56,10 +56,10 @@ const Navbar = () => {
 					<div className="dropdown absolute">
 						{modalOptions && (
 							<>
-								<Link className="nav-button" href="/dashboard">
+								<Link className="nav-button" href="/store/dashboard">
 									Dashboard
 								</Link>
-								<Link className="nav-button" href="/inventory">
+								<Link className="nav-button" href="/store/inventory">
 									Inventory
 								</Link>
 							</>
@@ -78,10 +78,10 @@ const Navbar = () => {
 				)}
 				{navOptions && (
 					<>
-						<Link className="nav-button" href="/dashboard">
+						<Link className="nav-button" href="/store/dashboard">
 							Dashboard
 						</Link>
-						<Link className="nav-button" href="/inventory">
+						<Link className="nav-button" href="/store/inventory">
 							Inventory
 						</Link>
 					</>

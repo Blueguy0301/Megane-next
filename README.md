@@ -59,3 +59,4 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 1. optimize installments on `/api/installment.ts`. It takes 500ms to create,update and delete an installment
 1. front end authentication with next-Auth
 1. seperate server components to client compontents
+1. have page to be a server component by default. ON ALL FILES

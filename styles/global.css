@@ -5,6 +5,11 @@
 :root {
 	--nav-size: 64px;
 }
+h1 {
+	@apply text-2xl text-white;
+	font-family: "Inter";
+	font-style: normal;
+}
 h2 {
 	font-size: 1.5rem;
 	color: white;
@@ -157,9 +162,11 @@ h3,
 }
 .group input,
 .group select {
-	@apply bg-gray-300;
-	@apply p-1;
-	flex-grow: 1;
+	@apply flex-grow bg-gray-300 p-1;
+	border-radius: 6px;
+}
+.login-input {
+	@apply flex-grow bg-gray-300 p-1;
 	border-radius: 6px;
 }
 .red {
@@ -263,4 +270,7 @@ span.checkout h5 {
 }
 .group select {
 	height: 32px;
+}
+.login-form label {
+	@apply text-white;
 }

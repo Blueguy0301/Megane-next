@@ -20,7 +20,6 @@ export const authOptions: NextAuthOptions = {
 				},
 			},
 			async authorize(credentials, req) {
-				// console.log(credentials, req)
 				const { username, password } = credentials as any
 				if (!username || !password) return null
 				const user: userDetails = (await prisma.users

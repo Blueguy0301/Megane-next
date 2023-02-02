@@ -10,9 +10,12 @@ type userData = {
 }
 const page = () => {
 	const { data: session } = useSession()
-	const router = useRouter()
-	if (!session) void router.push("/login")
-	return <div>Logged in as {session?.user.userName}</div>
+	return (
+		<div>
+			<Button type="Link" href="/login">
+				Login
+			</Button>
+		</div>
+	)
 }
-
 export default page
