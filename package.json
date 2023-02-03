@@ -3,7 +3,7 @@
 	"version": "0.2.5",
 	"private": true,
 	"scripts": {
-		"dev": "FAST_REFRESH=false next dev",
+		"dev": " next dev ",
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint"
@@ -13,8 +13,8 @@
 		"bcryptjs": "^2.4.3",
 		"html5-qrcode": "^2.3.4",
 		"jsonwebtoken": "^9.0.0",
-		"next": "13.0.6",
-		"next-auth": "^4.18.7",
+		"next": "^13.1.6",
+		"next-auth": "^4.19.2",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
 		"react-hook-form": "^7.43.0",

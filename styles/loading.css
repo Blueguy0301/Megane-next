@@ -1,0 +1,32 @@
+.loader {
+	width: 10rem;
+	height: 10rem;
+	border: 3px solid #fff;
+	border-radius: 50%;
+	display: inline-block;
+	position: relative;
+	box-sizing: border-box;
+	animation: rotation 1s linear infinite;
+}
+.loader::after {
+	content: "";
+	box-sizing: border-box;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 9rem;
+	height: 9rem;
+	border-radius: 50%;
+	border: 10px solid;
+	border-color: rgb(29 78 216) transparent;
+}
+
+@keyframes rotation {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}

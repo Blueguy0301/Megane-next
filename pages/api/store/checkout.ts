@@ -42,8 +42,9 @@ const addCheckOut: nextFunction = async (req, res, credentials) => {
 	let data: Invoice = { storeId: BigInt(storeId), dateTime: new Date(), total }
 	if (isCredited && customerName) {
 		const installmentId = await prisma.installments
+			// todo : change customer name to  id
 			.upsert({
-				where: { customerName: customerName },
+				where: { id: BigInt(343) },
 				update: { total: { increment: total } },
 				create: {
 					customerName: customerName,

@@ -21,7 +21,8 @@
 		],
 		"paths": {
 			"@components/*": ["./app/components/*"],
-			"@api/*": ["./pages/api/*"]
+			"@api/*": ["./pages/api/*"],
+			"@css/*": ["./styles/*"]
 		}
 	},
 	"include": [

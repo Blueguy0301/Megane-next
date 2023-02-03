@@ -1,12 +1,13 @@
 "use client"
-import type { ReactNode } from "react"
+import { ReactNode, Suspense } from "react"
 import Navbar from "@components/Navbar"
 import Scan from "@components/Scan"
+import Loading from "./Loading"
 export default function RootLayout({ children }: { children: ReactNode }) {
 	return (
 		<>
 			<Navbar />
-			{children}
+			<Suspense fallback={<Loading />}>{children}</Suspense>
 			<Scan />
 		</>
 	)
