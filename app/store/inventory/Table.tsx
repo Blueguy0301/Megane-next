@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 import TablePagination from "./TablePagination"
-import { useState } from "react"
-import searchProducts from "./binarySearch"
+import { ChangeEvent, useState } from "react"
+import searchProducts from "./productSearch"
 import type { Session } from "next-auth"
 import Button from "@components/Button"
 import Image from "next/image"
@@ -16,20 +16,32 @@ interface data {
 		mass: string
 		barcode: string
 	}
+	id: string
 }
 interface props {
 	data: data[]
 	session: Session
 }
 function Table({ data, session }: props) {
-	const [current, setCurrent] = useState(0)
+	const [current, setCurrent] = useState(1)
 	//* memoize this
 	const [product, setProduct] = useState(data)
 	const [search, setSearch] = useState("")
+	const [selected, setSelected] = useState<string[]>([])
 	const shownProduct = useMemo(() => {
-		if (search === "") return product as unknown as data[]
+		if (search === "") return product
 		else return searchProducts(search, product) as data[]
 	}, [search])
+	const selectAll = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+		if (e.target.checked) setSelected(product.map((d) => d.id))
+		else setSelected([])
+	}, [])
+	const select = useCallback((id: string) => {
+		return (e: ChangeEvent<HTMLInputElement>) => {
+			if (e.target.checked) setSelected((prev) => [...prev, id])
+			else setSelected((prev) => prev.filter((prevId) => prevId !== id))
+		}
+	}, [])
 	return (
 		<>
 			<div className="flex w-full flex-row flex-wrap justify-center gap-3 ">
@@ -42,7 +54,9 @@ function Table({ data, session }: props) {
 						>
 							Add Product
 						</Button>
+						{/* todo: disable this button if nothing is selected. */}
 						<Button type="button">Delete Selected</Button>
+						{/* todo: disable this button if there is more than one selected */}
 						<Button type="button">Update Existsing</Button>
 					</>
 				)}
@@ -74,7 +88,12 @@ function Table({ data, session }: props) {
 									scope="col"
 									className="w-4 px-6 py-4 text-center text-sm  font-medium text-white"
 								>
-									<input type="checkbox" name="all" id="all" />
+									<input
+										type="checkbox"
+										name="all"
+										id="all"
+										onChange={(e) => selectAll(e)}
+									/>
 								</th>
 								<th
 									scope="col"
@@ -114,12 +133,14 @@ function Table({ data, session }: props) {
 								<tr
 									className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
 									key={a}
-									onClick={(e) => {
-										console.log(`${a} has been clicked`)
-									}}
 								>
 									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-white">
-										<input type="checkbox" name="selected" />
+										<input
+											type="checkbox"
+											name="selected"
+											onChange={select(i.id)}
+											checked={selected.includes(i.id)}
+										/>
 									</td>
 									<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white">
 										{i.Product.name}
@@ -134,7 +155,7 @@ function Table({ data, session }: props) {
 										{i.Location}
 									</td>
 									<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white">
-										{i.price}
+										PHP {i.price}
 									</td>
 								</tr>
 							))}
@@ -143,8 +164,8 @@ function Table({ data, session }: props) {
 				</div>
 			</div>
 			<TablePagination
-				shown={data.length}
-				current={50 > data.length ? 1 : data.length - 49}
+				shown={product.length}
+				current={50 > product.length ? 1 : product.length - 49}
 			/>
 		</>
 	)

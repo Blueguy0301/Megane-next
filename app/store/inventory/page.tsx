@@ -30,7 +30,10 @@ async function getProductStore(storeId: number) {
 			},
 			Location: true,
 			price: true,
+			id: true,
 		},
+		take: 50,
 	})
+	.then((data) => data.map((d) => ({ ...d, id: d.id.toString() })))
 	return products
 }
