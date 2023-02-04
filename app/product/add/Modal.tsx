@@ -1,23 +1,15 @@
 "use client"
-import type { ReactNode, MouseEventHandler, Dispatch, SetStateAction } from "react"
+import { useEffect, useState } from "react"
 import Scanner from "@components/Scanner"
 import Button from "@components/Button"
-type Props = {
-	Modal: (props: {
-		title: string
-		children: ReactNode
-		onAccept?: MouseEventHandler
-		confirmText?: string | number
-		[x: string]: any
-	}) => JSX.Element
-	Scanned: string
-	setScanned: Dispatch<SetStateAction<string>>
-}
-
-const Modal = (props: Props) => {
+import type { addProps } from "../../interface"
+const Modal = (props: addProps) => {
 	const { Modal, Scanned, setScanned } = props
 	const genRanHex = (size = 2) =>
 		[...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join("")
+	useEffect(() => {
+		//* add request here everytime that the scanned value is changed
+	}, [Scanned])
 	return (
 		<Modal title="Scan" className="flex flex-col gap-4">
 			<div className="flex flex-row flex-wrap">

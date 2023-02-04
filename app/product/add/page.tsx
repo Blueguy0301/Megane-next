@@ -6,36 +6,25 @@ import Button from "../../components/Button"
 import useModal from "../../components/useModal"
 import ModalScanner from "./Modal"
 import Select from "./Select"
-type formData = {
-	name: string
-	Category: string
-	price: number | string
-	location: string
-	mass: number | string
-	description: string
-}
+import { formData } from "../../interface"
+import { useForm, SubmitHandler } from "react-hook-form"
+import ProductForm from "./ProductForm"
 export default function page() {
-	const [formData, setFormData] = useState<formData>({
-		name: "",
-		Category: "",
-		price: (0).toFixed(2),
-		location: "",
-		mass: (0).toFixed(2),
-		description: "",
-	})
-	const [Scanned, setScanned] = useState("none")
-	const unit =
-		formData.Category === "weight"
-			? "Weight"
-			: formData.Category === "volume"
-			? "Volume"
-			: "Quantity"
-	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target
-		setFormData((prev) => {
-			return { ...prev, [name]: value }
-		})
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+		watch,
+		setValue,
+	} = useForm<formData>()
+	const [isStoreNew, setIsStoreNew] = useState(false)
+	const [isNew, setIsNew] = useState(false)
+	const onSubmit: SubmitHandler<formData> = (data) => {
+		//* submit to api here.
 	}
+	const formData = watch()
+	const [Scanned, setScanned] = useState("none")
+	const unit = "Quantity"
 	const { Modal, Open } = useModal()
 	return (
 		<div className="page box-border flex-wrap">
@@ -45,54 +34,17 @@ export default function page() {
 				action="#"
 				method="post"
 				className="box-border flex  min-w-[50%] flex-grow flex-col gap-3"
+				onSubmit={handleSubmit(onSubmit)}
 			>
-				<fieldset className="min-w-1/2 flex flex-col p-4">
-					<div className="relative flex flex-col gap-4 border border-solid border-white p-4">
-						<h3 className="float">Type</h3>
-						<div className="group">
-							<label htmlFor="name">Name</label>
-							<input
-								type="text"
-								name="name"
-								id="name"
-								value={formData.name}
-								onChange={handleChange}
-							/>
-						</div>
-						<div className="group ">
-							<label htmlFor="barcode">Barcode</label>
-							<div className="relative flex-grow">
-								<input
-									type="text"
-									className="w-full"
-									value={Scanned === "none" ? "" : Scanned}
-									onChange={(e) => setScanned(e.target.value)}
-									id="barcode"
-								/>
-								<Open className="scan-btn">Scan</Open>
-							</div>
-						</div>
-						<div className="group">
-							<label htmlFor="Category">Category</label>
-							<Select
-								selected={formData.Category}
-								setSelected={setFormData}
-								name="Category"
-								id="Category"
-							/>
-						</div>
-						<div className="group">
-							<label htmlFor="unit">{unit}</label>
-							<input
-								type="number"
-								value={formData.mass}
-								onChange={handleChange}
-								name="mass"
-							/>
-						</div>
-					</div>
-				</fieldset>
-				<fieldset className="min-w-1/2 flex flex-col p-4">
+				<ProductForm
+					register={register}
+					setScanned={setScanned}
+					setValue={setValue}
+					Scanned={Scanned}
+					Open={Open}
+					disabled={false}
+				/>
+				<fieldset className="min-w-1/2 flex flex-col p-4 disabled:opacity-50">
 					<div className="relative flex flex-col gap-4 border border-solid border-white p-4">
 						<h3 className="float">Sales information</h3>
 						<div className="group">
@@ -100,21 +52,17 @@ export default function page() {
 							<input
 								type="number"
 								id="price"
-								value={formData.price}
-								onChange={handleChange}
-								name="price"
 								pattern="^\d+(\.\d{1,2})?$"
+								min={0}
+								{...register("price", { required: true })}
 							/>
 						</div>
-
 						<div className="group">
 							<label htmlFor="location">Loaction</label>
 							<input
 								type="text"
 								id="location"
-								value={formData.location}
-								onChange={handleChange}
-								name="location"
+								{...register("location", { required: true })}
 							/>
 						</div>
 						<div className="group">
@@ -122,9 +70,7 @@ export default function page() {
 							<input
 								type="text"
 								id="desc"
-								value={formData.description}
-								onChange={handleChange}
-								name="description"
+								{...register("description", { required: true })}
 							/>
 						</div>
 					</div>

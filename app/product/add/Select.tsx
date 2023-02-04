@@ -1,34 +1,16 @@
 "use client"
-import type { Dispatch, SetStateAction, ChangeEvent } from "react"
-type formData = {
-	name: string
-	Category: string
-	price: number | string
-	location: string
-	mass: number | string
-	description: string
-}
 type props = {
-	selected: string
-	setSelected: Dispatch<SetStateAction<formData>>
-	name: string
-	id: string
+	[x: string]: any
+	setValue: any
 }
 const Select = (props: props) => {
-	const { selected, setSelected, name, id } = props
-	const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
-		const { name, value } = e.target
-		setSelected((prev) => {
-			return { ...prev, [name]: value }
-		})
-	}
+	const { setValue, ...rest } = props
 	return (
 		<select
-			onChange={handleChange}
-			value={selected}
-			name={name}
-			id={id}
+			{...rest}
 			className="flex-grow"
+			id="Category"
+			onChange={(e) => setValue("Category", e.target.value)}
 		>
 			<optgroup label="Cigarettes">
 				<option value="stick">Stick</option>
