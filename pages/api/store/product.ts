@@ -1,6 +1,6 @@
 //* successfully migrated to nextAuth
 import { NextApiRequest, NextApiResponse } from "next"
-import { checkIfValid, filter, testNumber } from "../middleware"
+import { checkCredentials, checkIfValid, filter, testNumber } from "../middleware"
 import {
 	nextFunction,
 	product,
@@ -8,13 +8,10 @@ import {
 	productStore,
 	authority,
 } from "../../interface"
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@api/auth/[...nextauth]"
 import prisma from "../db"
 export default async function handleProducts(req: NextApiRequest, res: NextApiResponse) {
 	const verb = req.method
-	const credentials = await getServerSession(req, res, authOptions)
-	console.log(credentials)
+	const credentials = await checkCredentials(req, res, authority.registered)
 	const { isStoreNew, onlyStore, pId } = req.query as unknown as productQuery
 	if (!credentials) return
 	if (verb === "GET") return getProductStore(req, res, credentials)
@@ -28,9 +25,8 @@ export default async function handleProducts(req: NextApiRequest, res: NextApiRe
 	else return res.status(405).end()
 }
 //* test pass 2/2
-const addProduct: nextFunction = async (req, res, credentials, isStoreNew = false) => {
+const addProduct: nextFunction = async (req, res, user, isStoreNew = false) => {
 	const { barcode, name, category, mass } = req.body as product
-	const { user } = credentials
 	if (user.authorityId < authority.storeOwner)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!checkIfValid(barcode) && !isStoreNew)
@@ -55,14 +51,12 @@ const addProduct: nextFunction = async (req, res, credentials, isStoreNew = fals
 				return { error: `${name} already exists in the database. try using other names` }
 			else return e
 		})
-	if (isStoreNew && newProduct.id)
-		return addProductStore(req, res, credentials, newProduct.id)
+	if (isStoreNew && newProduct.id) return addProductStore(req, res, user, newProduct.id)
 	return res.json({ result: newProduct })
 }
 //* tested
-const updateProduct: nextFunction = async (req, res, credentials) => {
+const updateProduct: nextFunction = async (req, res, user) => {
 	const { barcode, name, category, mass } = req.body as product
-	const { user } = credentials
 	if (user.authorityId < authority.admin)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!checkIfValid(barcode)) return res.json({ error: "an error occured" })
@@ -79,9 +73,8 @@ const updateProduct: nextFunction = async (req, res, credentials) => {
 	return res.json({ result: updateProduct })
 }
 //* tested
-const deleteProduct: nextFunction = async (req, res, credentials) => {
+const deleteProduct: nextFunction = async (req, res, user) => {
 	const { pId } = req.body
-	const { user } = credentials
 	if (user.authorityId < authority.admin)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!pId || testNumber(pId)) return res.json({ error: "no data found" })
@@ -99,14 +92,8 @@ const deleteProduct: nextFunction = async (req, res, credentials) => {
 }
 
 //* test pass 2/2
-const addProductStore: nextFunction = async (
-	req,
-	res,
-	credentials,
-	productId: string
-) => {
+const addProductStore: nextFunction = async (req, res, user, productId: string) => {
 	const { price, location, description } = req.body as productStore
-	const { user } = credentials
 	if (user.authorityId < authority.storeOwner)
 		return res.status(401).json({ error: "unauthorized" })
 	if (
@@ -143,9 +130,8 @@ const addProductStore: nextFunction = async (
 	return res.json({ result: createProductStore })
 }
 //* tested
-const updateProductStore: nextFunction = async (req, res, credentials) => {
+const updateProductStore: nextFunction = async (req, res, user) => {
 	const { pId, price, location, description } = req.body
-	const { user } = credentials
 	if (user.authorityId < authority.storeOwner)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!pId) return res.json({ error: "invalid arguments" })
@@ -174,9 +160,8 @@ const updateProductStore: nextFunction = async (req, res, credentials) => {
 	return res.json({ result: updateProduct })
 }
 //* tested
-const deleteProductStore: nextFunction = async (req, res, credentials) => {
+const deleteProductStore: nextFunction = async (req, res, user) => {
 	const { pId } = req.body
-	const { user } = credentials
 	if (user.authorityId < authority.storeOwner)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!pId || testNumber(pId)) return res.json({ error: "invalid arguments" })
@@ -187,9 +172,8 @@ const deleteProductStore: nextFunction = async (req, res, credentials) => {
 	return res.json({ result: Delete })
 }
 
-const getProductStore: nextFunction = async (req, res, credentials) => {
+const getProductStore: nextFunction = async (req, res, user) => {
 	const { id, barcode } = req.query as { [x: string]: string }
-	const { user } = credentials
 	if (user.authorityId < authority.registered)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!id && !checkIfValid(user.storeId, barcode))

@@ -14,8 +14,7 @@ function checkIfValid({ userName, password, storeId }: user, res: NextApiRespons
 export default async function handleUser(req: NextApiRequest, res: NextApiResponse) {
 	//* if statement for request method. only update, post and delete methods are allowed
 	const verb = req.method
-	const authorization = req.headers.authorization as string
-	const credentials = await checkCredentials(authorization, res, authority.admin)
+	const credentials = await checkCredentials(req, res, authority.admin)
 	if (!credentials) return
 	if (verb === "POST") return addUser(req, res, credentials)
 	// if (verb === "UPDATE") return updateUser(req, res)

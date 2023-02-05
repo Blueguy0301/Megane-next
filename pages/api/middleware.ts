@@ -1,23 +1,21 @@
-import type { NextApiResponse } from "next"
+import type { NextApiRequest, NextApiResponse } from "next"
 import bcrypt from "bcryptjs"
 import Jwt from "jsonwebtoken"
 import { authority, error, payload, userData } from "../interface"
+import { authOptions } from "./auth/[...nextauth]"
+import { getServerSession, Session } from "next-auth"
 const secret = process.env.secret_key as string
 const numberRegex = /^\d+$/
 const salt = bcrypt.genSaltSync()
 export async function checkCredentials(
-	authorization: string,
+	req: NextApiRequest,
 	res: NextApiResponse,
 	minAutorithy = authority.registered
 ) {
-	const token = authorization?.replace("Bearer ", "") as string
-	const user = Jwt.verify(token, secret, (err, decoded) => {
-		if (err) return { error: "token not valid" } as error
-		else return decoded as userData
-	}) as unknown as payload
-	if (user?.error) return res.status(401).json({ error: "unauthorized" })
+	const { user } = (await getServerSession(req, res, authOptions)) as Session
+	if (!user) return res.status(401).json({ error: "unauthorized" })
 	// console.log("user", user)
-	if (user.data?.authorityId < minAutorithy)
+	if (user.authorityId < minAutorithy)
 		return res.status(401).json({ error: "Unauthorized" })
 	return user
 }

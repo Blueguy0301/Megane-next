@@ -13,8 +13,7 @@ export default async function handleInstallments(
 	res: NextApiResponse
 ) {
 	const verb = req.method
-	const authorization = req.headers.authorization as string
-	const credentials = await checkCredentials(authorization, res)
+	const credentials = await checkCredentials(req, res)
 	if (!credentials) return
 	if (verb === "GET") return getInstallment(req, res, credentials)
 	if (verb === "POST") return addInstallment(req, res, credentials)
@@ -23,9 +22,9 @@ export default async function handleInstallments(
 	else return res.status(405).end()
 }
 //* tested
-const addInstallment: nextFunction = async (req, res, credentials) => {
+const addInstallment: nextFunction = async (req, res, user) => {
 	let { customerName, total, isAdded, id } = req.body as installments
-	const { storeId } = credentials.data
+	const { storeId } = user
 
 	if (!checkIfValid(customerName) || testNumber(total) || testNumber(storeId))
 		return res.json({ error: "invalid arguments" })
@@ -38,7 +37,7 @@ const addInstallment: nextFunction = async (req, res, credentials) => {
 			select: { id: true },
 		})
 		.then((d) => d?.id.toString())
-	if (checkDuplicates) return updateInstallment(req, res, credentials, checkDuplicates)
+	if (checkDuplicates) return updateInstallment(req, res, user, checkDuplicates)
 	const addInstallment = await prisma.installments
 		.create({
 			data: {
@@ -56,7 +55,7 @@ const addInstallment: nextFunction = async (req, res, credentials) => {
 	return res.json({ result: addInstallment })
 }
 //* tested
-const deleteInstallment: nextFunction = async (req, res, credentials) => {
+const deleteInstallment: nextFunction = async (req, res, user) => {
 	const { id } = req.body as installments
 	if (testNumber(id)) return res.json({ error: "invalid arguments" })
 	const addInstallment = await prisma.installments
@@ -78,8 +77,8 @@ const getInstallment: nextFunction = async (req, res) => {
 	return res.json({ result: getInstallment })
 }
 //* tested
-const updateInstallment: nextFunction = async (req, res, credentials, installmentId) => {
-	const { storeId } = credentials.data
+const updateInstallment: nextFunction = async (req, res, user, installmentId) => {
+	const { storeId } = user
 	let { customerName, total, isAdded, id } = req.body as installments
 	if (!checkIfValid(customerName) || testNumber(total) || testNumber(storeId))
 		return res.json({ error: "invalid arguments" })

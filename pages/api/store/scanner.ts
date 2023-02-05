@@ -1,25 +1,23 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { checkCredentials } from "../middleware"
 import { authority, nextFunction, product } from "../../interface"
 import prisma from "../db"
+import { checkCredentials } from "@api/middleware"
 export default async function handleProducts(req: NextApiRequest, res: NextApiResponse) {
 	const { storeScan, productScan } = req.query
 	const verb = req.method
-	const authorization = req.headers.authorization as string
-	const credentials = await checkCredentials(authorization, res)
+	const credentials = await checkCredentials(req, res, authority.registered)
 	if (!credentials) return
 	if (verb === "GET" && storeScan) return getProductStore(req, res, credentials)
 	if (verb === "GET" && productScan) return getProduct(req, res, credentials)
 	else return res.status(405).end()
 }
 //* tested
-const getProductStore: nextFunction = async (req, res, credentials) => {
-	const { storeId } = credentials.data
+const getProductStore: nextFunction = async (req, res, user) => {
 	const barcode = (req.query.barcode as string) ?? ""
 	const getProductStore = await prisma.productStore
 		.findFirst({
 			where: {
-				AND: [{ storeId: BigInt(storeId) }, { Product: { barcode: barcode } }],
+				AND: [{ storeId: BigInt(user.storeId) }, { Product: { barcode: barcode } }],
 			},
 			select: {
 				id: true,
@@ -41,9 +39,8 @@ const getProductStore: nextFunction = async (req, res, credentials) => {
 }
 
 //* tested
-const getProduct: nextFunction = async (req, res, credentials) => {
+const getProduct: nextFunction = async (req, res, user) => {
 	const { barcode } = req.query as product
-	const { data: user } = credentials
 	if (user.authorityId < authority.registered)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!barcode) return res.json({ error: "no data found" })

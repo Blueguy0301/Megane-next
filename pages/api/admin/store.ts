@@ -11,8 +11,7 @@ function checkIfValid({ storeId, storeName }: body, res: NextApiResponse) {
 }
 export default async function handleStore(req: NextApiRequest, res: NextApiResponse) {
 	const verb = req.method
-	const authorization = req.headers.authorization as string
-	const credentials = await checkCredentials(authorization, res, authority.admin)
+	const credentials = await checkCredentials(req, res, authority.admin)
 	if (!credentials) return
 	if (verb === "POST") return addStore(req, res, credentials)
 	if (verb === "PUT") return updateStore(req, res, credentials)
@@ -40,7 +39,7 @@ const addStore: nextFunction = async (req, res) => {
 	return res.json({ result: createStore })
 }
 //* tested
-const updateStore: nextFunction = async (req, res, credentials) => {
+const updateStore: nextFunction = async (req, res) => {
 	const { storeId, storeName } = req.body
 	if (!checkIfValid({ storeId, storeName }, res)) return
 	const updateStore = await prisma.stores
@@ -57,7 +56,7 @@ const updateStore: nextFunction = async (req, res, credentials) => {
 	return res.json({ result: updateStore })
 }
 //* tested
-const deleteStore: nextFunction = async (req, res, credentials) => {
+const deleteStore: nextFunction = async (req, res) => {
 	const { storeId, storeName } = req.body
 	if (!checkIfValid({ storeId, storeName }, res)) return
 	const removeStore = await prisma.stores

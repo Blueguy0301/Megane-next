@@ -65,7 +65,7 @@ export type productQuery = {
 export type nextFunction = (
 	req: NextApiRequest,
 	res: NextApiResponse,
-	credentials: Session,
+	credentials: userDetails,
 	...others: any[]
 ) => any
 
