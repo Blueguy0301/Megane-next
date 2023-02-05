@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import Scanner from "@components/Scanner"
 import Button from "@components/Button"
-import type { addProps } from "../../interface"
+import type { addProps } from "../../../interface"
 const Modal = (props: addProps) => {
 	const { Modal, Scanned, setScanned } = props
 	const genRanHex = (size = 2) =>

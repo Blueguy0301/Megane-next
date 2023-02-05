@@ -1,6 +1,6 @@
-//* retest
+//* successfully migrated to nextAuth
 import { NextApiRequest, NextApiResponse } from "next"
-import { checkCredentials, checkIfValid, filter, testNumber } from "../middleware"
+import { checkIfValid, filter, testNumber } from "../middleware"
 import {
 	nextFunction,
 	product,
@@ -8,11 +8,13 @@ import {
 	productStore,
 	authority,
 } from "../../interface"
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@api/auth/[...nextauth]"
 import prisma from "../db"
 export default async function handleProducts(req: NextApiRequest, res: NextApiResponse) {
 	const verb = req.method
-	const authorization = req.headers.authorization as string
-	const credentials = await checkCredentials(authorization, res)
+	const credentials = await getServerSession(req, res, authOptions)
+	console.log(credentials)
 	const { isStoreNew, onlyStore, pId } = req.query as unknown as productQuery
 	if (!credentials) return
 	if (verb === "GET") return getProductStore(req, res, credentials)
@@ -28,7 +30,7 @@ export default async function handleProducts(req: NextApiRequest, res: NextApiRe
 //* test pass 2/2
 const addProduct: nextFunction = async (req, res, credentials, isStoreNew = false) => {
 	const { barcode, name, category, mass } = req.body as product
-	const { data: user } = credentials
+	const { user } = credentials
 	if (user.authorityId < authority.storeOwner)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!checkIfValid(barcode) && !isStoreNew)
@@ -60,7 +62,7 @@ const addProduct: nextFunction = async (req, res, credentials, isStoreNew = fals
 //* tested
 const updateProduct: nextFunction = async (req, res, credentials) => {
 	const { barcode, name, category, mass } = req.body as product
-	const { data: user } = credentials
+	const { user } = credentials
 	if (user.authorityId < authority.admin)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!checkIfValid(barcode)) return res.json({ error: "an error occured" })
@@ -79,7 +81,7 @@ const updateProduct: nextFunction = async (req, res, credentials) => {
 //* tested
 const deleteProduct: nextFunction = async (req, res, credentials) => {
 	const { pId } = req.body
-	const { data: user } = credentials
+	const { user } = credentials
 	if (user.authorityId < authority.admin)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!pId || testNumber(pId)) return res.json({ error: "no data found" })
@@ -104,7 +106,7 @@ const addProductStore: nextFunction = async (
 	productId: string
 ) => {
 	const { price, location, description } = req.body as productStore
-	const { data: user } = credentials
+	const { user } = credentials
 	if (user.authorityId < authority.storeOwner)
 		return res.status(401).json({ error: "unauthorized" })
 	if (
@@ -143,7 +145,7 @@ const addProductStore: nextFunction = async (
 //* tested
 const updateProductStore: nextFunction = async (req, res, credentials) => {
 	const { pId, price, location, description } = req.body
-	const { data: user } = credentials
+	const { user } = credentials
 	if (user.authorityId < authority.storeOwner)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!pId) return res.json({ error: "invalid arguments" })
@@ -174,7 +176,7 @@ const updateProductStore: nextFunction = async (req, res, credentials) => {
 //* tested
 const deleteProductStore: nextFunction = async (req, res, credentials) => {
 	const { pId } = req.body
-	const { data: user } = credentials
+	const { user } = credentials
 	if (user.authorityId < authority.storeOwner)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!pId || testNumber(pId)) return res.json({ error: "invalid arguments" })
@@ -187,7 +189,7 @@ const deleteProductStore: nextFunction = async (req, res, credentials) => {
 
 const getProductStore: nextFunction = async (req, res, credentials) => {
 	const { id, barcode } = req.query as { [x: string]: string }
-	const { data: user } = credentials
+	const { user } = credentials
 	if (user.authorityId < authority.registered)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!id && !checkIfValid(user.storeId, barcode))

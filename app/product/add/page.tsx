@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import { ChangeEvent, useEffect } from "react"
-import { useState } from "react"
-import Button from "../../components/Button"
-import useModal from "../../components/useModal"
-import ModalScanner from "./Modal"
-import Select from "./Select"
+import { useState, useEffect } from "react"
+import Button from "@components/Button"
+import useModal from "@components/useModal"
 import { formData } from "../../interface"
 import { useForm, SubmitHandler } from "react-hook-form"
-import ProductForm from "./ProductForm"
+import ModalScanner from "./components/Modal"
+import ProductForm from "./components/ProductForm"
+import FormData from "./components/FormData"
+import { sendData } from "./components/request"
 export default function page() {
 	const {
 		register,
@@ -16,23 +16,39 @@ export default function page() {
 		formState: { errors },
 		watch,
 		setValue,
+		reset,
 	} = useForm<formData>()
-	const [isStoreNew, setIsStoreNew] = useState(false)
+
+	// todo : find a way to get the data from scanner, to here
+	//* idea one : do it in the backend. send a isStoreNew and isNew params inside the json.
+	const [isStoreNew, setIsStoreNew] = useState(true)
 	const [isNew, setIsNew] = useState(false)
+	const [fetchData, setFetchData] = useState({})
 	const onSubmit: SubmitHandler<formData> = (data) => {
 		//* submit to api here.
+		console.log("ran")
+		sendData(data, isStoreNew, Scanned)
 	}
 	const formData = watch()
 	const [Scanned, setScanned] = useState("none")
-	const unit = "Quantity"
 	const { Modal, Open } = useModal()
+	const { Modal: ErrorModal, setIsOpen, isOpen } = useModal()
 	return (
 		<div className="page box-border flex-wrap">
 			<ModalScanner Modal={Modal} Scanned={Scanned} setScanned={setScanned} />
-			{/* forms */}
+			<ErrorModal title="Error">
+				<p>The following are required:</p>
+				<ul className="list-inside list-disc px-4 pb-4">
+					{errors.name?.message && <li className="text-lg text-white">Name</li>}
+					{errors.mass?.message && <li className="text-lg text-white">Quantity</li>}
+					{errors.price?.message && <li className="text-lg text-white">Price</li>}
+					{errors.location?.message && <li className="text-lg text-white">Location</li>}
+					{errors.description?.message && (
+						<li className="text-lg text-white">Description</li>
+					)}
+				</ul>
+			</ErrorModal>
 			<form
-				action="#"
-				method="post"
 				className="box-border flex  min-w-[50%] flex-grow flex-col gap-3"
 				onSubmit={handleSubmit(onSubmit)}
 			>
@@ -52,9 +68,8 @@ export default function page() {
 							<input
 								type="number"
 								id="price"
-								pattern="^\d+(\.\d{1,2})?$"
 								min={0}
-								{...register("price", { required: true })}
+								{...register("price", { required: "Price is required" })}
 							/>
 						</div>
 						<div className="group">
@@ -62,7 +77,7 @@ export default function page() {
 							<input
 								type="text"
 								id="location"
-								{...register("location", { required: true })}
+								{...register("location", { required: "Location is required" })}
 							/>
 						</div>
 						<div className="group">
@@ -70,57 +85,36 @@ export default function page() {
 							<input
 								type="text"
 								id="desc"
-								{...register("description", { required: true })}
+								{...register("description", { required: "Description is required" })}
 							/>
 						</div>
 					</div>
 				</fieldset>
 				<div className="mt-auto flex flex-wrap items-center justify-center gap-4 p-4">
-					<Button className="flex-grow"> Add product</Button>
-					<Button type="reset" className="red flex-grow">
+					<Button
+						className="flex-grow"
+						type="submit"
+						onClick={(e) => {
+							if (!(Object.keys(errors).length === 0) && !isOpen) {
+								setIsOpen(!isOpen)
+							} else setIsOpen(false)
+						}}
+					>
+						Add product
+					</Button>
+					<Button
+						type="reset"
+						className="red flex-grow"
+						onClick={() => {
+							setScanned("none")
+							reset()
+						}}
+					>
 						Reset
 					</Button>
 				</div>
 			</form>
-			{/* product information */}
-			<div className="flex w-full max-w-[100%] flex-grow  p-4 md:min-w-[50%] md:max-w-[50%]">
-				<div className="relative box-border flex flex-grow border border-solid border-white">
-					<h3 className="float">Product Information</h3>
-					{formData.name !== "" && (
-						<div className="z-10 flex w-full flex-col items-center justify-evenly  p-5">
-							<span className="info flex flex-row gap-3">
-								<h4>Product Name</h4>
-								<h5>{formData.name}</h5>
-							</span>
-							<span className="info flex flex-row gap-3">
-								<h4>Barcode</h4>
-								<h5>{Scanned}</h5>
-							</span>
-							<span className="info flex flex-row gap-3">
-								<h4>Category</h4>
-								<h5>{formData.Category}</h5>
-							</span>
-							<span className="info flex flex-row gap-3">
-								<h4>{unit}</h4>
-								<h5>{formData.mass}</h5>
-							</span>
-
-							<span className="info flex flex-row gap-3">
-								<h4>Price</h4>
-								<h5>{formData.price}</h5>
-							</span>
-							<span className="info flex flex-row gap-3">
-								<h4>Location</h4>
-								<h5>{formData.location}</h5>
-							</span>
-							<span className="info flex flex-row gap-3">
-								<h4>Description</h4>
-								<h5>{formData.description}</h5>
-							</span>
-						</div>
-					)}
-				</div>
-			</div>
+			<FormData Scanned={Scanned} formData={formData} />
 		</div>
 	)
 }

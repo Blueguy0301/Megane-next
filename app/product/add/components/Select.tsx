@@ -4,14 +4,16 @@ type props = {
 	setValue: any
 }
 const Select = (props: props) => {
-	const { setValue, ...rest } = props
+	const { setValue, register, ...rest } = props
 	return (
 		<select
 			{...rest}
+			{...register("Category", { required: true })}
 			className="flex-grow"
 			id="Category"
 			onChange={(e) => setValue("Category", e.target.value)}
 		>
+			<option value="">select</option>
 			<optgroup label="Cigarettes">
 				<option value="stick">Stick</option>
 				<option value="pack">Pack</option>

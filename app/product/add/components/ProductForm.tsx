@@ -15,7 +15,11 @@ const ProductForm = (props: props) => {
 				<h3 className="float">Type</h3>
 				<div className="group">
 					<label htmlFor="name">Name</label>
-					<input type="text" id="name" {...register("name", { required: true })} />
+					<input
+						type="text"
+						id="name"
+						{...register("name", { required: "Name is required" })}
+					/>
 				</div>
 				<div className="group ">
 					<label htmlFor="barcode">Barcode</label>
@@ -32,11 +36,15 @@ const ProductForm = (props: props) => {
 				</div>
 				<div className="group">
 					<label htmlFor="Category">Category</label>
-					<Select {...register("Category", { required: true })} setValue={setValue} />
+					<Select register={register} setValue={setValue} />
 				</div>
 				<div className="group">
 					<label htmlFor="unit">Quantity</label>
-					<input type="text" {...register("mass", { required: true })} id="unit" />
+					<input
+						type="text"
+						{...register("mass", { required: "Quantity is required" })}
+						id="unit"
+					/>
 				</div>
 			</div>
 		</fieldset>

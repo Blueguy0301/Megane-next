@@ -16,7 +16,7 @@ h2 {
 }
 p {
 	@apply text-white;
-	@apply text-sm;
+	@apply text-lg;
 }
 h3,
 .nav-button {

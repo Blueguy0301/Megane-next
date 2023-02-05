@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next"
+import { Session } from "next-auth"
 
 export type product = {
 	name: string
@@ -64,7 +65,7 @@ export type productQuery = {
 export type nextFunction = (
 	req: NextApiRequest,
 	res: NextApiResponse,
-	credentials: payload,
+	credentials: Session,
 	...others: any[]
 ) => any
 

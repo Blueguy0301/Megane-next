@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client"
+///todo : refetch data when mounted
 import TablePagination from "./TablePagination"
 import { ChangeEvent, useState } from "react"
 import searchProducts from "./productSearch"

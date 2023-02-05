@@ -11,8 +11,8 @@ type Props = {
 	[x: string]: any
 }
 
-const useModal = () => {
-	const [isOpen, setIsOpen] = useState(false)
+const useModal = (opened = false) => {
+	const [isOpen, setIsOpen] = useState(opened)
 	const handleClick = () => setIsOpen(!isOpen)
 	const Open = (props: {
 		className?: string
@@ -65,7 +65,7 @@ const useModal = () => {
 		</div>
 	)
 
-	return { Open, Modal }
+	return { Open, Modal, setIsOpen, isOpen }
 }
 
 export default useModal
