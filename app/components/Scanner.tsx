@@ -13,25 +13,24 @@ const handleScan = (code: string) => {
 }
 const Scanner = (props: props) => {
 	const { addChecking, setLastCode } = props
-	// const audio = new Audio("/success.mp3")
+	const audio = new Audio("/success.mp3")
 	const qrcodeRegionId = "scanner-region"
 	let temp: string
 	let scanner: Html5QrcodeScanner
 	const qrCodeSuccessCallback: (d: any, scanner: any) => void = (data) => {
-		// if (data !== temp && addChecking) {
-		// 	audio.play()
-		// 	setLastCode(data)
-		// 	if (!audio.paused) {
-		// 		audio.pause()
-		// 		audio.currentTime = 0
-		// 	}
-		// 	temp = data
-		// 	return
-		// }
+		if (data !== temp && addChecking) {
+			audio.play()
+			setLastCode(data)
+			if (!audio.paused) {
+				audio.pause()
+				audio.currentTime = 0
+			}
+			temp = data
+			return
+		}
 		if (!addChecking) {
 			setLastCode(data)
 		}
-
 		temp = data
 	}
 	const qrCodeErrorCallback: (e: any) => void = (e) => {}

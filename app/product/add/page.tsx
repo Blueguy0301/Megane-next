@@ -8,29 +8,40 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import ModalScanner from "./components/Modal"
 import ProductForm from "./components/ProductForm"
 import FormData from "./components/FormData"
-import { sendData } from "./components/request"
+import { checkBarcode, sendData } from "./components/request"
 export default function page() {
 	const { register, handleSubmit, formState, watch, setValue, reset } =
 		useForm<formData>()
-	const { errors, isLoading, isSubmitting, isDirty } = formState
+	const { errors, isSubmitting, isDirty } = formState
 	//* idea one : do it in the backend. send a isStoreNew and isNew params inside the json.
 	const [isStoreNew, setIsStoreNew] = useState(true)
-	const [isNew, setIsNew] = useState(false)
 	const [showSubmit, setShowSubmit] = useState(false)
 	const [scanPressed, setScanPressed] = useState(false)
-
+	const [formDisabled, setFormDisabled] = useState([false, false])
 	const onSubmit: SubmitHandler<formData> = (data) => {
 		//* submit to api here.
-
+		setFormDisabled([true, true])
 		sendData(data, isStoreNew, Scanned)
 	}
-	useEffect(() => {
-		setShowSubmit(true)
-	}, [])
 	const formData = watch()
 	const [Scanned, setScanned] = useState("none")
 	//todo : make this into one whole component where you can use just one modal
-	const { Modal, Open, setIsOpen, isOpen } = useModal()
+	const { Modal, Open, setIsOpen } = useModal()
+	useEffect(() => {
+		setShowSubmit(true)
+	}, [])
+	useEffect(() => {
+		//* add request here everytime that the scanned value is changed
+		const asyncData = async () => {
+			const { result } = await checkBarcode(Scanned)
+			setIsStoreNew(result.isStoreNew ?? false)
+			setFormDisabled([result.isStoreNew ?? false, false])
+			setValue("name", result.name)
+			setValue("Category", result.Category)
+			setValue("mass", result.mass)
+		}
+		asyncData()
+	}, [Scanned])
 	return (
 		<div className="page box-border flex-wrap">
 			<ModalScanner
@@ -51,10 +62,13 @@ export default function page() {
 					setValue={setValue}
 					Scanned={Scanned}
 					Open={Open}
-					disabled={false}
+					disabled={formDisabled[0]}
 					setScanPressed={setScanPressed}
 				/>
-				<fieldset className="min-w-1/2 flex flex-col p-4 disabled:opacity-50">
+				<fieldset
+					className="min-w-1/2 flex flex-col p-4 disabled:opacity-50"
+					disabled={formDisabled[1]}
+				>
 					<div className="relative flex flex-col gap-4 border border-solid border-white p-4">
 						<h3 className="float">Sales information</h3>
 						<div className="group">
@@ -98,7 +112,7 @@ export default function page() {
 								console.log("pasok 2")
 								setIsOpen(true)
 							}}
-							disabled={!isDirty}
+							disabled={!isDirty || isSubmitting}
 						>
 							Add product
 						</Button>

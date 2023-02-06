@@ -1,6 +1,6 @@
 "use client"
 import React from "react"
-import { formData } from "../../interface"
+import { formData } from "../../../interface"
 
 const FormData = (props: { formData: formData; Scanned: string }) => {
 	const { formData, Scanned } = props

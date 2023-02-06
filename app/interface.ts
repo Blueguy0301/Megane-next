@@ -26,3 +26,12 @@ export type addProps = {
 	scanPressed: boolean
 	setScanPressed: any
 }
+export type sendData = {
+	price: string | number
+	location: string
+	description: string
+	barcode?: string
+	name?: string
+	category?: string
+	mass?: string
+}

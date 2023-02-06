@@ -49,8 +49,19 @@ const getProduct: nextFunction = async (req, res, user) => {
 			where: {
 				barcode: barcode,
 			},
+			include: {
+				ProductStore: {
+					where: {
+						storeId: user.storeId,
+					},
+					select: {
+						Location: true,
+					},
+				},
+			},
 		})
 		.then((d) => ({
+			isStoreNew: d?.ProductStore[0].Location ? false : true,
 			name: d?.name,
 			barcode: d?.barcode,
 			Category: d?.Category,
