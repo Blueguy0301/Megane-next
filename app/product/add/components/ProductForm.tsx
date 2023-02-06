@@ -5,7 +5,8 @@ type props = {
 	[x: string]: any
 }
 const ProductForm = (props: props) => {
-	const { register, setScanned, setValue, Scanned, Open, disabled } = props
+	const { register, setScanned, setValue, Scanned, Open, disabled, setScanPressed } =
+		props
 	return (
 		<fieldset
 			className="min-w-1/2 flex flex-col p-4 disabled:opacity-50"
@@ -31,7 +32,15 @@ const ProductForm = (props: props) => {
 							onChange={(e) => setScanned(e.target.value)}
 							id="barcode"
 						/>
-						<Open className="scan-btn">Scan</Open>
+						<Open
+							className="scan-btn"
+							onClick={() => {
+								console.log("ran")
+								setScanPressed(true)
+							}}
+						>
+							Scan
+						</Open>
 					</div>
 				</div>
 				<div className="group">

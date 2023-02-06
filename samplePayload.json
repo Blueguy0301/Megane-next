@@ -1,6 +1,0 @@
-{
-	"iat": 938458934,
-	"cty": "application/json",
-	"exp": 30450934590,
-	"data": { "username": "username", "storeId": "storeId" }
-}

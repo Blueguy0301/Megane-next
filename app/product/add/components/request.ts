@@ -1,4 +1,3 @@
-import useSWR from "swr"
 import axios from "axios"
 import { formData } from "../../../interface"
 export const sendData = (data: formData, isStoreNew: boolean, barcode: string) => {
@@ -23,6 +22,5 @@ export const sendData = (data: formData, isStoreNew: boolean, barcode: string) =
 			.then((d) => console.log(d))
 	}
 	const key = "/api/store/product"
-	console.log()
 	return fetcher(key)
 }

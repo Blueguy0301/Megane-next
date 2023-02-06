@@ -23,6 +23,9 @@ const useModal = (opened = false) => {
 			onClick={(e) => {
 				e.preventDefault()
 				setIsOpen(!isOpen)
+				if (props.onClick) {
+					props.onClick(e)
+				}
 			}}
 			className={props.className ?? ""}
 		>

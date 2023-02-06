@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Button from "@components/Button"
 import useModal from "@components/useModal"
 import { formData } from "../../interface"
@@ -10,44 +10,37 @@ import ProductForm from "./components/ProductForm"
 import FormData from "./components/FormData"
 import { sendData } from "./components/request"
 export default function page() {
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-		watch,
-		setValue,
-		reset,
-	} = useForm<formData>()
-
-	// todo : find a way to get the data from scanner, to here
+	const { register, handleSubmit, formState, watch, setValue, reset } =
+		useForm<formData>()
+	const { errors, isLoading, isSubmitting, isDirty } = formState
 	//* idea one : do it in the backend. send a isStoreNew and isNew params inside the json.
 	const [isStoreNew, setIsStoreNew] = useState(true)
 	const [isNew, setIsNew] = useState(false)
-	const [fetchData, setFetchData] = useState({})
+	const [showSubmit, setShowSubmit] = useState(false)
+	const [scanPressed, setScanPressed] = useState(false)
+
 	const onSubmit: SubmitHandler<formData> = (data) => {
 		//* submit to api here.
-		console.log("ran")
+
 		sendData(data, isStoreNew, Scanned)
 	}
+	useEffect(() => {
+		setShowSubmit(true)
+	}, [])
 	const formData = watch()
 	const [Scanned, setScanned] = useState("none")
-	const { Modal, Open } = useModal()
-	const { Modal: ErrorModal, setIsOpen, isOpen } = useModal()
+	//todo : make this into one whole component where you can use just one modal
+	const { Modal, Open, setIsOpen, isOpen } = useModal()
 	return (
 		<div className="page box-border flex-wrap">
-			<ModalScanner Modal={Modal} Scanned={Scanned} setScanned={setScanned} />
-			<ErrorModal title="Error">
-				<p>The following are required:</p>
-				<ul className="list-inside list-disc px-4 pb-4">
-					{errors.name?.message && <li className="text-lg text-white">Name</li>}
-					{errors.mass?.message && <li className="text-lg text-white">Quantity</li>}
-					{errors.price?.message && <li className="text-lg text-white">Price</li>}
-					{errors.location?.message && <li className="text-lg text-white">Location</li>}
-					{errors.description?.message && (
-						<li className="text-lg text-white">Description</li>
-					)}
-				</ul>
-			</ErrorModal>
+			<ModalScanner
+				Modal={Modal}
+				Scanned={Scanned}
+				setScanned={setScanned}
+				errors={errors}
+				scanPressed={scanPressed}
+				setScanPressed={setScanPressed}
+			/>
 			<form
 				className="box-border flex  min-w-[50%] flex-grow flex-col gap-3"
 				onSubmit={handleSubmit(onSubmit)}
@@ -59,6 +52,7 @@ export default function page() {
 					Scanned={Scanned}
 					Open={Open}
 					disabled={false}
+					setScanPressed={setScanPressed}
 				/>
 				<fieldset className="min-w-1/2 flex flex-col p-4 disabled:opacity-50">
 					<div className="relative flex flex-col gap-4 border border-solid border-white p-4">
@@ -90,29 +84,37 @@ export default function page() {
 						</div>
 					</div>
 				</fieldset>
-				<div className="mt-auto flex flex-wrap items-center justify-center gap-4 p-4">
-					<Button
-						className="flex-grow"
-						type="submit"
-						onClick={(e) => {
-							if (!(Object.keys(errors).length === 0) && !isOpen) {
-								setIsOpen(!isOpen)
-							} else setIsOpen(false)
-						}}
-					>
-						Add product
-					</Button>
-					<Button
-						type="reset"
-						className="red flex-grow"
-						onClick={() => {
-							setScanned("none")
-							reset()
-						}}
-					>
-						Reset
-					</Button>
-				</div>
+				{showSubmit && (
+					<div className="mt-auto flex flex-wrap items-center justify-center gap-4 p-4">
+						<Button
+							className="flex-grow disabled:opacity-50"
+							type="submit"
+							onClick={(e) => {
+								if (Object.keys(errors).length === 0) {
+									// console.log(Object.keys(errors))
+								}
+								console.log("pasok")
+								setScanPressed(false)
+								console.log("pasok 2")
+								setIsOpen(true)
+							}}
+							disabled={!isDirty}
+						>
+							Add product
+						</Button>
+						<Button
+							type="reset"
+							className="red flex-grow"
+							onClick={() => {
+								setScanned("none")
+								reset()
+							}}
+							id="puta"
+						>
+							Reset
+						</Button>
+					</div>
+				)}
 			</form>
 			<FormData Scanned={Scanned} formData={formData} />
 		</div>

@@ -22,4 +22,7 @@ export type addProps = {
 	}) => JSX.Element
 	Scanned: string
 	setScanned: Dispatch<SetStateAction<string>>
+	errors: any
+	scanPressed: boolean
+	setScanPressed: any
 }
