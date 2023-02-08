@@ -15,7 +15,8 @@ type Props = {
 	}) => JSX.Element
 	Total: number
 }
-
+//todo : add multiple modal here : the following are important :
+//* Manual add
 const Modal = (props: Props) => {
 	const { Modal, Total } = props
 	const [selected, setSelected] = useState("Cash")

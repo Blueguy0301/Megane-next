@@ -1,27 +1,38 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import Button from "@components/Button"
 import useModal from "@components/useModal"
 import { formData } from "../../interface"
-import { useForm, SubmitHandler } from "react-hook-form"
+import { useForm, SubmitHandler, Controller } from "react-hook-form"
 import ModalScanner from "./components/Modal"
 import ProductForm from "./components/ProductForm"
 import FormData from "./components/FormData"
 import { checkBarcode, sendData } from "./components/request"
+import { useRouter } from "next/navigation"
 export default function page() {
 	const { register, handleSubmit, formState, watch, setValue, reset } =
 		useForm<formData>()
 	const { errors, isSubmitting, isDirty } = formState
-	//* idea one : do it in the backend. send a isStoreNew and isNew params inside the json.
+	const scanController = new AbortController()
+	const nav = useRouter()
 	const [isStoreNew, setIsStoreNew] = useState(true)
 	const [showSubmit, setShowSubmit] = useState(false)
 	const [scanPressed, setScanPressed] = useState(false)
 	const [formDisabled, setFormDisabled] = useState([false, false])
 	const onSubmit: SubmitHandler<formData> = (data) => {
 		//* submit to api here.
+		setShowSubmit(false)
 		setFormDisabled([true, true])
-		sendData(data, isStoreNew, Scanned)
+		const asyncData = async () => {
+			const result = await sendData(data, isStoreNew, Scanned)
+			if (result.status === 200 && !result.data.error) {
+				nav.push("/store/inventory")
+			} else {
+				//show errors here
+			}
+		}
+		asyncData()
 	}
 	const formData = watch()
 	const [Scanned, setScanned] = useState("none")
@@ -33,14 +44,17 @@ export default function page() {
 	useEffect(() => {
 		//* add request here everytime that the scanned value is changed
 		const asyncData = async () => {
-			const { result } = await checkBarcode(Scanned)
-			setIsStoreNew(result.isStoreNew ?? false)
-			setFormDisabled([result.isStoreNew ?? false, false])
-			setValue("name", result.name)
-			setValue("Category", result.Category)
-			setValue("mass", result.mass)
+			const { result, data } = await checkBarcode(Scanned, scanController)
+			if (!result) {
+				setIsStoreNew(data.result.isStoreNew ?? false)
+				setFormDisabled([!data.result.newProduct, false])
+				setValue("name", data.result.name)
+				setValue("Category", data.result.Category)
+				setValue("mass", data.result.mass)
+			}
 		}
-		asyncData()
+		if (Scanned.length >= 11) asyncData()
+		return () => scanController.abort()
 	}, [Scanned])
 	return (
 		<div className="page box-border flex-wrap">
@@ -51,6 +65,7 @@ export default function page() {
 				errors={errors}
 				scanPressed={scanPressed}
 				setScanPressed={setScanPressed}
+				setIsOpen={setIsOpen}
 			/>
 			<form
 				className="box-border flex  min-w-[50%] flex-grow flex-col gap-3"

@@ -25,6 +25,7 @@ export type addProps = {
 	errors: any
 	scanPressed: boolean
 	setScanPressed: any
+	setIsOpen?: Dispatch<SetStateAction<boolean>>
 }
 export type sendData = {
 	price: string | number

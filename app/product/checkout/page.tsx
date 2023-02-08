@@ -11,6 +11,7 @@ function page() {
 	const [products, setProducts] = useState(new Array(30).fill(0))
 	const [quantity, setQuantity] = useState(99)
 	const [barcode, setBarcode] = useState("none")
+	const scannerRequest = new AbortController()
 	const Total = useMemo(() => {
 		return products
 			.map((product, i) => {
@@ -30,6 +31,14 @@ function page() {
 			scanButton.style.opacity = "1"
 		}
 	}, [])
+	useEffect(() => {
+		//   for scanner request
+
+		return () => {
+			scannerRequest.abort()
+		}
+	}, [barcode])
+
 	return (
 		<div className="page flex-col-reverse flex-wrap md:flex-row md:flex-nowrap">
 			<ModalForm Modal={Modal} Total={Total} />

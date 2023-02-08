@@ -23,14 +23,13 @@ const getProductStore: nextFunction = async (req, res, user) => {
 				id: true,
 				price: true,
 				Product: {
-					select: { name: true, Category: true, mass: true },
+					select: { name: true, mass: true },
 				},
 			},
 		})
 		.then((d) => ({
 			productStoreId: d?.id.toString(),
 			name: d?.Product.name,
-			category: d?.Product.Category,
 			mass: d?.Product.mass,
 			price: d?.price,
 		}))
@@ -52,7 +51,7 @@ const getProduct: nextFunction = async (req, res, user) => {
 			include: {
 				ProductStore: {
 					where: {
-						storeId: user.storeId,
+						storeId: BigInt(user.storeId),
 					},
 					select: {
 						Location: true,
@@ -61,7 +60,8 @@ const getProduct: nextFunction = async (req, res, user) => {
 			},
 		})
 		.then((d) => ({
-			isStoreNew: d?.ProductStore[0].Location ? false : true,
+			newProduct: d?.id ? false : true,
+			isStoreNew: d?.ProductStore[0]?.Location ? false : true,
 			name: d?.name,
 			barcode: d?.barcode,
 			Category: d?.Category,

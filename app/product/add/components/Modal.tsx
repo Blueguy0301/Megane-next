@@ -1,13 +1,14 @@
 "use client"
-import { useEffect } from "react"
 import Scanner from "@components/Scanner"
 import Button from "@components/Button"
 import type { addProps } from "../../../interface"
 const Modal = (props: addProps) => {
 	const { Modal, Scanned, setScanned, errors, scanPressed } = props
 	const genRanHex = (size = 2) =>
-		[...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join("")
-
+		Math.floor(
+			Math.pow(10, size - 1) +
+				Math.random() * (Math.pow(10, size) - Math.pow(10, size - 1) - 1)
+		).toString()
 	if (!scanPressed) {
 		return (
 			<Modal title="Error">
@@ -36,7 +37,13 @@ const Modal = (props: addProps) => {
 							<h3>Scanned:</h3>
 							<p>{Scanned ?? "none"} </p>
 						</div>
-						<Button className="green w-full" onClick={(e) => setScanned(genRanHex(8))}>
+						<Button
+							className="green w-full"
+							onClick={(e) => {
+								setScanned(genRanHex(12))
+								props.setIsOpen && props.setIsOpen(false)
+							}}
+						>
 							Generate Instead
 						</Button>
 					</div>

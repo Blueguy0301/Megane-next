@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 import { Html5QrcodeScanner } from "html5-qrcode"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import type { Dispatch, SetStateAction } from "react"
 import "/styles/scanner.css"
 type props = { addChecking?: boolean; setLastCode: Dispatch<SetStateAction<string>> }
@@ -13,28 +13,33 @@ const handleScan = (code: string) => {
 }
 const Scanner = (props: props) => {
 	const { addChecking, setLastCode } = props
-	const audio = new Audio("/success.mp3")
+	// const audio = new Audio("/assets/success.mp3")
+	const audio = useRef<HTMLAudioElement | undefined>(
+		typeof Audio !== "undefined" ? new Audio("/assets/success.mp3") : undefined
+	)
 	const qrcodeRegionId = "scanner-region"
 	let temp: string
 	let scanner: Html5QrcodeScanner
-	const qrCodeSuccessCallback: (d: any, scanner: any) => void = (data) => {
+	const qrCodeSuccessCallback = (data: string) => {
 		if (data !== temp && addChecking) {
-			audio.play()
+			console.log("temp is not equal to data and addChecking.")
+			audio.current?.play()
 			setLastCode(data)
-			if (!audio.paused) {
-				audio.pause()
-				audio.currentTime = 0
-			}
+
 			temp = data
 			return
 		}
 		if (!addChecking) {
+			console.log("no addchecking.")
+
 			setLastCode(data)
+			audio.current?.play()
 		}
+		console.log("end")
+
 		temp = data
 	}
 	const qrCodeErrorCallback: (e: any) => void = (e) => {}
-
 	useEffect(() => {
 		// console.log("ran")
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -51,6 +56,7 @@ const Scanner = (props: props) => {
 			false
 		)
 		scanner.render(qrCodeSuccessCallback, qrCodeErrorCallback)
+		// audio.play()
 		return () => {
 			// console.log("return ran")
 			scanner.clear()

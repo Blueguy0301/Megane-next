@@ -6,7 +6,8 @@
 		"dev": " next dev ",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint"
+		"lint": "next lint",
+		"dev-secure": "npx local-ssl-proxy --key ./cert/key.pem --cert ./cert/cert.pem --source 5000 --target 3000 "
 	},
 	"dependencies": {
 		"@prisma/client": "^4.9.0",

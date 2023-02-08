@@ -8,7 +8,7 @@ const Select = (props: props) => {
 	return (
 		<select
 			{...rest}
-			{...register("Category", { required: true })}
+			{...register("Category")}
 			className="flex-grow"
 			id="Category"
 			onChange={(e) => setValue("Category", e.target.value)}
