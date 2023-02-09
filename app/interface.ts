@@ -12,14 +12,15 @@ export type formData = {
 	mass: string
 	description: string
 }
+export type modal = (props: {
+	title: string
+	children: ReactNode
+	onAccept?: MouseEventHandler
+	confirmText?: string | number
+	[x: string]: any
+}) => JSX.Element
 export type addProps = {
-	Modal: (props: {
-		title: string
-		children: ReactNode
-		onAccept?: MouseEventHandler
-		confirmText?: string | number
-		[x: string]: any
-	}) => JSX.Element
+	Modal: modal
 	Scanned: string
 	setScanned: Dispatch<SetStateAction<string>>
 	errors: any
@@ -27,6 +28,7 @@ export type addProps = {
 	setScanPressed: any
 	setIsOpen?: Dispatch<SetStateAction<boolean>>
 }
+
 export type sendData = {
 	price: string | number
 	location: string
@@ -35,4 +37,11 @@ export type sendData = {
 	name?: string
 	category?: string
 	mass?: string
+}
+export type checkoutProducts = {
+	name: string
+	price: number
+	productStoreId: string
+	mass: string
+	quantity: number
 }

@@ -30,13 +30,10 @@ const Scanner = (props: props) => {
 			return
 		}
 		if (!addChecking) {
-			console.log("no addchecking.")
-
+			// console.log("no addchecking.")
 			setLastCode(data)
-			audio.current?.play()
 		}
-		console.log("end")
-
+		// console.log("end")
 		temp = data
 	}
 	const qrCodeErrorCallback: (e: any) => void = (e) => {}

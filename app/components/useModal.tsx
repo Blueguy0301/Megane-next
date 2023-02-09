@@ -1,5 +1,5 @@
 "use client"
-import { MouseEventHandler, ReactNode } from "react"
+import type { MouseEventHandler, ReactNode } from "react"
 import { useState } from "react"
 import Button from "@components/Button"
 

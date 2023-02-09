@@ -1,26 +1,53 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import { useEffect, useMemo, useState, Fragment } from "react"
+import { useEffect, useMemo, useState, useRef } from "react"
 import Button from "@components/Button"
 import Scanner from "@components/Scanner"
 import Product from "./Product"
 import useModal from "@components/useModal"
 import ModalForm from "./Modal"
+import { scannerRequest } from "./request"
+import { checkoutProducts } from "../../interface"
 function page() {
-	const { Modal, Open } = useModal()
-	const [products, setProducts] = useState(new Array(30).fill(0))
-	const [quantity, setQuantity] = useState(99)
+	const { Modal, Open, setIsOpen } = useModal()
+	const [products, setProducts] = useState<Array<checkoutProducts>>([])
+	const [quantity, setQuantity] = useState(1)
 	const [barcode, setBarcode] = useState("none")
-	const scannerRequest = new AbortController()
-	const Total = useMemo(() => {
-		return products
-			.map((product, i) => {
-				return i
+	const [modalOpened, setModalOpened] = useState<string | undefined>()
+	const audio = useRef(
+		typeof Audio !== "undefined" ? new Audio("/assets/success.mp3") : undefined
+	)
+	const [error, setError] = useState({})
+	const scannerController = new AbortController()
+	const fetchData = async () => {
+		const { data, error } = (await scannerRequest(barcode, scannerController)) as any
+		if (!data) return
+		if (Object.keys(data.result).length > 0 && !error) {
+			const { name, price, productStoreId, mass } = data.result
+			audio.current?.play()
+			setProducts((prev) => {
+				const existingProductIndex = prev.findIndex(
+					(v) => v.productStoreId === productStoreId
+				)
+				if (existingProductIndex >= 0) {
+					return prev.map((v, i) => {
+						if (i === existingProductIndex) {
+							return { ...v, quantity: v.quantity + quantity }
+						}
+						return v
+					})
+				}
+				return [...prev, { name, price, productStoreId, mass, quantity }]
 			})
-			.reduce((a: any, b: any) => {
-				return a + b
-				// return a + b.price * b.quantity
-			}, 0)
+			setIsOpen(false)
+		} else {
+			setError({ error: "data not registered on the database" })
+		}
+		console.log(data)
+	}
+	let lastCode = ""
+	const Total = useMemo(() => {
+		return products.reduce((a: any, b: any) => a + b.price * b.quantity, 0)
 	}, [products])
 	useEffect(() => {
 		const scanButton = document.getElementsByClassName("scan")[0] as HTMLElement
@@ -31,17 +58,27 @@ function page() {
 			scanButton.style.opacity = "1"
 		}
 	}, [])
+	//? can use useMemo instead of useEffect for better performance?
+	//todo : no to optimistic request.
 	useEffect(() => {
-		//   for scanner request
-
+		if (barcode !== lastCode && barcode !== "none" && barcode.length >= 12) {
+			fetchData()
+			lastCode = barcode
+		}
 		return () => {
-			scannerRequest.abort()
+			scannerController.abort()
 		}
 	}, [barcode])
 
 	return (
 		<div className="page flex-col-reverse flex-wrap md:flex-row md:flex-nowrap">
-			<ModalForm Modal={Modal} Total={Total} />
+			<ModalForm
+				Modal={Modal}
+				Total={Total}
+				modalOpened={modalOpened}
+				barcode={barcode}
+				setBarcode={setBarcode}
+			/>
 			<div className="min-w-1/2 flex flex-grow flex-col p-4 md:max-w-[50%]">
 				<div className="relative flex flex-grow flex-col gap-4 border border-solid border-white p-4">
 					<h3 className="float">Product</h3>
@@ -50,13 +87,12 @@ function page() {
 							{products.map((product, i) => {
 								return (
 									<Product
-										product="product Name with a long long name"
-										price={30}
-										qty={quantity}
+										product={`${product.name} (${product.mass})`}
+										price={product.price}
+										qty={product.quantity}
 										key={i}
 										onDelete={() => {
-											setProducts((prev) => prev.filter((product, index) => i !== index))
-											console.log(`delete ${i}`)
+											setProducts((prev) => prev.filter((_, index) => i !== index))
 										}}
 									/>
 								)
@@ -69,8 +105,12 @@ function page() {
 					</div>
 				</div>
 				<div className="flex w-full flex-wrap gap-4 pt-3">
-					<Open className="green flex-grow">Checkout</Open>
-					<Button className="flex-grow">Manual Add</Button>
+					<Open className="green flex-grow" onClick={() => setModalOpened("checkOut")}>
+						Checkout
+					</Open>
+					<Open className="flex-grow" onClick={() => setModalOpened("Manual Add")}>
+						Manual Add
+					</Open>
 					<Button className=" red flex-grow">Cancel</Button>
 				</div>
 			</div>

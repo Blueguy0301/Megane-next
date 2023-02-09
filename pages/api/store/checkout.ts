@@ -43,7 +43,7 @@ const addCheckOut: nextFunction = async (req, res, user) => {
 		const installmentId = await prisma.installments
 			// todo : change customer name to  id
 			.upsert({
-				where: { id: BigInt(343) },
+				where: { id: BigInt(0) },
 				update: { total: { increment: total } },
 				create: {
 					customerName: customerName,

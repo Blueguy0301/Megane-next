@@ -28,10 +28,10 @@ const getProductStore: nextFunction = async (req, res, user) => {
 			},
 		})
 		.then((d) => ({
-			productStoreId: d?.id.toString(),
 			name: d?.Product.name,
 			mass: d?.Product.mass,
 			price: d?.price,
+			productStoreId: d?.id.toString(),
 		}))
 		.catch((e) => e)
 	return res.json({ result: getProductStore })

@@ -1,29 +1,30 @@
 "use client"
 import { MouseEventHandler, ReactNode, useState } from "react"
 import type { ChangeEvent } from "react"
+import { modal } from "../../interface"
+import { useForm } from "react-hook-form"
 type formData = {
 	name?: string
 	amount: number | undefined
 }
 type Props = {
-	Modal: (props: {
-		title: string
-		children: ReactNode
-		onAccept?: MouseEventHandler
-		confirmText?: string | number
-		[x: string]: any
-	}) => JSX.Element
+	Modal: modal
 	Total: number
+	modalOpened?: string
+	barcode: string
+	setBarcode: any
 }
 //todo : add multiple modal here : the following are important :
 //* Manual add
 const Modal = (props: Props) => {
-	const { Modal, Total } = props
+	const { Modal, Total, modalOpened, barcode, setBarcode } = props
 	const [selected, setSelected] = useState("Cash")
 	const [formData, setFormData] = useState<formData>({
 		name: "",
 		amount: 0,
 	})
+	const { register } = useForm()
+
 	const handleFormData = (name: string) => {
 		return (e: ChangeEvent<HTMLInputElement>) => {
 			const { value } = e.target
@@ -39,8 +40,31 @@ const Modal = (props: Props) => {
 			})
 		}
 	}
-	return (
-		<>
+	if (modalOpened === "Manual Add") {
+		// setIsOpen && setIsOpen(true)
+		return (
+			<Modal title="Manual Add" className="relative flex flex-wrap" confirmText="Add">
+				<fieldset className="flex flex-grow  flex-wrap gap-4">
+					<div className="checkout group">
+						<label htmlFor="code">Barcode</label>
+						<div className="flex flex-grow items-center justify-center gap-4">
+							<input
+								type="text"
+								name="code"
+								id="code"
+								value={barcode}
+								onChange={(e) => setBarcode(e.target.value)}
+								autoFocus
+							/>
+						</div>
+					</div>
+				</fieldset>
+			</Modal>
+		)
+	}
+	if (modalOpened === "checkOut") {
+		// setIsOpen && setIsOpen(true)
+		return (
 			<Modal
 				title="Checkout Information"
 				className="relative flex flex-wrap "
@@ -130,8 +154,8 @@ const Modal = (props: Props) => {
 					</div>
 				</div>
 			</Modal>
-		</>
-	)
+		)
+	} else return <></>
 }
 
 export default Modal
