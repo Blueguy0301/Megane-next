@@ -9,6 +9,7 @@ type Props = {
 	onAccept?: MouseEventHandler
 	confirmText?: string | number
 	[x: string]: any
+	hideConfirm?: boolean
 }
 
 const useModal = (opened = false) => {
@@ -51,15 +52,17 @@ const useModal = (opened = false) => {
 					{props.children}
 				</div>
 				<div className=" flex w-full flex-row justify-center gap-3 md:justify-end">
-					<Button
-						className="green"
-						onClick={(e) => {
-							if (props.onAccept) props.onAccept(e)
-							handleClick()
-						}}
-					>
-						{props.confirmText ?? "Confirm"}
-					</Button>
+					{!props.hideConfirm && (
+						<Button
+							className="green"
+							onClick={(e) => {
+								if (props.onAccept) props.onAccept(e)
+								handleClick()
+							}}
+						>
+							{props.confirmText ?? "Confirm"}
+						</Button>
+					)}
 					<Button onClick={handleClick} className="red">
 						Close
 					</Button>

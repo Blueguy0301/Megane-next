@@ -11,7 +11,7 @@ const Modal = (props: addProps) => {
 		).toString()
 	if (!scanPressed) {
 		return (
-			<Modal title="Error">
+			<Modal title="Error" hideConfirm>
 				<p>The following are required:</p>
 				<ul className="list-inside list-disc px-4 pb-4">
 					{errors.name?.message && <li className="text-lg text-white">Name</li>}
@@ -27,7 +27,7 @@ const Modal = (props: addProps) => {
 		)
 	} else
 		return (
-			<Modal title="Scan" className="flex flex-col gap-4">
+			<Modal title="Scan" className="flex flex-col gap-4" hideConfrim={true}>
 				<div className="flex flex-row flex-wrap">
 					<div className="min-w-[50%] flex-grow">
 						<Scanner setLastCode={setScanned} addChecking={true} />

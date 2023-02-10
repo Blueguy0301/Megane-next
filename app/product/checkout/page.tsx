@@ -8,6 +8,7 @@ import useModal from "@components/useModal"
 import ModalForm from "./Modal"
 import { scannerRequest } from "./request"
 import { checkoutProducts } from "../../interface"
+import { minCodeLength } from "../../../pages/interface"
 function page() {
 	const { Modal, Open, setIsOpen } = useModal()
 	const [products, setProducts] = useState<Array<checkoutProducts>>([])
@@ -21,7 +22,7 @@ function page() {
 	const scannerController = new AbortController()
 	const fetchData = async () => {
 		const { data, error } = (await scannerRequest(barcode, scannerController)) as any
-		if (!data) return
+		if (!data?.result) return
 		if (Object.keys(data.result).length > 0 && !error) {
 			const { name, price, productStoreId, mass } = data.result
 			audio.current?.play()
@@ -39,11 +40,14 @@ function page() {
 				}
 				return [...prev, { name, price, productStoreId, mass, quantity }]
 			})
+			setBarcode("")
 			setIsOpen(false)
-		} else {
-			setError({ error: "data not registered on the database" })
+		} else setError({ error: "data not registered on the database" })
+		if (error) {
+			setError({ error: error })
 		}
-		console.log(data)
+
+		// console.log(data)
 	}
 	let lastCode = ""
 	const Total = useMemo(() => {
@@ -61,10 +65,13 @@ function page() {
 	//? can use useMemo instead of useEffect for better performance?
 	//todo : no to optimistic request.
 	useEffect(() => {
-		if (barcode !== lastCode && barcode !== "none" && barcode.length >= 12) {
+		if (barcode !== lastCode && barcode !== "none" && barcode.length >= minCodeLength) {
+			console.log(barcode.length)
 			fetchData()
 			lastCode = barcode
 		}
+		setError({})
+
 		return () => {
 			scannerController.abort()
 		}
@@ -78,6 +85,7 @@ function page() {
 				modalOpened={modalOpened}
 				barcode={barcode}
 				setBarcode={setBarcode}
+				error={error}
 			/>
 			<div className="min-w-1/2 flex flex-grow flex-col p-4 md:max-w-[50%]">
 				<div className="relative flex flex-grow flex-col gap-4 border border-solid border-white p-4">

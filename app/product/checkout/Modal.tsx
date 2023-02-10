@@ -13,11 +13,12 @@ type Props = {
 	modalOpened?: string
 	barcode: string
 	setBarcode: any
+	error: { error?: string }
 }
 //todo : add multiple modal here : the following are important :
 //* Manual add
 const Modal = (props: Props) => {
-	const { Modal, Total, modalOpened, barcode, setBarcode } = props
+	const { Modal, Total, modalOpened, barcode, setBarcode, error } = props
 	const [selected, setSelected] = useState("Cash")
 	const [formData, setFormData] = useState<formData>({
 		name: "",
@@ -43,20 +44,29 @@ const Modal = (props: Props) => {
 	if (modalOpened === "Manual Add") {
 		// setIsOpen && setIsOpen(true)
 		return (
-			<Modal title="Manual Add" className="relative flex flex-wrap" confirmText="Add">
+			<Modal
+				title="Manual Add"
+				className="relative flex flex-wrap"
+				confirmText="Add"
+				hideConfirm
+			>
 				<fieldset className="flex flex-grow  flex-wrap gap-4">
-					<div className="checkout group">
+					<div className="checkout group flex-grow">
 						<label htmlFor="code">Barcode</label>
 						<div className="flex flex-grow items-center justify-center gap-4">
 							<input
 								type="text"
 								name="code"
 								id="code"
-								value={barcode}
+								value={barcode === "none" ? "" : barcode}
 								onChange={(e) => setBarcode(e.target.value)}
 								autoFocus
+								className="w-full"
 							/>
 						</div>
+						<p className=" w-full text-center font-semibold text-red-500">
+							{error.error}
+						</p>
 					</div>
 				</fieldset>
 			</Modal>
@@ -72,7 +82,7 @@ const Modal = (props: Props) => {
 			>
 				<div className="relative flex flex-col flex-wrap gap-4 lg:w-3/4">
 					<fieldset className="flex flex-grow  flex-wrap gap-4">
-						<div className="checkout group">
+						<div className="checkout group ">
 							<label className=" ">Payment Option</label>
 							<div className="flex flex-grow items-center justify-center gap-4">
 								<input

@@ -11,6 +11,7 @@ import FormData from "./components/FormData"
 import { checkBarcode, sendData } from "./components/request"
 import { useRouter } from "next/navigation"
 import swalModal from "@components/swalModal"
+import { minCodeLength } from "../../../pages/interface"
 export default function page() {
 	const { register, handleSubmit, formState, watch, setValue, reset } =
 		useForm<formData>()
@@ -73,7 +74,7 @@ export default function page() {
 				setValue("mass", data.result.mass)
 			}
 		}
-		if (Scanned.length >= 11) asyncData()
+		if (Scanned.length >= minCodeLength) asyncData()
 		return () => scanController.abort()
 	}, [Scanned])
 	return (

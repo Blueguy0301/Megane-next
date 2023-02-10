@@ -81,3 +81,4 @@ export interface installments {
 	total: number
 	isAdded: boolean
 }
+export const minCodeLength = 8
