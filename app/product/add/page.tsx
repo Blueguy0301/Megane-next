@@ -10,6 +10,7 @@ import ProductForm from "./components/ProductForm"
 import FormData from "./components/FormData"
 import { checkBarcode, sendData } from "./components/request"
 import { useRouter } from "next/navigation"
+import swalModal from "@components/swalModal"
 export default function page() {
 	const { register, handleSubmit, formState, watch, setValue, reset } =
 		useForm<formData>()
@@ -25,11 +26,30 @@ export default function page() {
 		setShowSubmit(false)
 		setFormDisabled([true, true])
 		const asyncData = async () => {
-			const result = await sendData(data, isStoreNew, Scanned)
-			if (result.status === 200 && !result.data.error) {
+			const {
+				status,
+				data: { result },
+			} = await sendData(data, isStoreNew, Scanned)
+			if (status === 200 && (!result.error || !result.clientVersion)) {
+				swalModal.fire({
+					title: "Success",
+					showConfirmButton: false,
+					icon: "success",
+					text: "Redirecting to Inventory",
+					timer: 3000,
+					timerProgressBar: true,
+				})
 				nav.push("/store/inventory")
-			} else {
-				//show errors here
+			} else if (result.error) {
+				swalModal.fire({
+					title: "Error",
+					showConfirmButton: false,
+					text: result.error,
+					timer: 3000,
+					icon: "error",
+				})
+				setFormDisabled([false, false])
+				setShowSubmit(true)
 			}
 		}
 		asyncData()
@@ -119,13 +139,10 @@ export default function page() {
 							className="flex-grow disabled:opacity-50"
 							type="submit"
 							onClick={(e) => {
-								if (Object.keys(errors).length === 0) {
-									// console.log(Object.keys(errors))
+								if (Object.keys(errors).length > 0) {
+									setScanPressed(false)
+									setIsOpen(true)
 								}
-								console.log("pasok")
-								setScanPressed(false)
-								console.log("pasok 2")
-								setIsOpen(true)
 							}}
 							disabled={!isDirty || isSubmitting}
 						>

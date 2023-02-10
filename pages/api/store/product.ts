@@ -106,7 +106,7 @@ const addProductStore: nextFunction = async (req, res, user, productId: string) 
 		where: { AND: [{ productId: BigInt(productId) }, { storeId: BigInt(user.storeId) }] },
 	})
 	if (countProductStore > 0)
-		return res.json({ error: "product already exists on your store" })
+		return res.json({ result: { error: "product already exists on your store" } })
 	const createProductStore = await prisma.productStore
 		.create({
 			data: {
