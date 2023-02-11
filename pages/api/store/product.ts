@@ -1,4 +1,4 @@
-//* successfully migrated to nextAuth
+//* successfully migrated to nextAuth and added to response.type
 import { NextApiRequest, NextApiResponse } from "next"
 import { checkCredentials, checkIfValid, filter, testNumber } from "../middleware"
 import {
@@ -47,10 +47,12 @@ const addProduct: nextFunction = async (req, res, user, isStoreNew = false) => {
 			id: d.id.toString(),
 		}))
 		.catch((e) => {
+			console.log("error @ product.ts:50 \n", e)
 			if (e.code === "P2002")
 				return { error: `${name} already exists in the database. try using other names` }
 			else return e
 		})
+	if ("error" in newProduct) return res.json(newProduct)
 	if (isStoreNew && newProduct.id) return addProductStore(req, res, user, newProduct.id)
 	return res.json({ result: newProduct })
 }
@@ -70,8 +72,11 @@ const updateProduct: nextFunction = async (req, res, user) => {
 			Category: d.Category,
 			mass: d.mass,
 		}))
-	return res.json({ result: updateProduct })
+		.catch((e) => ({ error: e }))
+	if ("error" in updateProduct) return res.json(updateProduct)
+	else return res.json({ result: updateProduct })
 }
+//! todo : no error handling
 //* tested
 const deleteProduct: nextFunction = async (req, res, user) => {
 	const { pId } = req.body
@@ -116,18 +121,27 @@ const addProductStore: nextFunction = async (req, res, user, productId: string) 
 				Description: description ?? "",
 				storeId: BigInt(user.storeId),
 			},
+			select: {
+				id: true,
+				productId: false,
+				storeId: false,
+				price: true,
+				Location: true,
+				Description: true,
+			},
 		})
 		.then((d) => ({
 			...d,
 			id: d.id.toString(),
-			productId: d.productId.toString(),
-			storeId: d.storeId.toString(),
+			productId: productId,
 		}))
 		.catch((e) => {
+			console.log("error in line 127 @ product.ts", e)
 			if (e.code === "P2003") return { error: `${productId} is not a product` }
 			else return e
 		})
-	return res.json({ result: createProductStore })
+	if ("error" in createProductStore) return res.json(createProductStore)
+	else return res.json({ result: createProductStore })
 }
 //* tested
 const updateProductStore: nextFunction = async (req, res, user) => {
@@ -156,8 +170,11 @@ const updateProductStore: nextFunction = async (req, res, user) => {
 			storeId: d.storeId.toString(),
 			productId: d.productId.toString(),
 		}))
-		.catch((e) => e)
-	return res.json({ result: updateProduct })
+		.catch((e) => ({ error: e }))
+	if ("error" in updateProduct) {
+		console.log(updateProduct)
+		return res.json({ error: updateProduct })
+	} else return res.json({ result: updateProduct })
 }
 //* tested
 const deleteProductStore: nextFunction = async (req, res, user) => {
@@ -171,7 +188,7 @@ const deleteProductStore: nextFunction = async (req, res, user) => {
 		.catch((e) => ({ error: e?.meta?.cause, success: false }))
 	return res.json({ result: Delete })
 }
-
+//! todo : no error handling
 const getProductStore: nextFunction = async (req, res, user) => {
 	const { id, barcode } = req.query as { [x: string]: string }
 	if (user.authorityId < authority.registered)
@@ -203,7 +220,7 @@ const getProductStore: nextFunction = async (req, res, user) => {
 				},
 			})
 			.then((d) => {
-				if (!d || d?.ProductStore?.length === 0) return "nothing found"
+				if (!d || d?.ProductStore?.length === 0) return false
 				else
 					return {
 						name: d?.name,
@@ -215,12 +232,12 @@ const getProductStore: nextFunction = async (req, res, user) => {
 						productId: d?.id?.toString(),
 					}
 			})
-		return res.json({ result: productId })
+		return res.json(productId ? { result: productId } : { error: "Nothing found" })
 	}
 	if (id && !testNumber(id)) {
 		const searchStore = await prisma.productStore
 			.findFirst({
-				where: { id: BigInt(id as string) },
+				where: { id: BigInt(id) },
 				select: {
 					id: true,
 					storeId: false,
@@ -244,6 +261,6 @@ const getProductStore: nextFunction = async (req, res, user) => {
 				productStoreId: d?.id.toString(),
 				productId: d?.productId.toString(),
 			}))
-		return res.json({ result: searchStore })
+		return res.json(searchStore ? { result: searchStore } : { error: "Nothing found" })
 	} else return res.json({ error: "invalid arguments" })
 }

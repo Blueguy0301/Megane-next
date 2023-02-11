@@ -51,7 +51,11 @@ const addInstallment: nextFunction = async (req, res, user) => {
 			...d,
 			id: d.id.toString(),
 		}))
-		.catch((e) => e)
+		.catch((e) => {
+			console.log("error @ installment:55\n", e)
+			return { error: e }
+		})
+	if ("error" in addInstallment) return res.json(addInstallment)
 	return res.json({ result: addInstallment })
 }
 //* tested
@@ -61,8 +65,11 @@ const deleteInstallment: nextFunction = async (req, res, user) => {
 	const addInstallment = await prisma.installments
 		.delete({ where: { id: BigInt(id) } })
 		.then(() => ({ success: true }))
-		.catch((e) => e?.meta?.cause)
-	return res.json({ result: addInstallment })
+		.catch((e) => {
+			console.log("error @ installment.ts:65\n", e)
+			return { error: e?.meta?.cause, success: false }
+		})
+	return res.json(addInstallment)
 }
 //* tested
 const getInstallment: nextFunction = async (req, res) => {
@@ -74,7 +81,12 @@ const getInstallment: nextFunction = async (req, res) => {
 			select,
 		})
 		.then((d) => ({ ...d, id: d?.id.toString() }))
-	return res.json({ result: getInstallment })
+		.catch((e) => {
+			console.log("error in installment.ts:78 \n", e)
+			return { error: e }
+		})
+	if ("error" in getInstallment) return res.json(getInstallment)
+	else return res.json({ result: getInstallment })
 }
 //* tested
 const updateInstallment: nextFunction = async (req, res, user, installmentId) => {
@@ -100,6 +112,10 @@ const updateInstallment: nextFunction = async (req, res, user, installmentId) =>
 			...d,
 			id: d.id.toString(),
 		}))
-		.catch((e) => e)
+		.catch((e) => {
+			console.log("error in installment.ts:109 \n", e)
+			return { error: e }
+		})
+	if ("error" in updateInstallment) return res.json(updateInstallment)
 	return res.json({ result: updateInstallment })
 }

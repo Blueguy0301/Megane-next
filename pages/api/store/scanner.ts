@@ -12,6 +12,7 @@ export default async function handleProducts(req: NextApiRequest, res: NextApiRe
 	else return res.status(405).end()
 }
 //* tested
+//todo : add barcode
 const getProductStore: nextFunction = async (req, res, user) => {
 	const barcode = (req.query.barcode as string) ?? ""
 	const getProductStore = await prisma.productStore
@@ -33,11 +34,17 @@ const getProductStore: nextFunction = async (req, res, user) => {
 			price: d?.price,
 			productStoreId: d?.id.toString(),
 		}))
-		.catch((e) => e)
-	return res.json({ result: getProductStore })
+		.catch((e) => {
+			console.log("error @ scanner.ts:37 \n", e)
+			return { error: e }
+		})
+	if ("error" in getProductStore) return res.json(getProductStore)
+	else return res.json({ result: getProductStore })
 }
 
 //* tested
+//todo : add barcode
+
 const getProduct: nextFunction = async (req, res, user) => {
 	const { barcode } = req.query as product
 	if (user.authorityId < authority.registered)
@@ -71,5 +78,6 @@ const getProduct: nextFunction = async (req, res, user) => {
 		.catch((e) => ({
 			error: e,
 		}))
-	return res.json({ result: getProduct })
+	if ("error" in getProduct) return res.json(getProduct)
+	else return res.json({ result: getProduct })
 }

@@ -1,4 +1,4 @@
-//* successfully migrated to nextAuth
+//* successfully migrated to nextAuth added types
 import { NextApiRequest, NextApiResponse } from "next"
 import { authority, Invoice, InvoicePurchase, nextFunction } from "../../interface"
 import prisma from "../db"
@@ -23,7 +23,7 @@ export default async function handleCheckout(req: NextApiRequest, res: NextApiRe
 	if (verb === "DELETE") return deleteCheckOut(req, res, credentials)
 	else return res.status(405).end()
 }
-
+//todo : line 44
 const addCheckOut: nextFunction = async (req, res, user) => {
 	if (user.authorityId < authority.registered)
 		return res.status(401).json({ error: "invalid credentials" })
@@ -52,9 +52,13 @@ const addCheckOut: nextFunction = async (req, res, user) => {
 				},
 				select: { id: true },
 			})
-			.then((d) => d.id.toString())
-			.catch((e) => e)
-		data = { ...data, installmentId: BigInt(installmentId) }
+			.then((d) => ({ id: d.id.toString() }))
+			.catch((e) => {
+				console.log("error at checkout.ts:57\n", e)
+				return { error: e }
+			})
+		if ("error" in installmentId) return res.json(installmentId)
+		data = { ...data, installmentId: BigInt(installmentId.id) }
 	}
 	const invoice = await prisma.invoice
 		.create({
@@ -80,8 +84,12 @@ const addCheckOut: nextFunction = async (req, res, user) => {
 			total: d.total,
 			installmentTotal: d.Installment?.total,
 		}))
-		.catch((e) => e)
-	return res.json({ result: invoice })
+		.catch((e) => {
+			console.log("error @ checkout.ts:84 \n", e)
+			return { error: e }
+		})
+	if ("error" in invoice) return res.json(invoice)
+	else return res.json({ result: invoice })
 }
 const getCheckOut: nextFunction = async (req, res, user) => {
 	const { invoiceId } = req.query as query
@@ -146,5 +154,5 @@ const deleteCheckOut: nextFunction = async (req, res, user) => {
 			success: true,
 		}))
 		.catch((e) => ({ error: e, success: false }))
-	return res.json({ result: deleteCheckOut })
+	return res.json(deleteCheckOut)
 }
