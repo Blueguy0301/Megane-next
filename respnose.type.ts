@@ -63,9 +63,9 @@ export interface storeProductScanner {
 	error?: string | object
 	result?: {
 		name: string
-		price: number
 		mass: string
-		id: bigint
+		price: number
+		productStoreId: string
 	}
 }
 export interface productScanner {

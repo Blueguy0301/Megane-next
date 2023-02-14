@@ -1,15 +1,15 @@
 //* successfully migrated to nextAuth added types
 import { NextApiRequest, NextApiResponse } from "next"
-import { authority, Invoice, InvoicePurchase, nextFunction } from "../../interface"
+import {
+	checkOutBody,
+	authority,
+	Invoice,
+	InvoicePurchase,
+	nextFunction,
+} from "../../interface"
 import prisma from "../db"
 import { checkCredentials, testNumber } from "../middleware"
-type body = {
-	productList: Array<InvoicePurchase> | InvoicePurchase
-	storeId: string
-	total: number
-	isCredited?: boolean
-	customerName?: string
-}
+
 type query = {
 	storeId: string
 	invoiceId: string
@@ -27,7 +27,7 @@ export default async function handleCheckout(req: NextApiRequest, res: NextApiRe
 const addCheckOut: nextFunction = async (req, res, user) => {
 	if (user.authorityId < authority.registered)
 		return res.status(401).json({ error: "invalid credentials" })
-	const { productList, isCredited, total, customerName } = req.body as body
+	const { productList, isCredited, total, customerName } = req.body as checkOutBody
 	let products: { productStoreId: bigint }[]
 	if (testNumber(user.storeId) || testNumber(total))
 		return res.json({ error: "invalid arguments" })

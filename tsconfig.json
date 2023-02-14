@@ -22,7 +22,10 @@
 		"paths": {
 			"@components/*": ["./app/components/*"],
 			"@api/*": ["./pages/api/*"],
-			"@css/*": ["./styles/*"]
+			"@css/*": ["./styles/*"],
+			"@responses": ["./respnose.type.ts"],
+			"@app/types": ["./app/interface.ts"],
+			"@pages/types": ["./pages/interface.ts"]
 		}
 	},
 	"include": [

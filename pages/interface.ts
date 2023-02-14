@@ -1,5 +1,5 @@
+import { productScanner } from "@responses"
 import type { NextApiRequest, NextApiResponse } from "next"
-import { Session } from "next-auth"
 
 export type product = {
 	name: string
@@ -82,3 +82,14 @@ export interface installments {
 	isAdded: boolean
 }
 export const minCodeLength = 8
+export type scanner = {
+	data: productScanner
+	status: number
+	error: any
+}
+export type checkOutBody = {
+	productList: InvoicePurchase[] | InvoicePurchase
+	total: number
+	isCredited?: boolean
+	customerName?: string
+}

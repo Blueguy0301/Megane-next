@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios, { AxiosResponse } from "axios"
 import { formData, sendData as dataSend } from "../../../interface"
 export const sendData = (
 	data: formData,
@@ -6,8 +6,7 @@ export const sendData = (
 	barcode: string,
 	pid = ""
 ) => {
-	const key = "/api/store/product"
-
+	const url = "/api/store/product"
 	let params: object = isStoreNew ? { isStoreNew: true } : {}
 	let dataSending: dataSend
 	if (pid !== "") {
@@ -28,17 +27,17 @@ export const sendData = (
 			description: data.description,
 		}
 	}
-	return axios.post(key, dataSending, { params })
+	return axios.post(url, dataSending, { params })
 }
 export const checkBarcode = async (scanned: string, controller: AbortController) => {
 	//todo : add a cache to localstorage
 	const url = "/api/store/scanner"
 	if (scanned === "none") return
-	const result = await axios
+	//assume that every error is a cancel token
+	return axios
 		.get(url, {
 			params: { barcode: scanned, productScan: true },
 			signal: controller.signal,
 		})
-		.catch((e) => ({ result: e }))
-	return result as any
+		.catch((e) => e)
 }

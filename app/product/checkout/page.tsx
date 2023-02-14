@@ -3,12 +3,13 @@
 import { useEffect, useMemo, useState, useRef } from "react"
 import Button from "@components/Button"
 import Scanner from "@components/Scanner"
-import Product from "./Product"
 import useModal from "@components/useModal"
+import Product from "./Product"
 import ModalForm from "./Modal"
 import { scannerRequest } from "./request"
-import { checkoutProducts } from "../../interface"
-import { minCodeLength } from "../../../pages/interface"
+import { checkoutProducts } from "@app/types"
+import { minCodeLength } from "@pages/types"
+import type { storeProductScanner } from "@responses"
 function page() {
 	const { Modal, Open, setIsOpen } = useModal()
 	const [products, setProducts] = useState<Array<checkoutProducts>>([])
@@ -18,41 +19,45 @@ function page() {
 	const audio = useRef(
 		typeof Audio !== "undefined" ? new Audio("/assets/success.mp3") : undefined
 	)
+	//* memoize this
+	let lastCode = ""
 	const [error, setError] = useState({})
 	const scannerController = new AbortController()
 	const fetchData = async () => {
-		const { data, error } = (await scannerRequest(barcode, scannerController)) as any
-		if (!data?.result) return
-		if (Object.keys(data.result).length > 0 && !error) {
-			const { name, price, productStoreId, mass } = data.result
-			audio.current?.play()
-			setProducts((prev) => {
-				const existingProductIndex = prev.findIndex(
-					(v) => v.productStoreId === productStoreId
-				)
-				if (existingProductIndex >= 0) {
-					return prev.map((v, i) => {
-						if (i === existingProductIndex) {
-							return { ...v, quantity: v.quantity + quantity }
-						}
-						return v
-					})
-				}
-				return [...prev, { name, price, productStoreId, mass, quantity }]
-			})
-			setBarcode("")
-			setIsOpen(false)
-		} else setError({ error: "data not registered on the database" })
-		if (error) {
-			setError({ error: error })
+		const response = await scannerRequest(barcode, scannerController)
+		const { data, error } = response
+		if (response.e) return
+		if (Object.keys(data).length === 0)
+			return setError({ error: "data not registered on the database" })
+		if (error) return setError({ error: error })
+		const { result, error: serverError } = response.data as storeProductScanner
+		if (serverError) {
+			//do the error modal here
 		}
-
-		// console.log(data)
+		if (!result) return
+		const { name, mass, price, productStoreId } = result
+		audio.current?.play()
+		setProducts((prev) => {
+			const existingProductIndex = prev.findIndex(
+				(v) => v.productStoreId === productStoreId
+			)
+			if (existingProductIndex >= 0) {
+				return prev.map((v, i) => {
+					if (i === existingProductIndex) {
+						return { ...v, quantity: v.quantity + quantity }
+					}
+					return v
+				})
+			}
+			return [...prev, { name, price, productStoreId, mass, quantity }]
+		})
+		setBarcode("")
+		setIsOpen(false)
 	}
-	let lastCode = ""
-	const Total = useMemo(() => {
-		return products.reduce((a: any, b: any) => a + b.price * b.quantity, 0)
-	}, [products])
+	const Total = useMemo(
+		() => products.reduce((a: any, b: any) => a + b.price * b.quantity, 0),
+		[products]
+	)
 	useEffect(() => {
 		const scanButton = document.getElementsByClassName("scan")[0] as HTMLElement
 		scanButton.style.opacity = "0"
@@ -66,17 +71,14 @@ function page() {
 	//todo : no to optimistic request.
 	useEffect(() => {
 		if (barcode !== lastCode && barcode !== "none" && barcode.length >= minCodeLength) {
-			console.log(barcode.length)
 			fetchData()
 			lastCode = barcode
 		}
 		setError({})
-
 		return () => {
 			scannerController.abort()
 		}
 	}, [barcode])
-
 	return (
 		<div className="page flex-col-reverse flex-wrap md:flex-row md:flex-nowrap">
 			<ModalForm

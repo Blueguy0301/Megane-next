@@ -7,7 +7,6 @@ import prisma from "@api/db"
 export default async function page() {
 	const session = await getServerSession(authOptions)
 	if (!session) redirect("/login")
-
 	const tableData = await getProductStore(session.user.storeId)
 	return (
 		<div className="page flex-col gap-3 p-4 ">

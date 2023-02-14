@@ -1,17 +1,24 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
+import { minCodeLength, scanner } from "@pages/types"
+import type { formData } from "@app/types"
+import type { addStoreProduct } from "@responses"
+
 import { useState, useEffect } from "react"
-import Button from "@components/Button"
+import { useForm, SubmitHandler } from "react-hook-form"
+import { useRouter } from "next/navigation"
+
 import useModal from "@components/useModal"
-import { formData } from "../../interface"
-import { useForm, SubmitHandler, Controller } from "react-hook-form"
+import Button from "@components/Button"
+import swalModal from "@components/swalModal"
+
 import ModalScanner from "./components/Modal"
 import ProductForm from "./components/ProductForm"
 import FormData from "./components/FormData"
 import { checkBarcode, sendData } from "./components/request"
-import { useRouter } from "next/navigation"
-import swalModal from "@components/swalModal"
-import { minCodeLength } from "../../../pages/interface"
+
+type responseData = { status: number; data: addStoreProduct }
+
 export default function page() {
 	const { register, handleSubmit, formState, watch, setValue, reset } =
 		useForm<formData>()
@@ -22,59 +29,70 @@ export default function page() {
 	const [showSubmit, setShowSubmit] = useState(false)
 	const [scanPressed, setScanPressed] = useState(false)
 	const [formDisabled, setFormDisabled] = useState([false, false])
+	const asyncData = async (data: formData) => {
+		const { status, data: res }: responseData = await sendData(data, isStoreNew, Scanned)
+		const { error } = res
+		if (status === 200 && !error) {
+			swalModal.fire({
+				title: "Success",
+				showConfirmButton: false,
+				icon: "success",
+				text: "Redirecting to Inventory",
+				timer: 3000,
+				timerProgressBar: true,
+			})
+			nav.push("/store/inventory")
+		} else if (error) {
+			swalModal.fire({
+				title: "Error",
+				showConfirmButton: false,
+				text: JSON.stringify(error) ?? "An error has occured",
+				timer: 3000,
+				icon: "error",
+			})
+			setFormDisabled([false, false])
+			setShowSubmit(true)
+		}
+	}
+	const searchBarcode = async () => {
+		const response = await checkBarcode(Scanned, scanController)
+		if (response.e) return
+		const {
+			data: { result, error },
+		} = response as scanner
+		if (!result && error) {
+			return swalModal.fire({
+				title: "Error",
+				showConfirmButton: false,
+				text: JSON.stringify(error) ?? "An error has occured",
+				timer: 5000,
+				icon: "error",
+			})
+		}
+		if (result) {
+			setIsStoreNew(result?.isStoreNew ?? false)
+			setFormDisabled([!result?.newProduct, false])
+			setValue("name", result?.name)
+			setValue("Category", result?.Category)
+			setValue("mass", result?.mass)
+			return
+		}
+	}
 	const onSubmit: SubmitHandler<formData> = (data) => {
 		//* submit to api here.
 		setShowSubmit(false)
 		setFormDisabled([true, true])
-		const asyncData = async () => {
-			const {
-				status,
-				data: { result },
-			} = await sendData(data, isStoreNew, Scanned)
-			if (status === 200 && (!result.error || !result.clientVersion)) {
-				swalModal.fire({
-					title: "Success",
-					showConfirmButton: false,
-					icon: "success",
-					text: "Redirecting to Inventory",
-					timer: 3000,
-					timerProgressBar: true,
-				})
-				nav.push("/store/inventory")
-			} else if (result.error) {
-				swalModal.fire({
-					title: "Error",
-					showConfirmButton: false,
-					text: result.error,
-					timer: 3000,
-					icon: "error",
-				})
-				setFormDisabled([false, false])
-				setShowSubmit(true)
-			}
-		}
-		asyncData()
+		asyncData(data)
 	}
 	const formData = watch()
 	const [Scanned, setScanned] = useState("none")
-	//todo : make this into one whole component where you can use just one modal
 	const { Modal, Open, setIsOpen } = useModal()
 	useEffect(() => {
 		setShowSubmit(true)
 	}, [])
 	useEffect(() => {
 		//* add request here everytime that the scanned value is changed
-		const asyncData = async () => {
-			const { result, data } = await checkBarcode(Scanned, scanController)
-			if (!result) {
-				setIsStoreNew(data.result.isStoreNew ?? false)
-				setFormDisabled([!data.result.newProduct, false])
-				setValue("name", data.result.name)
-				setValue("Category", data.result.Category)
-				setValue("mass", data.result.mass)
-			}
-		}
-		if (Scanned.length >= minCodeLength) asyncData()
+		if (Scanned.length >= minCodeLength) searchBarcode()
 		return () => scanController.abort()
 	}, [Scanned])
 	return (
