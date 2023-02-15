@@ -23,7 +23,7 @@ export default async function handleCheckout(req: NextApiRequest, res: NextApiRe
 	if (verb === "DELETE") return deleteCheckOut(req, res, credentials)
 	else return res.status(405).end()
 }
-//todo : line 44. fixed sql test 
+//todo : line 44. fixed sql
 const addCheckOut: nextFunction = async (req, res, user) => {
 	if (user.authorityId < authority.registered)
 		return res.status(401).json({ error: "invalid credentials" })
