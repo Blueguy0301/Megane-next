@@ -1,8 +1,9 @@
 "use client"
-import { MouseEventHandler, ReactNode, useState } from "react"
 import type { ChangeEvent } from "react"
-import { modal } from "../../interface"
+import type { checkoutProducts, modal } from "@app/types"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { checkOut } from "./request"
 type formData = {
 	name?: string
 	amount: number | undefined
@@ -14,18 +15,19 @@ type Props = {
 	barcode: string
 	setBarcode: any
 	error: { error?: string }
+	products: checkoutProducts[]
 }
 //todo : add multiple modal here : the following are important :
 //* Manual add
 const Modal = (props: Props) => {
 	const { Modal, Total, modalOpened, barcode, setBarcode, error } = props
+	const { products } = props
 	const [selected, setSelected] = useState("Cash")
 	const [formData, setFormData] = useState<formData>({
 		name: "",
 		amount: 0,
 	})
 	const { register } = useForm()
-
 	const handleFormData = (name: string) => {
 		return (e: ChangeEvent<HTMLInputElement>) => {
 			const { value } = e.target
@@ -79,6 +81,7 @@ const Modal = (props: Props) => {
 				title="Checkout Information"
 				className="relative flex flex-wrap "
 				confirmText="Checkout"
+				onAccept={() => checkOut(products, Total, formData.name, selected !== "Cash")}
 			>
 				<div className="relative flex flex-col flex-wrap gap-4 lg:w-3/4">
 					<fieldset className="flex flex-grow  flex-wrap gap-4">
@@ -118,7 +121,6 @@ const Modal = (props: Props) => {
 							/>
 						</div>
 					</fieldset>
-
 					<div className="checkout group relative flex-grow">
 						<label htmlFor="">Amount Paid:</label>
 						<div className="relative flex flex-grow items-center gap-2">
@@ -144,7 +146,7 @@ const Modal = (props: Props) => {
 						</div>
 					</div>
 					<div className="relative mt-10 box-border flex flex-grow border border-solid border-white">
-						<h3 className="float checkout">Sumarry</h3>
+						<h3 className="float checkout">Summary</h3>
 						<div className="z-10 flex w-full flex-col items-center justify-evenly  p-3">
 							<span className="checkout info flex flex-row gap-3">
 								<h4 className="">Payment Option</h4>

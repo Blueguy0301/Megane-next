@@ -23,9 +23,8 @@ export default async function handleInstallments(
 }
 //* tested
 const addInstallment: nextFunction = async (req, res, user) => {
-	let { customerName, total, isAdded, id } = req.body as installments
+	let { customerName, total, isAdded } = req.body as installments
 	const { storeId } = user
-
 	if (!checkIfValid(customerName) || testNumber(total) || testNumber(storeId))
 		return res.json({ error: "invalid arguments" })
 	total = isAdded ? total : -total

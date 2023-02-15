@@ -1,12 +1,6 @@
 //* successfully migrated to nextAuth added types
 import { NextApiRequest, NextApiResponse } from "next"
-import {
-	checkOutBody,
-	authority,
-	Invoice,
-	InvoicePurchase,
-	nextFunction,
-} from "../../interface"
+import { checkOutBody, authority, Invoice, nextFunction } from "../../interface"
 import prisma from "../db"
 import { checkCredentials, testNumber } from "../middleware"
 
@@ -41,25 +35,56 @@ const addCheckOut: nextFunction = async (req, res, user) => {
 	else products = [{ productStoreId: BigInt(productList.productStoreId) }]
 	let data: Invoice = { storeId: BigInt(user.storeId), dateTime: new Date(), total }
 	if (isCredited && customerName) {
-		const installmentId = await prisma.installments
-			// todo : change customer name to  id
-			.upsert({
-				where: { id: BigInt(0) },
-				update: { total: { increment: total } },
-				create: {
+		const count = await prisma.installments
+			.updateMany({
+				where: {
 					customerName: customerName,
-					total: total,
 					storeId: BigInt(user.storeId),
 				},
-				select: { id: true },
+				data: {
+					total: { increment: Number(total) },
+				},
 			})
-			.then((d) => ({ id: d.id.toString() }))
 			.catch((e) => {
-				console.log("error at checkout.ts:57\n", e)
+				console.log("error at checkout.ts:49\n", e)
 				return { error: e }
 			})
-		if ("error" in installmentId) return res.json(installmentId)
-		data = { ...data, installmentId: BigInt(installmentId.id) }
+		if ("error" in count) return
+		if (count.count < 1) {
+			const addInstallment = await prisma.installments
+				.create({
+					data: {
+						total: Number(total),
+						storeId: BigInt(user.storeId),
+						customerName: customerName,
+					},
+					select: { id: true },
+				})
+				.then((d) => ({
+					id: d.id.toString(),
+				}))
+				.catch((e) => {
+					console.log("error @ checkout:67\n", e)
+					return { error: e }
+				})
+			if ("error" in addInstallment) return res.json(addInstallment)
+			if (addInstallment.id) data = { ...data, installmentId: BigInt(addInstallment.id) }
+		} else {
+			const installmentId = await prisma.installments
+				.findFirst({
+					where: {
+						AND: [{ customerName: customerName }, { storeId: user.storeId }],
+					},
+					select: { id: true },
+				})
+				.then((d) => ({ id: d?.id.toString() }))
+				.catch((e) => {
+					console.log("error at checkout.ts:59\n", e)
+					return { error: e }
+				})
+			if ("error" in installmentId) return res.json(installmentId)
+			if (installmentId.id) data = { ...data, installmentId: BigInt(installmentId.id) }
+		}
 	}
 	const invoice = await prisma.invoice
 		.create({
@@ -86,7 +111,7 @@ const addCheckOut: nextFunction = async (req, res, user) => {
 			installmentTotal: d.Installment?.total,
 		}))
 		.catch((e) => {
-			console.log("error @ checkout.ts:84 \n", e)
+			console.log("error @ checkout.ts:114 \n", e)
 			return { error: e }
 		})
 	if ("error" in invoice) return res.json(invoice)

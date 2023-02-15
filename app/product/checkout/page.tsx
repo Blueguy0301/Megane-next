@@ -12,7 +12,7 @@ import { minCodeLength } from "@pages/types"
 import type { storeProductScanner } from "@responses"
 function page() {
 	const { Modal, Open, setIsOpen } = useModal()
-	const [products, setProducts] = useState<Array<checkoutProducts>>([])
+	const [products, setProducts] = useState<checkoutProducts[]>([])
 	const [quantity, setQuantity] = useState(1)
 	const [barcode, setBarcode] = useState("none")
 	const [modalOpened, setModalOpened] = useState<string | undefined>()
@@ -25,16 +25,13 @@ function page() {
 	const scannerController = new AbortController()
 	const fetchData = async () => {
 		const response = await scannerRequest(barcode, scannerController)
-		const { data, error } = response
-		if (response.e) return
-		if (Object.keys(data).length === 0)
-			return setError({ error: "data not registered on the database" })
-		if (error) return setError({ error: error })
+		if ("e" in response) return
+		const { data } = response
+		if ("error" in data) return setError({ error: error })
 		const { result, error: serverError } = response.data as storeProductScanner
-		if (serverError) {
-			//do the error modal here
-		}
-		if (!result) return
+		if (serverError) return setError({ error: serverError })
+		if (!result || Object.keys(result).length === 0)
+			return setError({ error: "No product found" })
 		const { name, mass, price, productStoreId } = result
 		audio.current?.play()
 		setProducts((prev) => {
@@ -88,6 +85,7 @@ function page() {
 				barcode={barcode}
 				setBarcode={setBarcode}
 				error={error}
+				products={products}
 			/>
 			<div className="min-w-1/2 flex flex-grow flex-col p-4 md:max-w-[50%]">
 				<div className="relative flex flex-grow flex-col gap-4 border border-solid border-white p-4">

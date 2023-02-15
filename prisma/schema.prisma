@@ -72,8 +72,10 @@ model Installments {
 }
 
 model InvoicePurchases {
-  invoiceId      BigInt       @id
+  invoiceId      BigInt       
   productStoreId BigInt
+  quantity       Int
   ProductStore   ProductStore @relation(fields: [productStoreId], references: [id])
   Invoice        Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+   @@unique([invoiceId, productStoreId])
 }
