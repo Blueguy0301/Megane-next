@@ -25,7 +25,6 @@ model Users {
   password    String
   authorityId Int
   storeId     BigInt
-
   store       Stores @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
@@ -36,7 +35,6 @@ model ProductStore {
   Location         String
   Description      String
   storeId          BigInt            
-  
   store            Stores             @relation(fields: [storeId], references: [id], onDelete: Cascade)
   Product          Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
   InvoicePurchases InvoicePurchases[]
@@ -48,7 +46,6 @@ model Product {
   barcode      String         @unique
   Category     String
   mass         String
-
   ProductStore ProductStore[]
 }
 
@@ -68,10 +65,10 @@ model Installments {
   customerName String    
   total        Int       @default(0)
   storeId      BigInt   
-
   store        Stores             @relation(fields: [storeId], references: [id], onDelete: Cascade)
   Invoice      Invoice[]
-  
+  @@unique([storeId, customerName])
+  // @@unique([customerName], map: "Stores")
 }
 
 model InvoicePurchases {
