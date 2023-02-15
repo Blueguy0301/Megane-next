@@ -24,7 +24,7 @@ export default async function handleCheckout(req: NextApiRequest, res: NextApiRe
 	else return res.status(405).end()
 }
 
-//todo : line 44. fixed sql 
+//todo : line 44. change id and upsert to updateMany
 const addCheckOut: nextFunction = async (req, res, user) => {
 	if (user.authorityId < authority.registered)
 		return res.status(401).json({ error: "invalid credentials" })
