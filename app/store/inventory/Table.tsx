@@ -43,6 +43,7 @@ function Table({ data, session }: props) {
 			else setSelected((prev) => prev.filter((prevId) => prevId !== id))
 		}
 	}, [])
+	// use the memo hook here.
 	return (
 		<>
 			<div className="flex w-full flex-row flex-wrap justify-center gap-3 ">

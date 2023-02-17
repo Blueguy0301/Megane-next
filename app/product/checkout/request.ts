@@ -1,7 +1,12 @@
+
 import { checkOutBody, InvoicePurchase, minCodeLength } from "@pages/types"
 import { storeProductScanner } from "@responses"
 import axios, { AxiosError, AxiosResponse } from "axios"
 type checkOut = InvoicePurchase | InvoicePurchase[]
+type formData = {
+	name?: string
+	amount: number | undefined
+}
 export const scannerRequest = async (code: string, controller: AbortController) => {
 	if (!(code.length >= minCodeLength))
 		return {
@@ -15,24 +20,24 @@ export const scannerRequest = async (code: string, controller: AbortController) 
 			signal: controller.signal,
 		})
 		.catch((e) => ({ e: e }))
-	console.log(product)
 	return product
 }
 
 export const checkOut = async (
 	products: checkOut,
 	total: number,
-	customerName?: string,
+	formData: formData,
 	isCredited = false
 ) => {
 	const url = "/api/store/checkout"
 	const body: checkOutBody = {
 		productList: products,
 		total,
-		customerName,
+		customerName: formData.name,
 		isCredited,
+		creditTotal: isCredited ? total - (formData.amount ?? 0) : 0
 	}
-	const result = await axios.post(url, body).catch((e) => e)
+	const result = await axios.post(url, body).catch((e) => ({ e: e }))
 	console.log(result)
 	return result
 }

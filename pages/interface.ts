@@ -45,6 +45,7 @@ export type Invoice = {
 }
 export type InvoicePurchase = {
 	productStoreId: bigint | string
+	quantity: number
 }
 
 export interface userData extends user {
@@ -82,14 +83,11 @@ export interface installments {
 	isAdded: boolean
 }
 export const minCodeLength = 8
-export type scanner = {
-	data: productScanner
-	status: number
-	error: any
-}
+
 export type checkOutBody = {
 	productList: InvoicePurchase[] | InvoicePurchase
 	total: number
 	isCredited?: boolean
 	customerName?: string
+	creditTotal: number
 }

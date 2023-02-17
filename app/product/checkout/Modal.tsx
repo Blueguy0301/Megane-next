@@ -2,7 +2,6 @@
 import type { ChangeEvent } from "react"
 import type { checkoutProducts, modal } from "@app/types"
 import { useState } from "react"
-import { useForm } from "react-hook-form"
 import { checkOut } from "./request"
 type formData = {
 	name?: string
@@ -27,7 +26,6 @@ const Modal = (props: Props) => {
 		name: "",
 		amount: 0,
 	})
-	const { register } = useForm()
 	const handleFormData = (name: string) => {
 		return (e: ChangeEvent<HTMLInputElement>) => {
 			const { value } = e.target
@@ -81,7 +79,7 @@ const Modal = (props: Props) => {
 				title="Checkout Information"
 				className="relative flex flex-wrap "
 				confirmText="Checkout"
-				onAccept={() => checkOut(products, Total, formData.name, selected !== "Cash")}
+				onAccept={() => checkOut(products, Total, formData, selected !== "Cash")}
 			>
 				<div className="relative flex flex-col flex-wrap gap-4 lg:w-3/4">
 					<fieldset className="flex flex-grow  flex-wrap gap-4">

@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import { minCodeLength, scanner } from "@pages/types"
+import { minCodeLength } from "@pages/types"
 import type { formData } from "@app/types"
-import type { addStoreProduct } from "@responses"
+import type { addStoreProduct, productScanner } from "@responses"
 
 import { useState, useEffect } from "react"
 import { useForm, SubmitHandler } from "react-hook-form"
@@ -46,7 +46,7 @@ export default function page() {
 			swalModal.fire({
 				title: "Error",
 				showConfirmButton: false,
-				text: JSON.stringify(error) ?? "An error has occured",
+				text: (error as string) ?? "An error has occured",
 				timer: 3000,
 				icon: "error",
 			})
@@ -56,15 +56,22 @@ export default function page() {
 	}
 	const searchBarcode = async () => {
 		const response = await checkBarcode(Scanned, scanController)
-		if (response.e) return
-		const {
-			data: { result, error },
-		} = response as scanner
+		if (!response || "e" in response) return
+		const { result, error } = response.data as productScanner
 		if (!result && error) {
 			return swalModal.fire({
 				title: "Error",
 				showConfirmButton: false,
-				text: JSON.stringify(error) ?? "An error has occured",
+				text: (error as string) ?? "An error has occured",
+				timer: 5000,
+				icon: "error",
+			})
+		}
+		if (!result?.isStoreNew) {
+			return swalModal.fire({
+				title: "Error",
+				showConfirmButton: false,
+				text: `${result?.name} is already registered to the store.`,
 				timer: 5000,
 				icon: "error",
 			})

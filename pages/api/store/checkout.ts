@@ -17,22 +17,25 @@ export default async function handleCheckout(req: NextApiRequest, res: NextApiRe
 	if (verb === "DELETE") return deleteCheckOut(req, res, credentials)
 	else return res.status(405).end()
 }
-
-//todo : line 44. change id and upsert to updateMany
+//todo : if productList is 0, return an error
+//todo : add creditTotal
 const addCheckOut: nextFunction = async (req, res, user) => {
 	if (user.authorityId < authority.registered)
 		return res.status(401).json({ error: "invalid credentials" })
-	const { productList, isCredited, total, customerName } = req.body as checkOutBody
-	let products: { productStoreId: bigint }[]
-	if (testNumber(user.storeId) || testNumber(total))
+	const { productList, isCredited, total, customerName, creditTotal } = req.body as checkOutBody
+	let products: { productStoreId: bigint, quantity: number }[]
+	if (testNumber(user.storeId) || testNumber(total) || testNumber(creditTotal))
 		return res.json({ error: "invalid arguments" })
 	if (Array.isArray(productList))
 		products = productList.map((product) => ({
 			productStoreId: BigInt(product.productStoreId),
+			quantity: Number(product.quantity ?? 0)
 		}))
 	else if (testNumber(productList?.productStoreId))
 		return res.json({ error: "invalid arguments" })
-	else products = [{ productStoreId: BigInt(productList.productStoreId) }]
+	else products = [{
+		productStoreId: BigInt(productList.productStoreId), quantity: Number(productList.quantity ?? 0)
+	}]
 	let data: Invoice = { storeId: BigInt(user.storeId), dateTime: new Date(), total }
 	if (isCredited && customerName) {
 		const count = await prisma.installments
@@ -42,7 +45,7 @@ const addCheckOut: nextFunction = async (req, res, user) => {
 					storeId: BigInt(user.storeId),
 				},
 				data: {
-					total: { increment: Number(total) },
+					total: { increment: Number(creditTotal) },
 				},
 			})
 			.catch((e) => {
@@ -73,13 +76,13 @@ const addCheckOut: nextFunction = async (req, res, user) => {
 			const installmentId = await prisma.installments
 				.findFirst({
 					where: {
-						AND: [{ customerName: customerName }, { storeId: user.storeId }],
+						AND: [{ customerName: customerName }, { storeId: BigInt(user.storeId) }],
 					},
 					select: { id: true },
 				})
 				.then((d) => ({ id: d?.id.toString() }))
 				.catch((e) => {
-					console.log("error at checkout.ts:59\n", e)
+					console.log("error at checkout.ts:85\n", e)
 					return { error: e }
 				})
 			if ("error" in installmentId) return res.json(installmentId)
@@ -95,8 +98,6 @@ const addCheckOut: nextFunction = async (req, res, user) => {
 				},
 			},
 			select: {
-				id: true,
-				dateTime: true,
 				total: true,
 				Installment: {
 					select: { customerName: true, total: true },
@@ -104,11 +105,10 @@ const addCheckOut: nextFunction = async (req, res, user) => {
 			},
 		})
 		.then((d) => ({
-			id: d.id.toString(),
-			customerName: d.Installment?.customerName,
-			dateTime: d.dateTime,
+			success: true,
+			customerName: d.Installment?.customerName ?? null,
 			total: d.total,
-			installmentTotal: d.Installment?.total,
+			installmentTotal: d.Installment?.total ?? null,
 		}))
 		.catch((e) => {
 			console.log("error @ checkout.ts:114 \n", e)

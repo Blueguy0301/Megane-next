@@ -46,6 +46,7 @@ CREATE TABLE "Invoice" (
     "storeId" INT8 NOT NULL,
     "installmentId" INT8,
     "dateTime" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "total" INT4 NOT NULL,
 
     CONSTRAINT "Invoice_pkey" PRIMARY KEY ("id")
 );
@@ -54,16 +55,20 @@ CREATE TABLE "Invoice" (
 CREATE TABLE "Installments" (
     "id" INT8 NOT NULL DEFAULT unique_rowid(),
     "customerName" STRING NOT NULL,
+    "total" INT4 NOT NULL DEFAULT 0,
+    "storeId" INT8 NOT NULL,
 
     CONSTRAINT "Installments_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "InvoicePurchases" (
+    "id" INT8 NOT NULL DEFAULT unique_rowid(),
     "invoiceId" INT8 NOT NULL,
     "productStoreId" INT8 NOT NULL,
+    "quantity" INT4 NOT NULL,
 
-    CONSTRAINT "InvoicePurchases_pkey" PRIMARY KEY ("invoiceId")
+    CONSTRAINT "InvoicePurchases_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -79,22 +84,28 @@ CREATE UNIQUE INDEX "Product_name_key" ON "Product"("name");
 CREATE UNIQUE INDEX "Product_barcode_key" ON "Product"("barcode");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Installments_customerName_key" ON "Installments"("customerName");
+CREATE UNIQUE INDEX "Installments_storeId_customerName_key" ON "Installments"("storeId", "customerName");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "InvoicePurchases_invoiceId_productStoreId_key" ON "InvoicePurchases"("invoiceId", "productStoreId");
 
 -- AddForeignKey
 ALTER TABLE "Users" ADD CONSTRAINT "Users_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Stores"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProductStore" ADD CONSTRAINT "ProductStore_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Stores"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ProductStore" ADD CONSTRAINT "ProductStore_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProductStore" ADD CONSTRAINT "ProductStore_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ProductStore" ADD CONSTRAINT "ProductStore_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Stores"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Stores"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_installmentId_fkey" FOREIGN KEY ("installmentId") REFERENCES "Installments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Installments" ADD CONSTRAINT "Installments_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Stores"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "InvoicePurchases" ADD CONSTRAINT "InvoicePurchases_productStoreId_fkey" FOREIGN KEY ("productStoreId") REFERENCES "ProductStore"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -3,7 +3,7 @@ import { authOptions } from "@api/auth/[...nextauth]"
 import Button from "@components/Button"
 import prisma from "@api/db"
 import { getServerSession } from "next-auth/next"
-import { authority } from "../../../pages/interface"
+import { authority } from "@pages/types"
 import Card from "./Card"
 import CardInfo from "./CardInfo"
 const getData = async (storeId: any) => {
@@ -39,11 +39,8 @@ export default async function page() {
 	if (!session) return
 	const data = await getData(session.user.storeId)
 	if (!data) return
-	const total = data.Invoices.map((t) => t.total).reduce((a: any, b: any) => a + b, 0)
-	const Installments = data.Installments.map((t) => t.total).reduce(
-		(a: any, b: any) => a + b,
-		0
-	)
+	const total = data.Invoices.map((t) => t.total).reduce((a, b) => a + b, 0)
+	const Installments = data.Installments.map((t) => t.total).reduce((a, b) => a + b, 0)
 	return (
 		<div className="page flex-row flex-wrap items-center gap-10  p-10">
 			<div className="flex w-full flex-row flex-wrap gap-10">

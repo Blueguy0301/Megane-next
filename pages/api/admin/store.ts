@@ -1,6 +1,6 @@
 //*checked
 import type { NextApiRequest, NextApiResponse } from "next"
-import { authority, nextFunction } from "../../interface"
+import { authority, nextFunction, } from "@pages/types"
 import prisma from "../db"
 import { checkCredentials, testNumber } from "../middleware"
 type body = { storeId: string; storeName: string }

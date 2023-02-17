@@ -7,7 +7,7 @@ import {
 	productQuery,
 	productStore,
 	authority,
-} from "../../interface"
+} from "@pages/types"
 import prisma from "../db"
 export default async function handleProducts(req: NextApiRequest, res: NextApiResponse) {
 	const verb = req.method
@@ -37,7 +37,7 @@ const addProduct: nextFunction = async (req, res, user, isStoreNew = false) => {
 			create: {
 				name: name,
 				barcode: barcode,
-				Category: category,
+				Category: category ?? "Others",
 				mass: mass,
 			},
 			update: {},
@@ -110,8 +110,9 @@ const addProductStore: nextFunction = async (req, res, user, productId: string) 
 	const countProductStore = await prisma.productStore.count({
 		where: { AND: [{ productId: BigInt(productId) }, { storeId: BigInt(user.storeId) }] },
 	})
+	console.log(countProductStore)
 	if (countProductStore > 0)
-		return res.json({ result: { error: "product already exists on your store" } })
+		return res.json({ error: "product already exists on your store" })
 	const createProductStore = await prisma.productStore
 		.create({
 			data: {
@@ -137,8 +138,8 @@ const addProductStore: nextFunction = async (req, res, user, productId: string) 
 		}))
 		.catch((e) => {
 			console.log("error in line 127 @ product.ts", e)
-			if (e.code === "P2003") return { error: `${productId} is not a product` }
-			else return e
+			if (e.code === "P2003") return { error: `${productId} is not a product.` }
+			else return { error: "an error has occured while saving." }
 		})
 	if ("error" in createProductStore) return res.json(createProductStore)
 	else return res.json({ result: createProductStore })

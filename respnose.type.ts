@@ -111,11 +111,10 @@ export interface addInstallment {
 export interface addCheckout {
 	error?: string | object
 	result?: {
-		id: string
-		customerName: string
-		dateTime: Date
+		success: boolean
+		customerName: string | null
 		total: number
-		installmentTotal: number
+		installmentTotal: number | null
 	}
 }
 export interface updateCheckout {

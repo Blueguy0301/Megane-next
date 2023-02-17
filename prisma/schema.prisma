@@ -1,9 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
-  }
+}
 
 datasource db {
   provider = "cockroachdb"
@@ -13,10 +10,10 @@ datasource db {
 model Stores {
   id           BigInt         @id @default(autoincrement())
   name         String         @unique
-  users        Users[]
-  productStore ProductStore[]
-  Invoices     Invoice[]
   Installments Installments[]
+  Invoices     Invoice[]
+  productStore ProductStore[]
+  users        Users[]
 }
 
 model Users {
@@ -30,14 +27,14 @@ model Users {
 
 model ProductStore {
   id               BigInt             @id @default(autoincrement())
-  productId        BigInt            
+  productId        BigInt
   price            Int
   Location         String
   Description      String
-  storeId          BigInt            
-  store            Stores             @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  Product          Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  storeId          BigInt
   InvoicePurchases InvoicePurchases[]
+  Product          Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  store            Stores             @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model Product {
@@ -62,20 +59,21 @@ model Invoice {
 
 model Installments {
   id           BigInt    @id @default(autoincrement())
-  customerName String    
+  customerName String
   total        Int       @default(0)
-  storeId      BigInt   
-  store        Stores             @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId      BigInt
+  store        Stores    @relation(fields: [storeId], references: [id], onDelete: Cascade)
   Invoice      Invoice[]
+
   @@unique([storeId, customerName])
-  // @@unique([customerName], map: "Stores")
 }
 
 model InvoicePurchases {
+  id             BigInt       @id @default(autoincrement())
   invoiceId      BigInt       
   productStoreId BigInt
   quantity       Int
   ProductStore   ProductStore @relation(fields: [productStoreId], references: [id])
   Invoice        Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-   @@unique([invoiceId, productStoreId])
+  @@unique([invoiceId, productStoreId])
 }

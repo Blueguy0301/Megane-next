@@ -39,5 +39,5 @@ export const checkBarcode = async (scanned: string, controller: AbortController)
 			params: { barcode: scanned, productScan: true },
 			signal: controller.signal,
 		})
-		.catch((e) => e)
+		.catch((e) => ({ e }))
 }
