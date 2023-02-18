@@ -41,6 +41,7 @@ const page = async ({ params }: { params: { id: string } }) => {
 	const data = await getData(params.id)
 	if (!session) return
 	if (!data || !data.InvoicePurchases) return notFound()
+	console.log("test")
 	return (
 		<div className="page flex-col gap-3 p-4">
 			<h3>Purchase History</h3>
