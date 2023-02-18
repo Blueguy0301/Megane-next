@@ -50,17 +50,14 @@ function Table({ data, session }: props) {
 			<div className="flex w-full flex-row flex-wrap justify-center gap-3 ">
 				{session?.user.authorityId >= authority.storeOwner && (
 					<>
-						<Button
-							type="Link"
-							href="/product/add"
-							className="flex items-center justify-center"
-						>
-							Add Product
-						</Button>
 						{/* todo: disable this button if nothing is selected. */}
-						<Button type="button">Delete Selected</Button>
-						{/* todo: disable this button if there is more than one selected */}
-						<Button type="button">Update Existsing</Button>
+						<Button
+							type="button"
+							disabled={selected.length <= 0}
+							className="disabled:opacity-50"
+						>
+							Delete Selected
+						</Button>
 					</>
 				)}
 				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-3 md:ml-auto">
@@ -121,7 +118,7 @@ function Table({ data, session }: props) {
 						<tbody>
 							{shownProduct.map((invoice, a) => (
 								<tr
-									className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
+									className="cursor-pointer border-b transition duration-300 ease-in-out hover:bg-gray-600"
 									key={a}
 									onClick={(e) => router.push(`/store/history/invoice/${invoice.id}`)}
 								>
@@ -133,14 +130,14 @@ function Table({ data, session }: props) {
 											checked={selected.includes(invoice.id)}
 										/>
 									</td>
-									<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white ">
+									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
 										{invoice.total}
 									</td>
 
-									<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white ">
+									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
 										{invoice.dateTime}
 									</td>
-									<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white ">
+									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
 										{invoice.Installment}
 									</td>
 								</tr>

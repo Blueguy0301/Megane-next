@@ -47,15 +47,56 @@ const page = async ({ params }: { params: { id: string } }) => {
 			<p>Buyer : {data?.Installment?.customerName ?? "Unknown"}</p>
 			<p>Total : {data?.total}</p>
 			<p>Date Purchased : {convertDate(data?.dateTime as string)} </p>
-			{data.InvoicePurchases.map((purchase, i) => {
-				return (
-					<p key={i}>
-						{purchase.quantity}x {purchase.ProductStore.Product.name}(
-						{purchase.ProductStore.Product.mass}) PHP{" "}
-						{purchase.quantity * purchase.ProductStore.price}
-					</p>
-				)
-			})}
+			<div className="flex flex-col">
+				<div className="max-w-[100%] overflow-auto">
+					<table className="min-w-full  bg-gray-800">
+						<thead className="border-b bg-white/25">
+							<tr>
+								<th
+									scope="col"
+									className="px-6 py-4 text-left text-sm font-medium text-white"
+								>
+									Product
+								</th>
+								<th
+									scope="col"
+									className="px-6 py-4 text-center text-sm font-medium text-white"
+								>
+									Quantity
+								</th>
+								<th
+									scope="col"
+									className="px-6 py-4 text-center text-sm font-medium text-white "
+								>
+									Price
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{data.InvoicePurchases.map((purchase, i) => {
+								return (
+									<tr
+										className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
+										key={i}
+									>
+										<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white ">
+											{purchase.ProductStore.Product.name}(
+											{purchase.ProductStore.Product.mass})
+										</td>
+
+										<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white ">
+											{purchase.quantity}
+										</td>
+										<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light  text-white">
+											PHP {purchase.quantity * purchase.ProductStore.price}
+										</td>
+									</tr>
+								)
+							})}
+						</tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 	)
 }
