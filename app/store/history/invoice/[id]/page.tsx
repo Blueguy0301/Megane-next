@@ -46,7 +46,7 @@ const page = async ({ params }: { params: { id: string } }) => {
 			<h3>Purchase History</h3>
 			<p>Buyer : {data?.Installment?.customerName ?? "Unknown"}</p>
 			<p>Total : {data?.total}</p>
-			<p>Date Purchased : {convertDate(data?.dateTime as string)} </p>
+			{/* <p>Date Purchased : {convertDate(data?.dateTime as string)} </p> */}
 			<div className="flex flex-col">
 				<div className="max-w-[100%] overflow-auto">
 					<table className="min-w-full  bg-gray-800">
