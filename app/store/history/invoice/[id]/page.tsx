@@ -33,7 +33,7 @@ async function getData(params: string) {
 			},
 		})
 		.then((d) => ({ ...d, dateTime: d?.dateTime.toISOString() }))
-
+	console.log("last")
 	return data
 }
 const page = async ({ params }: { params: { id: string } }) => {
