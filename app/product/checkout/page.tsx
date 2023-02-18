@@ -2,6 +2,8 @@
 "use client"
 import type { checkoutProducts } from "@app/types"
 import type { storeProductScanner } from "@responses"
+import { minCodeLength } from "@pages/types"
+
 import { useEffect, useMemo, useState, useRef } from "react"
 import Button from "@components/Button"
 import Scanner from "@components/Scanner"
@@ -9,7 +11,6 @@ import useModal from "@components/useModal"
 import Product from "./Product"
 import ModalForm from "./Modal"
 import { scannerRequest } from "./request"
-import { minCodeLength } from "@pages/types"
 function page() {
 	const { Modal, Open, setIsOpen } = useModal()
 	const [products, setProducts] = useState<checkoutProducts[]>([])
@@ -64,8 +65,6 @@ function page() {
 			scanButton.style.opacity = "1"
 		}
 	}, [])
-	//? can use useMemo instead of useEffect for better performance?
-	//todo : no to optimistic request.
 	useEffect(() => {
 		if (barcode !== lastCode && barcode !== "none" && barcode.length >= minCodeLength) {
 			fetchData()
@@ -85,7 +84,7 @@ function page() {
 				barcode={barcode}
 				setBarcode={setBarcode}
 				error={error}
-				products={products}
+				products={[products, setProducts]}
 			/>
 			<div className="min-w-1/2 flex flex-grow flex-col p-4 md:max-w-[50%]">
 				<div className="relative flex flex-grow flex-col gap-4 border border-solid border-white p-4">
@@ -119,7 +118,13 @@ function page() {
 					<Open className="flex-grow" onClick={() => setModalOpened("Manual Add")}>
 						Manual Add
 					</Open>
-					<Button className=" red flex-grow">Cancel</Button>
+					<Button
+						className=" red flex-grow text-center"
+						type="Link"
+						href="/store/dashboard"
+					>
+						Cancel
+					</Button>
 				</div>
 			</div>
 			<div className="min-w-1/2 flex flex-grow flex-col p-4 md:max-w-[50%]">

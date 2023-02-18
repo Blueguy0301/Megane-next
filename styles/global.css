@@ -85,8 +85,8 @@ h3,
 }
 .card {
 	flex-grow: 1;
-	min-height: 300px;
-	min-width: 30%;
+	min-height: 150px;
+	min-width: 45%;
 	box-shadow: 0px 0px 6px 6px #1e3a8a;
 }
 .nav {
@@ -150,10 +150,7 @@ h3,
 }
 
 .group {
-	@apply z-10;
-	@apply flex;
-	@apply gap-4;
-	@apply flex-wrap;
+	@apply z-10 flex flex-wrap gap-4;
 }
 .group label {
 	min-width: 120px;
@@ -273,4 +270,7 @@ span.checkout h5 {
 }
 .login-form label {
 	@apply text-white;
+}
+.dashboard {
+	/* max-height: calc(100vh - var(--nav-size)); */
 }

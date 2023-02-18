@@ -38,6 +38,5 @@ export const checkOut = async (
 		creditTotal: isCredited ? total - (formData.amount ?? 0) : 0
 	}
 	const result = await axios.post(url, body).catch((e) => ({ e: e }))
-	console.log(result)
 	return result
 }

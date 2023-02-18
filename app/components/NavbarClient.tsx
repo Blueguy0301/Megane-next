@@ -25,6 +25,7 @@ const NavbarClient = () => {
 		return () => window.removeEventListener("resize", checkSize)
 	}, [])
 	const handleDropdown = (e: MouseEvent<HTMLElement>) => {
+		console.log("clicked dropdown")
 		setIsShown(!isShown)
 		e.preventDefault()
 	}

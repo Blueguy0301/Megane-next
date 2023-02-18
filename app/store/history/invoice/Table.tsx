@@ -3,38 +3,40 @@
 ///todo : refetch data when mounted
 import TablePagination from "@components/TablePagination"
 import { ChangeEvent, useState } from "react"
-import searchProducts from "./productSearch"
 import type { Session } from "next-auth"
 import Button from "@components/Button"
 import Image from "next/image"
 import { authority } from "@pages/types"
 import { useMemo, useCallback } from "react"
+import { convertDate } from "@components/dateformat"
+import searchInvoice from "./invoiceSearch"
+import { useRouter } from "next/navigation"
+//todo : add data structure
 interface data {
-	Location: string
-	price: number
-	Product: {
-		name: string
-		mass: string
-		barcode: string
-	}
 	id: string
+	dateTime: string
+	total: number
+	Installment: string
 }
 interface props {
 	data: data[]
 	session: Session
 }
 function Table({ data, session }: props) {
-	const [current, setCurrent] = useState(1)
+	const router = useRouter()
 	//* memoize this
-	const [product, setProduct] = useState(data)
+	const Invoice = data.map((value) => ({
+		...value,
+		dateTime: convertDate(value.dateTime),
+	}))
 	const [search, setSearch] = useState("")
 	const [selected, setSelected] = useState<string[]>([])
 	const shownProduct = useMemo(() => {
-		if (search === "") return product
-		else return searchProducts(search, product) as data[]
+		if (search === "") return Invoice
+		else return searchInvoice(search, Invoice) as data[]
 	}, [search])
 	const selectAll = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-		if (e.target.checked) setSelected(product.map((d) => d.id))
+		if (e.target.checked) setSelected(Invoice.map((d) => d.id))
 		else setSelected([])
 	}, [])
 	const select = useCallback((id: string) => {
@@ -43,7 +45,6 @@ function Table({ data, session }: props) {
 			else setSelected((prev) => prev.filter((prevId) => prevId !== id))
 		}
 	}, [])
-	// use the memo hook here.
 	return (
 		<>
 			<div className="flex w-full flex-row flex-wrap justify-center gap-3 ">
@@ -99,65 +100,48 @@ function Table({ data, session }: props) {
 								</th>
 								<th
 									scope="col"
-									className="px-6 py-4 text-left text-sm font-medium text-white"
+									className="px-6 py-4 text-center text-sm font-medium text-white"
 								>
-									Name
+									Total
 								</th>
 								<th
 									scope="col"
-									className="px-6 py-4 text-left text-sm font-medium text-white"
+									className="px-6 py-4 text-center text-sm font-medium text-white"
 								>
-									Mass
+									Date
 								</th>
 								<th
 									scope="col"
-									className="px-6 py-4 text-left text-sm font-medium text-white"
+									className="px-6 py-4 text-center text-sm font-medium text-white "
 								>
-									Barcode
-								</th>
-
-								<th
-									scope="col"
-									className="px-6 py-4 text-left text-sm font-medium text-white"
-								>
-									Location
-								</th>
-								<th
-									scope="col"
-									className="px-6 py-4 text-left text-sm font-medium text-white"
-								>
-									Price
+									Buyer
 								</th>
 							</tr>
 						</thead>
 						<tbody>
-							{shownProduct.map((i, a) => (
+							{shownProduct.map((invoice, a) => (
 								<tr
 									className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
 									key={a}
+									onClick={(e) => router.push(`/store/history/invoice/${invoice.id}`)}
 								>
 									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-white">
 										<input
 											type="checkbox"
 											name="selected"
-											onChange={select(i.id)}
-											checked={selected.includes(i.id)}
+											onChange={select(invoice.id)}
+											checked={selected.includes(invoice.id)}
 										/>
 									</td>
-									<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white">
-										{i.Product.name}
+									<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white ">
+										{invoice.total}
 									</td>
-									<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white">
-										{i.Product.mass}
+
+									<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white ">
+										{invoice.dateTime}
 									</td>
-									<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white">
-										{i.Product.barcode}
-									</td>
-									<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white">
-										{i.Location}
-									</td>
-									<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white">
-										PHP {i.price}
+									<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white ">
+										{invoice.Installment}
 									</td>
 								</tr>
 							))}
@@ -166,8 +150,8 @@ function Table({ data, session }: props) {
 				</div>
 			</div>
 			<TablePagination
-				shown={product.length}
-				current={50 > product.length ? 1 : product.length - 49}
+				shown={Invoice.length}
+				current={50 > Invoice.length ? 1 : Invoice.length - 49}
 			/>
 		</>
 	)

@@ -20,17 +20,17 @@ export default async function handleCheckout(req: NextApiRequest, res: NextApiRe
 //todo : if productList is 0, return an error
 //todo : add creditTotal
 const addCheckOut: nextFunction = async (req, res, user) => {
-	if (user.authorityId < authority.registered)
-		return res.status(401).json({ error: "invalid credentials" })
 	const { productList, isCredited, total, customerName, creditTotal } = req.body as checkOutBody
 	let products: { productStoreId: bigint, quantity: number }[]
 	if (testNumber(user.storeId) || testNumber(total) || testNumber(creditTotal))
 		return res.json({ error: "invalid arguments" })
-	if (Array.isArray(productList))
+	if (Array.isArray(productList)) {
+		if (productList.length <= 0) return res.json({ error: "no products listed" })
 		products = productList.map((product) => ({
 			productStoreId: BigInt(product.productStoreId),
 			quantity: Number(product.quantity ?? 0)
 		}))
+	}
 	else if (testNumber(productList?.productStoreId))
 		return res.json({ error: "invalid arguments" })
 	else products = [{

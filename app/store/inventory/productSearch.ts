@@ -9,7 +9,7 @@ interface data {
 		barcode: string
 	}
 }
-export default function searchProducts(productName: string, productsArray: data[]) {
+export default function searchInvoice(productName: string, productsArray: data[]) {
 	let cache = JSON.parse(localStorage.getItem("cache") as string) || {}
 	if (cache[productName]) {
 		return cache[productName]

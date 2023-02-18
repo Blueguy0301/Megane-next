@@ -1,8 +1,10 @@
 "use client"
-import type { ChangeEvent } from "react"
+import type { ChangeEvent, Dispatch, SetStateAction } from "react"
 import type { checkoutProducts, modal } from "@app/types"
+import type { addCheckout } from "@responses"
 import { useState } from "react"
 import { checkOut } from "./request"
+import { errorModal, successModal } from "./swalModals"
 type formData = {
 	name?: string
 	amount: number | undefined
@@ -14,18 +16,27 @@ type Props = {
 	barcode: string
 	setBarcode: any
 	error: { error?: string }
-	products: checkoutProducts[]
+	products: [checkoutProducts[], Dispatch<SetStateAction<checkoutProducts[]>>]
 }
-//todo : add multiple modal here : the following are important :
-//* Manual add
 const Modal = (props: Props) => {
 	const { Modal, Total, modalOpened, barcode, setBarcode, error } = props
-	const { products } = props
+	const [products, setProducts] = props.products
 	const [selected, setSelected] = useState("Cash")
 	const [formData, setFormData] = useState<formData>({
 		name: "",
 		amount: 0,
 	})
+	const handleCheckout = async () => {
+		const res = await checkOut(products, Total, formData, selected !== "Cash")
+		if ("e" in res) return
+		const { result, error: serverError } = res.data as addCheckout
+		if (serverError) return errorModal(serverError)
+		else if (result) {
+			setProducts([])
+			return successModal(result, (formData.amount ?? 0) - Total)
+		}
+		return
+	}
 	const handleFormData = (name: string) => {
 		return (e: ChangeEvent<HTMLInputElement>) => {
 			const { value } = e.target
@@ -73,13 +84,12 @@ const Modal = (props: Props) => {
 		)
 	}
 	if (modalOpened === "checkOut") {
-		// setIsOpen && setIsOpen(true)
 		return (
 			<Modal
 				title="Checkout Information"
 				className="relative flex flex-wrap "
 				confirmText="Checkout"
-				onAccept={() => checkOut(products, Total, formData, selected !== "Cash")}
+				onAccept={() => handleCheckout()}
 			>
 				<div className="relative flex flex-col flex-wrap gap-4 lg:w-3/4">
 					<fieldset className="flex flex-grow  flex-wrap gap-4">

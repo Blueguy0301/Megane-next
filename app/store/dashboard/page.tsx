@@ -31,7 +31,6 @@ const getData = async (storeId: any) => {
 			},
 		},
 	})
-
 	return storeInfo
 }
 export default async function page() {
@@ -42,7 +41,7 @@ export default async function page() {
 	const total = data.Invoices.map((t) => t.total).reduce((a, b) => a + b, 0)
 	const Installments = data.Installments.map((t) => t.total).reduce((a, b) => a + b, 0)
 	return (
-		<div className="page flex-row flex-wrap items-center gap-10  p-10">
+		<div className="page dashboard flex-row flex-wrap items-center gap-10  p-10">
 			<div className="flex w-full flex-row flex-wrap gap-10">
 				<Card className="flex flex-col flex-wrap gap-10 p-3">
 					<div className="flex flex-row flex-wrap justify-start gap-10">
@@ -86,20 +85,36 @@ export default async function page() {
 					<CardInfo
 						className="side"
 						src="/products.svg"
-						alt=""
+						alt="products"
 						title="No. of Products"
 						value={data._count.productStore}
 					/>
 					{session.user.authorityId >= authority.admin && (
-						<Button type="Link" href="/admin">
+						<Button type="Link" href="/admin" className="text-center">
 							Admin Panel
 						</Button>
 					)}
 				</Card>
+				<Card className="flex flex-wrap gap-4 p-3">
+					<h2 className="w-full">History</h2>
+					<div className="flex w-full flex-wrap items-center justify-evenly gap-4">
+						<Button
+							type="Link"
+							href="/store/history/invoice"
+							className="flex-grow text-center md:flex-grow-0"
+						>
+							Invoice History
+						</Button>
+						<Button
+							type="Link"
+							href="/store/history/installment"
+							className="flex-grow text-center md:flex-grow-0"
+						>
+							Credit List
+						</Button>
+					</div>
+				</Card>
 			</div>
-			<Card className="h-[450px] w-full">
-				<h1>test</h1>
-			</Card>
 		</div>
 	)
 }

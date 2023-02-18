@@ -3,7 +3,7 @@
 ///todo : refetch data when mounted
 import TablePagination from "@components/TablePagination"
 import { ChangeEvent, useState } from "react"
-import searchProducts from "./productSearch"
+// import searchProducts from "./productSearch"
 import type { Session } from "next-auth"
 import Button from "@components/Button"
 import Image from "next/image"
@@ -31,7 +31,7 @@ function Table({ data, session }: props) {
 	const [selected, setSelected] = useState<string[]>([])
 	const shownProduct = useMemo(() => {
 		if (search === "") return product
-		else return searchProducts(search, product) as data[]
+		return product
 	}, [search])
 	const selectAll = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.checked) setSelected(product.map((d) => d.id))
