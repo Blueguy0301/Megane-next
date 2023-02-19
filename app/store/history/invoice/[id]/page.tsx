@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 import prisma from "@api/db"
 import { convertDate } from "@components/dateformat"
 import { notFound } from "next/navigation"
+import Link from "next/link"
 async function getData(params: string) {
 	const data = await prisma.invoice
 		.findFirst({
@@ -12,6 +13,7 @@ async function getData(params: string) {
 			select: {
 				dateTime: true,
 				total: true,
+				installmentId: true,
 				InvoicePurchases: {
 					select: {
 						quantity: true,
@@ -26,9 +28,7 @@ async function getData(params: string) {
 					},
 				},
 				Installment: {
-					select: {
-						customerName: true,
-					},
+					select: { customerName: true },
 				},
 			},
 		})
@@ -44,7 +44,13 @@ const page = async ({ params }: { params: { id: string } }) => {
 	return (
 		<div className="page flex-col gap-3 p-4">
 			<h3>Purchase History</h3>
-			<p>Buyer : {data?.Installment?.customerName ?? "Unknown"}</p>
+			{data.installmentId ? (
+				<Link href={`/store/history/installment/${data.installmentId}`}>
+					<p> Buyer : {data.Installment?.customerName}</p>
+				</Link>
+			) : (
+				<p> Buyer : Unknown</p>
+			)}
 			<p>Total : {data?.total}</p>
 			<p>Date Purchased : {convertDate(data?.dateTime as string)} </p>
 			<div className="flex flex-col">

@@ -36,7 +36,7 @@ const NavbarClient = () => {
 
 	return (
 		<>
-			<div className="mr-auto flex flex-row items-center gap-4 p-4">
+			<div className="mr-auto flex select-none flex-row items-center gap-4 p-4">
 				<Image src="/Logo.png" alt="Logo" width={90} height={64} decoding="sync" />
 				<h3>Megane</h3>
 			</div>
@@ -44,13 +44,13 @@ const NavbarClient = () => {
 			{navOptions && (
 				<div className="search-bar">
 					<input type="search" name="s" id="search" />
-					<button type="submit" onClick={handleClick} className="search-btn">
+					<button type="submit" onClick={handleClick} className="search-btn select-none">
 						<Image src="/search.svg" alt="Logo" width={30} height={30} />
 					</button>
 				</div>
 			)}
 			{/* navigation */}
-			<div className="btn-group ">
+			<div className="btn-group select-none">
 				{isShown && (
 					<div className="dropdown absolute">
 						{modalOptions && (
@@ -90,7 +90,7 @@ const NavbarClient = () => {
 				</button>
 			</div>
 			{/* theme */}
-			<div className="theme">
+			<div className="theme select-none">
 				<button type="button">
 					<Image src="/light.svg" height={30} width={30} alt="theme switch" />
 				</button>

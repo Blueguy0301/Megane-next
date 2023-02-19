@@ -8,5 +8,5 @@ export const options: Intl.DateTimeFormatOptions = {
     minute: "2-digit",
     timeZone: userTimeZone, // Use user's preferred time zone
 }
-export const convertDate = (date: string) => new Date(date)
+export const convertDate = (date: string | Date) => new Date(date)
     .toLocaleString("en-US", options).replace(/ /g, "\u202f")

@@ -17,6 +17,7 @@ async function getData() {
 						customerName: true,
 					},
 				},
+				installmentId: true,
 			},
 		})
 		.then((invoices) =>
