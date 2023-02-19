@@ -124,7 +124,7 @@ function Table({ data, session }: props) {
 						<tbody>
 							{shownProduct.map((invoice, a) => (
 								<tr
-									className="cursor-pointer border-b transition duration-300 ease-in-out hover:bg-gray-600"
+									className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
 									key={a}
 								>
 									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-white">

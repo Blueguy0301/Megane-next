@@ -43,7 +43,7 @@ const page = async ({ params }: { params: { id: string } }) => {
 	if (!data || !data.InvoicePurchases) return notFound()
 	return (
 		<div className="page flex-col gap-3 p-4">
-			<h3>Purchase History</h3>
+			<h2>Purchase History</h2>
 			{data.installmentId ? (
 				<Link href={`/store/history/installment/${data.installmentId}`} className="w-fit">
 					<p className="underline"> Buyer : {data.Installment?.customerName}</p>
@@ -51,7 +51,7 @@ const page = async ({ params }: { params: { id: string } }) => {
 			) : (
 				<p> Buyer : Unknown</p>
 			)}
-			<p>Total : {data?.total}</p>
+			<p>Total : PHP {data?.total}</p>
 			<p>Date Purchased : {convertDate(data?.dateTime as string)} </p>
 			<h3>Purchases :</h3>
 			<div className="flex flex-col">

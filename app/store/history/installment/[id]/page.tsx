@@ -38,9 +38,9 @@ const page = async ({ params }: { params: { id: string } }) => {
 	else
 		return (
 			<div className="page flex-col gap-3 p-4">
-				<h3>Installment history </h3>
+				<h2>Installment history </h2>
 				<p>User : {data?.customerName}</p>
-				<p>Total Unpaid : {data?.total}</p>
+				<p>Total Unpaid : PHP {data?.total}</p>
 				<h3>Invoice History:</h3>
 				<Table data={data.Invoice} />
 			</div>

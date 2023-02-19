@@ -2,26 +2,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Fonts : Libre Franklin, Inter and source sans pro */
 :root {
 	--nav-size: 64px;
 }
 h1 {
-	@apply text-2xl text-white;
+	@apply text-3xl;
+	color: white;
 	font-family: "Inter";
 	font-style: normal;
+	font-weight: 600;
 }
 h2 {
-	font-size: 1.5rem;
+	@apply text-2xl;
 	color: white;
+	font-family: "Libre Franklin";
+	font-weight: 400;
+}
+h3 {
+	@apply text-xl;
+	color: white;
+	font-weight: 300;
+}
+h4 {
+	@apply text-lg;
+	color: white;
+	font-weight: 200;
 }
 p {
-	@apply text-white;
-	@apply text-lg;
+	font-family: "Source Sans Pro";
+	color: white;
+	font-weight: 100;
 }
-h3,
+
 .nav-button {
 	@apply text-white;
-	font-family: "Inter";
+	font-family: "Libre Franklin";
 	font-style: normal;
 	font-weight: 400;
 	font-size: 20px;
@@ -126,6 +142,8 @@ h3,
 	@apply text-white;
 	padding: 0.5rem 1rem;
 	max-height: 64px;
+	font-weight: 300;
+	font-family: "Inter";
 }
 
 .dropdown {
@@ -253,10 +271,7 @@ h3.checkout {
 span.checkout {
 	width: 100%;
 }
-span.checkout h4 {
-	min-width: 130px !important	;
-	max-width: 130px !important;
-}
+
 span.checkout h5 {
 	flex-grow: 1;
 	margin: auto;

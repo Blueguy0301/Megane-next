@@ -52,7 +52,7 @@ export default async function page() {
 							title="Unpaid Credits"
 							value={Installments}
 						/>
-						<CardInfo src="/profit.svg" alt="profit" title="profit" value={total} />
+						<CardInfo src="/profit.svg" alt="profit" title="Profit" value={total} />
 					</div>
 					<div className="flex flex-row flex-wrap justify-start gap-10">
 						<CardInfo

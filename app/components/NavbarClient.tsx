@@ -29,10 +29,6 @@ const NavbarClient = () => {
 		setIsShown(!isShown)
 		e.preventDefault()
 	}
-	const handleClick = (e: MouseEvent<HTMLElement>) => {
-		//search
-		e.preventDefault()
-	}
 
 	return (
 		<>
@@ -41,14 +37,7 @@ const NavbarClient = () => {
 				<h3>Megane</h3>
 			</div>
 			{/* search */}
-			{navOptions && (
-				<div className="search-bar">
-					<input type="search" name="s" id="search" />
-					<button type="submit" onClick={handleClick} className="search-btn select-none">
-						<Image src="/search.svg" alt="Logo" width={30} height={30} />
-					</button>
-				</div>
-			)}
+
 			{/* navigation */}
 			<div className="btn-group select-none">
 				{isShown && (
@@ -56,7 +45,7 @@ const NavbarClient = () => {
 						{modalOptions && (
 							<>
 								<Link className="nav-button" href="/store/dashboard">
-									Dashboard
+									Home
 								</Link>
 								<Link className="nav-button" href="/store/inventory">
 									Inventory
@@ -78,7 +67,7 @@ const NavbarClient = () => {
 				{navOptions && (
 					<>
 						<Link className="nav-button" href="/store/dashboard">
-							Dashboard
+							Home
 						</Link>
 						<Link className="nav-button" href="/store/inventory">
 							Inventory

@@ -58,11 +58,13 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 ## To do:
 
-1. ui overhaul (again)
-1. type safety
 1. Logo
 1. optimize addProduct on `/api/product.ts`. It takes 1.5s to create a product
 1. optimize installments on `/api/installment.ts`. It takes 500ms to create,update and delete an installment
 1. seperate server components to client compontents
 1. have page to be a server component by default. ON ALL FILES
 1. change Swal color schemes
+1. Add delete functions on front end.
+1. fix svgs
+1. Button hover efffects
+1. css minify
