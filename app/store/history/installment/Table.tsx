@@ -8,8 +8,6 @@ import Button from "@components/Button"
 import Image from "next/image"
 import { authority } from "@pages/types"
 import { useMemo, useCallback } from "react"
-import { convertDate } from "@components/dateformat"
-import { useRouter } from "next/navigation"
 //todo : add data structure
 interface data {
 	total: number
@@ -22,7 +20,6 @@ interface props {
 	session: Session
 }
 function Table({ data, session }: props) {
-	const router = useRouter()
 	//* memoize this
 	const Invoice = data
 	const [search, setSearch] = useState("")
@@ -57,6 +54,7 @@ function Table({ data, session }: props) {
 						</Button>
 					</>
 				)}
+				<Button type="button">New Installment</Button>
 				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-3 md:ml-auto">
 					<Image
 						src="/search.svg"
@@ -110,14 +108,19 @@ function Table({ data, session }: props) {
 								>
 									Total Unpaid
 								</th>
+								<th
+									scope="col"
+									className="px-6 py-4 text-center text-sm font-medium text-white"
+								>
+									Action
+								</th>
 							</tr>
 						</thead>
 						<tbody>
 							{shownProduct.map((invoice, a) => (
 								<tr
-									className="cursor-pointer border-b transition duration-300 ease-in-out hover:bg-gray-600"
+									className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
 									key={a}
-									onClick={(e) => router.push(`/store/history/installment/${invoice.id}`)}
 								>
 									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-white">
 										<input
@@ -135,6 +138,11 @@ function Table({ data, session }: props) {
 									</td>
 									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
 										{invoice.total}
+									</td>
+									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
+										<Button type="Link" href={`/store/history/installment/${invoice.id}`}>
+											View
+										</Button>
 									</td>
 								</tr>
 							))}

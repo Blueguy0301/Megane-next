@@ -36,7 +36,7 @@ const page = async () => {
 	if (!session) redirect("/login")
 	return (
 		<div className="page flex-col gap-3 p-4">
-			<h3>Invoices</h3>
+			<h3>Installments</h3>
 			<Table data={data} session={session} />
 		</div>
 	)

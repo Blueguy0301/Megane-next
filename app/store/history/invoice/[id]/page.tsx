@@ -45,14 +45,15 @@ const page = async ({ params }: { params: { id: string } }) => {
 		<div className="page flex-col gap-3 p-4">
 			<h3>Purchase History</h3>
 			{data.installmentId ? (
-				<Link href={`/store/history/installment/${data.installmentId}`}>
-					<p> Buyer : {data.Installment?.customerName}</p>
+				<Link href={`/store/history/installment/${data.installmentId}`} className="w-fit">
+					<p className="underline"> Buyer : {data.Installment?.customerName}</p>
 				</Link>
 			) : (
 				<p> Buyer : Unknown</p>
 			)}
 			<p>Total : {data?.total}</p>
 			<p>Date Purchased : {convertDate(data?.dateTime as string)} </p>
+			<h3>Purchases :</h3>
 			<div className="flex flex-col">
 				<div className="max-w-[100%] overflow-auto">
 					<table className="min-w-full  bg-gray-800">

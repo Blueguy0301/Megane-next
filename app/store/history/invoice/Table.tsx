@@ -113,6 +113,12 @@ function Table({ data, session }: props) {
 								>
 									Buyer
 								</th>
+								<th
+									scope="col"
+									className="px-6 py-4 text-center text-sm font-medium text-white "
+								>
+									Action
+								</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -120,7 +126,6 @@ function Table({ data, session }: props) {
 								<tr
 									className="cursor-pointer border-b transition duration-300 ease-in-out hover:bg-gray-600"
 									key={a}
-									onClick={(e) => router.push(`/store/history/invoice/${invoice.id}`)}
 								>
 									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-white">
 										<input
@@ -139,6 +144,16 @@ function Table({ data, session }: props) {
 									</td>
 									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
 										{invoice.Installment}
+									</td>
+									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
+										<Button
+											type="Link"
+											href={`/store/history/invoice/${invoice.id}`}
+											disabled={invoice.id ? false : true}
+											className="disabled:opacity-50"
+										>
+											View
+										</Button>
 									</td>
 								</tr>
 							))}
