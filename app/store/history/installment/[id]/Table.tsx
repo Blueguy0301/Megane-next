@@ -1,6 +1,9 @@
 "use client"
 import { convertDate } from "@components/dateformat"
 import Button from "@components/Button"
+import { deleteInvoice } from "../../request"
+import { deleteFailed, deleteSuccess } from "../../swalModal"
+import { useCallback, useState } from "react"
 type props = {
 	data?: {
 		id: string
@@ -9,8 +12,18 @@ type props = {
 	}[]
 }
 const Table = (props: props) => {
-	const { data } = props
-
+	const { data: initialData } = props
+	const [data, setData] = useState(initialData)
+	const handleDelete = useCallback((id: string) => {
+		return async () => {
+			const res = await deleteInvoice(id)
+			if ("e" in res || "error" in res.data) return
+			if (res.data.success) {
+				setData((prev) => prev?.filter((invoice) => !data?.includes(invoice)))
+				deleteSuccess(res.data.count)
+			} else deleteFailed()
+		}
+	}, [])
 	return (
 		<div className="flex flex-col">
 			<div className="max-w-[100%] overflow-auto">
@@ -65,8 +78,8 @@ const Table = (props: props) => {
 												View
 											</Button>
 											<Button
-												type="Link"
-												href={`/store/history/invoice/${invoice.id}`}
+												type="button"
+												onClick={handleDelete(invoice.id)}
 												className="red"
 											>
 												Delete

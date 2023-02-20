@@ -2,11 +2,11 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { checkOutBody, authority, Invoice, nextFunction } from "../../interface"
 import prisma from "../db"
-import { checkCredentials, testNumber } from "../middleware"
+import { checkCredentials, checkIfValid, testNumber } from "../middleware"
 
 type query = {
 	storeId: string
-	invoiceId: string
+	invoiceId: string | string[]
 }
 export default async function handleCheckout(req: NextApiRequest, res: NextApiResponse) {
 	const verb = req.method
@@ -14,7 +14,7 @@ export default async function handleCheckout(req: NextApiRequest, res: NextApiRe
 	if (!credentials) return
 	if (verb === "POST") return addCheckOut(req, res, credentials)
 	if (verb === "GET") return getCheckOut(req, res, credentials)
-	if (verb === "DELETE") return deleteCheckOut(req, res, credentials)
+	if (verb === "PUT") return deleteCheckOut(req, res, credentials)
 	else return res.status(405).end()
 }
 //todo : if productList is 0, return an error
@@ -117,17 +117,16 @@ const addCheckOut: nextFunction = async (req, res, user) => {
 	if ("error" in invoice) return res.json(invoice)
 	else return res.json({ result: invoice })
 }
+//* not used
 const getCheckOut: nextFunction = async (req, res, user) => {
 	const { invoiceId } = req.query as query
-
 	if (user.authorityId < authority.registered)
 		return res.status(401).json({ error: "invalid credentials" })
-
-	if (testNumber(user.storeId) || testNumber(invoiceId))
+	if (testNumber(user.storeId) || testNumber(invoiceId as string))
 		return res.json({ error: "invalid arguments" })
 	const getCheckOut = await prisma.invoice
 		.findFirst({
-			where: { AND: [{ storeId: BigInt(user.storeId) }, { id: BigInt(invoiceId) }] },
+			where: { AND: [{ storeId: BigInt(user.storeId) }, { id: BigInt(invoiceId as string) }] },
 			include: {
 				InvoicePurchases: {
 					include: {
@@ -167,16 +166,20 @@ const getCheckOut: nextFunction = async (req, res, user) => {
 const deleteCheckOut: nextFunction = async (req, res, user) => {
 	if (user.authorityId < authority.storeOwner)
 		return res.status(401).json({ error: "unauthorized" })
-	const { invoiceId } = req.body as query
-	if (testNumber(user.storeId) || testNumber(invoiceId))
+	if (testNumber(user.storeId))
 		return res.json({ error: "invalid arguments" })
+	let invoiceId = req.body.data
+	if (!checkIfValid(invoiceId)) return res.json({ error: "invalid arguments" })
+	if (!Array.isArray(invoiceId) && !testNumber(invoiceId)) invoiceId = [BigInt(invoiceId)]
+	else invoiceId = invoiceId.map((id: string) => BigInt(id))
 	const deleteCheckOut = await prisma.invoice
-		.delete({
+		.deleteMany({
 			where: {
-				id: BigInt(invoiceId),
+				id: { in: invoiceId }
 			},
 		})
-		.then(() => ({
+		.then((d) => ({
+			count: d.count,
 			success: true,
 		}))
 		.catch((e) => ({ error: e, success: false }))

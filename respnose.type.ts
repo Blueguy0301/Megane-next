@@ -123,6 +123,7 @@ export interface updateCheckout {
 export interface deleteCheckout {
 	error?: string | object
 	success: boolean
+	count?: number | string
 }
 export interface getCheckOut {
 	error?: string | object

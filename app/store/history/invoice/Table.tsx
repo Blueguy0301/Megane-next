@@ -10,8 +10,8 @@ import { authority } from "@pages/types"
 import { useMemo, useCallback } from "react"
 import { convertDate } from "@components/dateformat"
 import searchInvoice from "./invoiceSearch"
-import { useRouter } from "next/navigation"
-//todo : add data structure
+import { deleteInvoice } from "../request"
+import { deleteFailed, deleteSuccess } from "../swalModal"
 interface data {
 	id: string
 	dateTime: string
@@ -23,18 +23,19 @@ interface props {
 	session: Session
 }
 function Table({ data, session }: props) {
-	const router = useRouter()
 	//* memoize this
-	const Invoice = data.map((value) => ({
-		...value,
-		dateTime: convertDate(value.dateTime),
-	}))
+	const [Invoice, setInvoice] = useState(
+		data.map((value) => ({
+			...value,
+			dateTime: convertDate(value.dateTime),
+		}))
+	)
 	const [search, setSearch] = useState("")
 	const [selected, setSelected] = useState<string[]>([])
 	const shownProduct = useMemo(() => {
 		if (search === "") return Invoice
 		else return searchInvoice(search, Invoice) as data[]
-	}, [search])
+	}, [search, Invoice])
 	const selectAll = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.checked) setSelected(Invoice.map((d) => d.id))
 		else setSelected([])
@@ -45,6 +46,15 @@ function Table({ data, session }: props) {
 			else setSelected((prev) => prev.filter((prevId) => prevId !== id))
 		}
 	}, [])
+	const handleDelete = async () => {
+		const res = await deleteInvoice(selected)
+		if ("e" in res || "error" in res.data) return
+		if (res.data.success) {
+			setInvoice((prev) => prev.filter((data) => !selected.includes(data.id)))
+			setSelected([])
+			deleteSuccess(res.data.count)
+		} else deleteFailed()
+	}
 	return (
 		<>
 			<div className="flex w-full flex-row flex-wrap justify-center gap-3 ">
@@ -55,6 +65,8 @@ function Table({ data, session }: props) {
 							type="button"
 							disabled={selected.length <= 0}
 							className="disabled:opacity-50"
+							cs
+							onClick={handleDelete}
 						>
 							Delete Selected
 						</Button>

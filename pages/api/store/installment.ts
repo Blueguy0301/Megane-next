@@ -70,7 +70,7 @@ const deleteInstallment: nextFunction = async (req, res, user) => {
 		})
 	return res.json(addInstallment)
 }
-//* tested
+//* not used
 const getInstallment: nextFunction = async (req, res) => {
 	const { id } = req.query as unknown as installments
 	if (testNumber(id)) return res.json({ error: "invalid arguments" })

@@ -223,7 +223,7 @@ h4 {
 	min-width: 150px;
 	max-width: 150px;
 	overflow: hidden;
-	font-weight: bold;
+	/* font-weight: bold; */
 }
 .info h4::after {
 	content: ":";
@@ -240,7 +240,7 @@ h4 {
 	height: calc(100vh - 20rem - var(--nav-size));
 }
 .green {
-	@apply bg-green-500 !important;
+	@apply bg-green-600 !important;
 }
 input[type="radio"][name="PaymentOption"] {
 	display: none;
