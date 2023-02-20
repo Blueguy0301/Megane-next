@@ -5,7 +5,7 @@ A point of sales system made with NextJs, Prisma and CockroachDB.
 ## Features
 
 1. Record products with barcodes or not.
-1. Creates and scans qr codes and barcodes based on EAP15 standards using your smartphone.
+1. Creates and scans qr codes and barcodes based using your smartphone.
 1. Track installments and Invoices.
 
 #### This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
