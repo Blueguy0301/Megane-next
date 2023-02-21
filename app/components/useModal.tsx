@@ -48,7 +48,7 @@ const useModal = (opened = false) => {
 				onClick={(e) => e.stopPropagation()}
 			>
 				<div className="flex-grow">
-					<h2 className="mb-4 text-2xl font-bold">{props.title}</h2>
+					<h2 className="mb-4 text-2xl ">{props.title}</h2>
 					{props.children}
 				</div>
 				<div className=" flex w-full flex-row justify-center gap-3 md:justify-end">

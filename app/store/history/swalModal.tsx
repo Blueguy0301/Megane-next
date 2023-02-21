@@ -27,3 +27,17 @@ export const addSuccess = () => {
 		timerProgressBar: true,
 	})
 }
+
+export const deletePrompt = (text: string) => {
+	return swalModal.fire({
+		title: "Are you sure?",
+		text,
+		icon: "warning",
+		showCancelButton: true,
+		customClass: {
+			cancelButton: "red",
+			confirmButton: "green",
+			popup: "swal-popup",
+		},
+	})
+}

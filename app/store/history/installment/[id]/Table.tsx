@@ -2,7 +2,7 @@
 import { convertDate } from "@components/dateformat"
 import Button from "@components/Button"
 import { deleteInvoice } from "../../request"
-import { deleteFailed, deleteSuccess } from "../../swalModal"
+import { deleteFailed, deletePrompt, deleteSuccess } from "../../swalModal"
 import { useCallback, useState } from "react"
 type props = {
 	data?: {
@@ -16,6 +16,9 @@ const Table = (props: props) => {
 	const [data, setData] = useState(initialData)
 	const handleDelete = useCallback((id: string) => {
 		return async () => {
+			const modalRes = await deletePrompt("Delete this invoice?")
+			console.log(modalRes)
+			if (!modalRes.isConfirmed) return
 			const res = await deleteInvoice(id)
 			if ("e" in res || "error" in res.data) return
 			if (res.data.success) {

@@ -21,11 +21,6 @@ const page = async () => {
 					Login
 				</Button>
 			)}
-			<h1>Lorem ipsum dolor sit amet.</h1>
-			<h2>Lorem ipsum dolor sit amet.</h2>
-			<h3>Lorem ipsum dolor sit amet.</h3>
-			<h4>Lorem ipsum dolor sit amet.</h4>
-			<p>Lorem ipsum dolor sit amet.</p>
 		</div>
 	)
 }

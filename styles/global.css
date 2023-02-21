@@ -289,3 +289,6 @@ span.checkout h5 {
 .dashboard {
 	/* max-height: calc(100vh - var(--nav-size)); */
 }
+.swal-popup {
+	@apply bg-slate-700 text-white !important;
+}

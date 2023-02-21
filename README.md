@@ -69,3 +69,4 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 1. Button hover efffects
 1. css minify
 1. Qr code on generate barcode.
+1. Add extra charge on checkout

@@ -3,38 +3,34 @@
 ///todo : refetch data when mounted
 import TablePagination from "@components/TablePagination"
 import { ChangeEvent, useState } from "react"
-import type { Session } from "next-auth"
 import Button from "@components/Button"
 import Image from "next/image"
-import { authority } from "@pages/types"
 import { useMemo, useCallback } from "react"
-import useModal from "@components/useModal"
-import ModalForms from "./ModalForms"
-//todo : add data structure
+
 interface data {
-	total: number
-	customerName: string
-	InvoiceCount: number
 	id: string
+	name: string
+	_count: {
+		Installments: number
+		Invoices: number
+		productStore: number
+		users: number
+	}
 }
 interface props {
 	data: data[]
-	session: Session
 }
-function Table({ data, session }: props) {
+function Table({ data }: props) {
 	//* memoize this
-	const Invoice = data
-	const { Modal, Open } = useModal()
+	const [Stores, setStores] = useState(data)
 	const [search, setSearch] = useState("")
 	const [selected, setSelected] = useState<string[]>([])
-	const [modalOpened, setModalOpened] = useState("")
-	const shownProduct = useMemo(() => {
-		if (search === "") return Invoice
+	const shownStores = useMemo(() => {
+		if (search === "") return Stores
 		// else return searchInvoice(search, Invoice) as data[]
-		return Invoice
-	}, [search])
+	}, [search, Stores])
 	const selectAll = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-		if (e.target.checked) setSelected(Invoice.map((d) => d.id))
+		if (e.target.checked) setSelected(Stores.map((d) => d.id))
 		else setSelected([])
 	}, [])
 	const select = useCallback((id: string) => {
@@ -43,24 +39,12 @@ function Table({ data, session }: props) {
 			else setSelected((prev) => prev.filter((prevId) => prevId !== id))
 		}
 	}, [])
+	const handleDelete = async () => {}
 	return (
 		<>
-			<div className="flex w-full flex-row flex-wrap justify-center gap-3 ">
-				{session?.user.authorityId >= authority.storeOwner && (
-					<>
-						{/* todo: disable this button if nothing is selected. */}
-						<Button
-							type="button"
-							disabled={selected.length <= 0}
-							className="disabled:opacity-50"
-						>
-							Delete Selected
-						</Button>
-					</>
-				)}
-				{/* todo: seperate this.  */}
-				<ModalForms modal={Modal} modalOpened={modalOpened} />
-				<Open onClick={() => setModalOpened("add")}>New Installment</Open>
+			<div className="flex w-full flex-row flex-wrap items-center justify-center gap-3  ">
+				<Button className="green">New Store</Button>
+				<Button className="red">Delete Selected</Button>
 				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-3 md:ml-auto">
 					<Image
 						src="/search.svg"
@@ -98,32 +82,38 @@ function Table({ data, session }: props) {
 								</th>
 								<th
 									scope="col"
+									className="px-6 py-4 text-center text-sm font-medium text-white"
+								>
+									Store Name
+								</th>
+								<th
+									scope="col"
+									className="px-6 py-4 text-center text-sm font-medium text-white"
+								>
+									Total Users
+								</th>
+								<th
+									scope="col"
 									className="px-6 py-4 text-center text-sm font-medium text-white "
 								>
-									Buyer
+									Products Registered
 								</th>
 								<th
 									scope="col"
-									className="px-6 py-4 text-center text-sm font-medium text-white"
+									className="px-6 py-4 text-center text-sm font-medium text-white "
 								>
-									Invoices
+									Total Invoices
 								</th>
 								<th
 									scope="col"
-									className="px-6 py-4 text-center text-sm font-medium text-white"
-								>
-									Unpaid
-								</th>
-								<th
-									scope="col"
-									className="px-6 py-4 text-center text-sm font-medium text-white"
+									className="px-6 py-4 text-center text-sm font-medium text-white "
 								>
 									Action
 								</th>
 							</tr>
 						</thead>
 						<tbody>
-							{shownProduct.map((invoice, a) => (
+							{shownStores?.map((store, a) => (
 								<tr
 									className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
 									key={a}
@@ -132,26 +122,27 @@ function Table({ data, session }: props) {
 										<input
 											type="checkbox"
 											name="selected"
-											onChange={select(invoice.id)}
-											checked={selected.includes(invoice.id)}
+											onChange={select(store.id)}
+											checked={selected.includes(store.id)}
 										/>
 									</td>
 									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
-										{invoice.customerName}
+										{store.name}
+									</td>
+
+									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
+										{store._count.users}
 									</td>
 									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
-										{invoice.InvoiceCount}
+										{store._count.productStore}
 									</td>
 									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
-										{invoice.total}
+										{store._count.Invoices}
 									</td>
-									<td className="flex items-center justify-center gap-4 whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
-										<Button type="Link" href={`/store/history/installment/${invoice.id}`}>
-											View
+									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
+										<Button type="button" className="green">
+											New User
 										</Button>
-										<Open onClick={() => setModalOpened("update")} className="green">
-											Update
-										</Open>
 									</td>
 								</tr>
 							))}
@@ -160,8 +151,8 @@ function Table({ data, session }: props) {
 				</div>
 			</div>
 			<TablePagination
-				shown={Invoice.length}
-				current={50 > Invoice.length ? 1 : Invoice.length - 49}
+				shown={Stores.length}
+				current={50 > Stores.length ? 1 : Stores.length - 49}
 			/>
 		</>
 	)
