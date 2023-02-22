@@ -57,14 +57,14 @@ function Table({ data, session }: props) {
 	}
 	return (
 		<>
-			<div className="flex w-full flex-row flex-wrap justify-center gap-3 ">
+			<div className="flex w-full flex-row flex-wrap items-center justify-center  gap-3">
 				{session?.user.authorityId >= authority.storeOwner && (
 					<>
 						{/* todo: disable this button if nothing is selected. */}
 						<Button
 							type="button"
 							disabled={selected.length <= 0}
-							className="disabled:opacity-50"
+							className="red disabled:opacity-50"
 							cs
 							onClick={handleDelete}
 						>

@@ -46,7 +46,7 @@ function Table({ data, session }: props) {
 	// use the memo hook here.
 	return (
 		<>
-			<div className="flex w-full flex-row flex-wrap justify-center gap-3 ">
+			<div className="flex w-full flex-row flex-wrap items-center justify-center gap-3 ">
 				{session?.user.authorityId >= authority.storeOwner && (
 					<>
 						<Button
@@ -56,10 +56,20 @@ function Table({ data, session }: props) {
 						>
 							Add Product
 						</Button>
-						{/* todo: disable this button if nothing is selected. */}
-						<Button type="button">Delete Selected</Button>
-						{/* todo: disable this button if there is more than one selected */}
-						<Button type="button">Update Existsing</Button>
+						<Button
+							type="button"
+							className=" red disabled:opacity-50"
+							disabled={selected.length < 1}
+						>
+							Delete Selected
+						</Button>
+						<Button
+							type="button"
+							className="green disabled:opacity-50"
+							disabled={selected.length !== 1}
+						>
+							Update Existsing
+						</Button>
 					</>
 				)}
 				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-3 md:ml-auto">

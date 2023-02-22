@@ -76,7 +76,7 @@ const Table = (props: props) => {
 										<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light  text-white">
 											PHP {invoice.total}
 										</td>
-										<td className="flex justify-center gap-4 whitespace-nowrap px-6 py-4">
+										<td className="flex items-center justify-center gap-4 whitespace-nowrap px-6 py-4">
 											<Button type="Link" href={`/store/history/invoice/${invoice.id}`}>
 												View
 											</Button>

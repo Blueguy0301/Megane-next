@@ -10,7 +10,6 @@ import { authority } from "@pages/types"
 import { useMemo, useCallback } from "react"
 import useModal from "@components/useModal"
 import ModalForms from "./ModalForms"
-//todo : add data structure
 interface data {
 	total: number
 	customerName: string
@@ -21,20 +20,24 @@ interface props {
 	data: data[]
 	session: Session
 }
+type forms = {
+	name: string
+	amount: number
+}
 function Table({ data, session }: props) {
 	//* memoize this
-	const Invoice = data
-	const { Modal, Open } = useModal()
+	const installments = data
+	const { Modal, Open, isOpen } = useModal()
 	const [search, setSearch] = useState("")
 	const [selected, setSelected] = useState<string[]>([])
 	const [modalOpened, setModalOpened] = useState("")
 	const shownProduct = useMemo(() => {
-		if (search === "") return Invoice
+		if (search === "") return installments
 		// else return searchInvoice(search, Invoice) as data[]
-		return Invoice
+		return installments
 	}, [search])
 	const selectAll = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-		if (e.target.checked) setSelected(Invoice.map((d) => d.id))
+		if (e.target.checked) setSelected(installments.map((d) => d.id))
 		else setSelected([])
 	}, [])
 	const select = useCallback((id: string) => {
@@ -43,31 +46,32 @@ function Table({ data, session }: props) {
 			else setSelected((prev) => prev.filter((prevId) => prevId !== id))
 		}
 	}, [])
+
 	return (
 		<>
-			<div className="flex w-full flex-row flex-wrap justify-center gap-3 ">
+			<div className="flex w-full flex-row flex-wrap items-center justify-center gap-3">
 				{session?.user.authorityId >= authority.storeOwner && (
 					<>
-						{/* todo: disable this button if nothing is selected. */}
 						<Button
 							type="button"
 							disabled={selected.length <= 0}
-							className="disabled:opacity-50"
+							className="red disabled:opacity-50"
 						>
 							Delete Selected
 						</Button>
 					</>
 				)}
-				{/* todo: seperate this.  */}
-				<ModalForms modal={Modal} modalOpened={modalOpened} />
-				<Open onClick={() => setModalOpened("add")}>New Installment</Open>
+				<ModalForms modal={Modal} modalOpened={modalOpened} isOpen={isOpen} />
+				<Open onClick={() => setModalOpened("add")} className="green">
+					New Installment
+				</Open>
 				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-3 md:ml-auto">
 					<Image
 						src="/search.svg"
 						width="27"
 						height="27"
 						decoding="async"
-						alt=""
+						alt="Search"
 						className="mr-3"
 					/>
 					<input
@@ -160,8 +164,8 @@ function Table({ data, session }: props) {
 				</div>
 			</div>
 			<TablePagination
-				shown={Invoice.length}
-				current={50 > Invoice.length ? 1 : Invoice.length - 49}
+				shown={installments.length}
+				current={50 > installments.length ? 1 : installments.length - 49}
 			/>
 		</>
 	)
