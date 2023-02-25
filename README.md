@@ -64,7 +64,7 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 1. seperate server components to client compontents
 1. have page to be a server component by default. ON ALL FILES
 1. change Swal color schemes
-1. Add delete functions on front end.
+1. Connect delete and update buttons to api
 1. fix svgs
 1. Button hover efffects
 1. css minify

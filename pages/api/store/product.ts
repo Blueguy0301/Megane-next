@@ -20,8 +20,8 @@ export default async function handleProducts(req: NextApiRequest, res: NextApiRe
 	if (verb === "POST") return addProduct(req, res, credentials, isStoreNew)
 	if (verb === "PUT" && onlyStore) return updateProductStore(req, res, credentials)
 	if (verb === "PUT") return updateProduct(req, res, credentials)
-	if (verb === "DELETE" && onlyStore) return deleteProductStore(req, res, credentials)
-	if (verb === "DELETE") return deleteProduct(req, res, credentials)
+	if (verb === "PATCH" && onlyStore) return deleteProductStore(req, res, credentials)
+	if (verb === "PATCH") return deleteProduct(req, res, credentials)
 	else return res.status(405).end()
 }
 //* test pass 2/2

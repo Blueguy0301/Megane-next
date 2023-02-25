@@ -5,7 +5,9 @@ import axios, { AxiosError, AxiosResponse } from "axios"
 type checkOut = InvoicePurchase | InvoicePurchase[]
 type formData = {
 	name?: string
-	amount: number | undefined
+	amount?: number
+	barcode?: string
+
 }
 export const scannerRequest = async (code: string, controller: AbortController) => {
 	if (!(code.length >= minCodeLength))

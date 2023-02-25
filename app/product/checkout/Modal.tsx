@@ -1,30 +1,35 @@
 "use client"
-import type { ChangeEvent, Dispatch, SetStateAction } from "react"
+import type { ChangeEvent, Dispatch, SetStateAction, MutableRefObject } from "react"
 import type { checkoutProducts, modal } from "@app/types"
-import type { addCheckout } from "@responses"
-import { useState } from "react"
-import { checkOut } from "./request"
+import type { addCheckout, storeProductScanner } from "@responses"
+import { useState, useEffect } from "react"
+import { checkOut, scannerRequest } from "./request"
 import { errorModal, successModal } from "./swalModals"
+import { minCodeLength } from "@pages/types"
 type formData = {
 	name?: string
-	amount: number | undefined
+	amount?: number
+	barcode: string
 }
 type Props = {
 	Modal: modal
 	Total: number
 	modalOpened?: string
 	barcode: string
-	setBarcode: any
-	error: { error?: string }
+	setBarcode: Dispatch<SetStateAction<string>>
 	products: [checkoutProducts[], Dispatch<SetStateAction<checkoutProducts[]>>]
+	quantity: number
+	audio: MutableRefObject<HTMLAudioElement | undefined>
+	setIsOpen: Dispatch<SetStateAction<boolean>>
 }
 const Modal = (props: Props) => {
-	const { Modal, Total, modalOpened, barcode, setBarcode, error } = props
+	const { Modal, Total, modalOpened, barcode, quantity, audio } = props
 	const [products, setProducts] = props.products
 	const [selected, setSelected] = useState("Cash")
 	const [formData, setFormData] = useState<formData>({
 		name: "",
 		amount: 0,
+		barcode: barcode,
 	})
 	const handleCheckout = async () => {
 		const res = await checkOut(products, Total, formData, selected !== "Cash")
@@ -37,8 +42,47 @@ const Modal = (props: Props) => {
 		}
 		return
 	}
+	const [error, setError] = useState<{ error: any }>({ error: "" })
+	const scannerController = new AbortController()
+	const fetchData = async () => {
+		const response = await scannerRequest(formData.barcode, scannerController)
+		console.log("response", response)
+		if ("e" in response) return
+		const { data } = response
+		if ("error" in data) return setError({ error: error })
+		const { result, error: serverError } = response.data as storeProductScanner
+		if (serverError) return setError({ error: serverError })
+		if (!result || Object.keys(result).length === 0)
+			return setError({ error: "No product found" })
+		const { name, mass, price, productStoreId } = result
+		audio.current?.play()
+		setProducts((prev) => {
+			const existingProductIndex = prev.findIndex(
+				(v) => v.productStoreId === productStoreId
+			)
+			if (existingProductIndex >= 0) {
+				return prev.map((v, i) => {
+					if (i === existingProductIndex) {
+						return { ...v, quantity: v.quantity + quantity }
+					}
+					return v
+				})
+			}
+			return [...prev, { name, price, productStoreId, mass, quantity }]
+		})
+		props.setBarcode("")
+		props.setIsOpen(false)
+	}
+	useEffect(() => {
+		console.log("dan")
+		setError({ error: "" })
+		if (formData.barcode.length >= minCodeLength) fetchData()
+		return () => {
+			scannerController.abort()
+		}
+	}, [formData.barcode])
 	const handleFormData = (name: string) => {
-		return (e: ChangeEvent<HTMLInputElement>) => {
+		return async (e: ChangeEvent<HTMLInputElement>) => {
 			const { value } = e.target
 			setFormData((prev) => {
 				if (name === "name") {
@@ -48,12 +92,14 @@ const Modal = (props: Props) => {
 					const number: number = e.target.valueAsNumber
 					return { ...prev, amount: number }
 				}
+				if (name === "barcode") {
+					return { ...prev, barcode: value }
+				}
 				return prev
 			})
 		}
 	}
 	if (modalOpened === "Manual Add") {
-		// setIsOpen && setIsOpen(true)
 		return (
 			<Modal
 				title="Manual Add"
@@ -67,12 +113,9 @@ const Modal = (props: Props) => {
 						<div className="flex flex-grow items-center justify-center gap-4">
 							<input
 								type="text"
-								name="code"
-								id="code"
-								value={barcode === "none" ? "" : barcode}
-								onChange={(e) => setBarcode(e.target.value)}
-								autoFocus
-								className="w-full"
+								id="CustomerName"
+								name="name"
+								onChange={handleFormData("barcode")}
 							/>
 						</div>
 						<p className=" w-full text-center font-semibold text-red-500">

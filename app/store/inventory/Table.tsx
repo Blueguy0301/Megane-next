@@ -9,6 +9,9 @@ import Button from "@components/Button"
 import Image from "next/image"
 import { authority } from "@pages/types"
 import { useMemo, useCallback } from "react"
+import { remove } from "./requst"
+import useModal from "@components/useModal"
+import UpdateModal from "./UpdateModal"
 interface data {
 	Location: string
 	price: number
@@ -43,9 +46,11 @@ function Table({ data, session }: props) {
 			else setSelected((prev) => prev.filter((prevId) => prevId !== id))
 		}
 	}, [])
+	const { Open, Modal, isOpen, setIsOpen } = useModal()
 	// use the memo hook here.
 	return (
 		<>
+			<UpdateModal Modal={Modal} isOpen={isOpen} setIsOpen={setIsOpen} />
 			<div className="flex w-full flex-row flex-wrap items-center justify-center gap-3 ">
 				{session?.user.authorityId >= authority.storeOwner && (
 					<>
@@ -57,19 +62,19 @@ function Table({ data, session }: props) {
 							Add Product
 						</Button>
 						<Button
-							type="button"
 							className=" red disabled:opacity-50"
 							disabled={selected.length < 1}
+							onClick={remove}
 						>
 							Delete Selected
 						</Button>
-						<Button
+						<Open
 							type="button"
 							className="green disabled:opacity-50"
 							disabled={selected.length !== 1}
 						>
 							Update Existsing
-						</Button>
+						</Open>
 					</>
 				)}
 				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-3 md:ml-auto">

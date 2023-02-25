@@ -8,29 +8,37 @@ type Props = {
 	children: ReactNode
 	onAccept?: MouseEventHandler
 	confirmText?: string | number
-	[x: string]: any
 	hideConfirm?: boolean
+	buttonSettings?: { [x: string]: any }
+	[x: string]: any
 }
 
 const useModal = (opened = false) => {
 	const [isOpen, setIsOpen] = useState(opened)
 	const handleClick = () => setIsOpen(!isOpen)
-	const Open = (props: {
+	const Open = ({
+		onClick,
+		className,
+		children,
+		...rest
+	}: {
 		className?: string
 		onClick?: MouseEventHandler
 		children: ReactNode
+		[x: string]: any
 	}) => (
 		<Button
 			onClick={(e) => {
 				e.preventDefault()
 				setIsOpen(!isOpen)
-				if (props.onClick) {
-					props.onClick(e)
+				if (onClick) {
+					onClick(e)
 				}
 			}}
-			className={props.className ?? ""}
+			className={className ?? ""}
+			{...rest}
 		>
-			{props.children}
+			{children}
 		</Button>
 	)
 
@@ -42,13 +50,13 @@ const useModal = (opened = false) => {
 			onClick={handleClick}
 		>
 			<div
-				className={` max-h-full w-full min-w-0 gap-4 overflow-auto rounded-md bg-slate-700 p-4 md:w-3/5 md:p-5  ${
+				className={` max-h-full w-full min-w-0 gap-4 overflow-auto rounded-md bg-slate-700 p-4 md:w-3/5 md:p-5 ${
 					props.className && props.className
 				}`}
 				onClick={(e) => e.stopPropagation()}
 			>
 				<div className="flex-grow">
-					<h2 className="mb-4 text-2xl ">{props.title}</h2>
+					<h2 className="mb-4  ">{props.title}</h2>
 					{props.children}
 				</div>
 				<div className=" flex w-full flex-row justify-center gap-3 md:justify-end">
@@ -57,8 +65,10 @@ const useModal = (opened = false) => {
 							className="green"
 							onClick={(e) => {
 								if (props.onAccept) props.onAccept(e)
-								handleClick()
+
+								props.buttonSettings?.handleClick ? null : handleClick()
 							}}
+							{...props.buttonSettings}
 						>
 							{props.confirmText ?? "Confirm"}
 						</Button>

@@ -65,7 +65,6 @@ function Table({ data, session }: props) {
 							type="button"
 							disabled={selected.length <= 0}
 							className="red disabled:opacity-50"
-							cs
 							onClick={handleDelete}
 						>
 							Delete Selected

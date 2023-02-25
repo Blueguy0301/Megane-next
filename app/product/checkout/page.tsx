@@ -22,17 +22,16 @@ function page() {
 	)
 	//* memoize this
 	let lastCode = ""
-	const [error, setError] = useState({})
+
 	const scannerController = new AbortController()
 	const fetchData = async () => {
 		const response = await scannerRequest(barcode, scannerController)
 		if ("e" in response) return
 		const { data } = response
-		if ("error" in data) return setError({ error: error })
+		if ("error" in data) return
 		const { result, error: serverError } = response.data as storeProductScanner
-		if (serverError) return setError({ error: serverError })
-		if (!result || Object.keys(result).length === 0)
-			return setError({ error: "No product found" })
+		if (serverError) return
+		if (!result || Object.keys(result).length === 0) return
 		const { name, mass, price, productStoreId } = result
 		audio.current?.play()
 		setProducts((prev) => {
@@ -66,15 +65,12 @@ function page() {
 		}
 	}, [])
 	useEffect(() => {
-		if (barcode !== lastCode && barcode !== "none" && barcode.length >= minCodeLength) {
+		if (barcode !== lastCode && barcode !== "none") {
 			fetchData()
 			lastCode = barcode
 		}
-		setError({})
-		return () => {
-			scannerController.abort()
-		}
-	}, [barcode])
+		return () => scannerController.abort()
+	}, [barcode.length >= minCodeLength])
 	return (
 		<div className="page flex-col-reverse flex-wrap md:flex-row md:flex-nowrap">
 			<ModalForm
@@ -83,8 +79,10 @@ function page() {
 				modalOpened={modalOpened}
 				barcode={barcode}
 				setBarcode={setBarcode}
-				error={error}
 				products={[products, setProducts]}
+				quantity={quantity}
+				setIsOpen={setIsOpen}
+				audio={audio}
 			/>
 			<div className="min-w-1/2 flex flex-grow flex-col p-4 md:max-w-[50%]">
 				<div className="relative flex flex-grow flex-col gap-4 border border-solid border-white p-4">

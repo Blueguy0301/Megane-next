@@ -18,6 +18,7 @@ export type modal = (props: {
 	children: ReactNode
 	onAccept?: MouseEventHandler
 	confirmText?: string | number
+	buttonSettings?: object
 	[x: string]: any
 }) => JSX.Element
 export type addProps = {
