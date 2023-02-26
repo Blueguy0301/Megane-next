@@ -12,6 +12,7 @@ import { convertDate } from "@components/dateformat"
 import searchInvoice from "./invoiceSearch"
 import { deleteInvoice } from "../request"
 import { deleteFailed, deleteSuccess } from "../swalModal"
+import { warning } from "@components/crudModals"
 interface data {
 	id: string
 	dateTime: string
@@ -47,6 +48,9 @@ function Table({ data, session }: props) {
 		}
 	}, [])
 	const handleDelete = async () => {
+		//! DO NOT ENABLE UNTIL YOU ADD A RECONFIRM
+		const warningRes = await warning()
+		if (!warningRes.isConfirmed) return
 		const res = await deleteInvoice(selected)
 		if ("e" in res || "error" in res.data) return
 		if (res.data.success) {

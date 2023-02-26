@@ -8,7 +8,7 @@ type props = {
 	data?: {
 		id: string
 		total: number
-		dateTime: Date
+		dateTime: string
 	}[]
 }
 const Table = (props: props) => {
@@ -17,7 +17,6 @@ const Table = (props: props) => {
 	const handleDelete = useCallback((id: string) => {
 		return async () => {
 			const modalRes = await deletePrompt("Delete this invoice?")
-			console.log(modalRes)
 			if (!modalRes.isConfirmed) return
 			const res = await deleteInvoice(id)
 			if ("e" in res || "error" in res.data) return

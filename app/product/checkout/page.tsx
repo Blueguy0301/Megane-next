@@ -1,3 +1,5 @@
+// Todo : refactor.
+
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 import type { checkoutProducts } from "@app/types"

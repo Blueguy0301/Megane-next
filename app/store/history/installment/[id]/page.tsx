@@ -1,10 +1,10 @@
 import { authOptions } from "@api/auth/[...nextauth]"
 import { getServerSession } from "next-auth"
 import prisma from "@api/db"
-
 import { notFound } from "next/navigation"
 import Table from "./Table"
 import Button from "@components/Button"
+import UserInfo from "./UserInfo"
 async function getData(params: string) {
 	const data = await prisma.installments
 		.findFirst({
@@ -27,7 +27,11 @@ async function getData(params: string) {
 		.then((d) => ({
 			customerName: d?.customerName,
 			total: d?.total,
-			Invoice: d?.Invoice.map((i) => ({ ...i, id: i.id.toString() })),
+			Invoice: d?.Invoice.map((i) => ({
+				...i,
+				id: i.id.toString(),
+				dateTime: i.dateTime.toISOString(),
+			})),
 		}))
 	return data
 }
@@ -39,17 +43,7 @@ const page = async ({ params }: { params: { id: string } }) => {
 	else
 		return (
 			<div className="page flex-col gap-3 p-4">
-				<h2>Installment history </h2>
-				<div className="flex flex-row items-start justify-center">
-					<div className="">
-						<p>User : {data?.customerName}</p>
-						<p>Total Unpaid : PHP {data?.total}</p>
-					</div>
-					<Button type="button" className="green ml-auto">
-						Update
-					</Button>
-				</div>
-				<h3>Invoice History:</h3>
+				<UserInfo data={data} id={params.id} />
 				<Table data={data.Invoice} />
 			</div>
 		)

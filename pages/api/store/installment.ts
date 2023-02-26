@@ -18,7 +18,7 @@ export default async function handleInstallments(
 	if (verb === "GET") return getInstallment(req, res, credentials)
 	if (verb === "POST") return addInstallment(req, res, credentials)
 	if (verb === "PUT") return updateInstallment(req, res, credentials)
-	if (verb === "DELETE") return deleteInstallment(req, res, credentials)
+	if (verb === "PATCH") return deleteInstallment(req, res, credentials)
 	else return res.status(405).end()
 }
 //* tested
@@ -59,10 +59,13 @@ const addInstallment: nextFunction = async (req, res, user) => {
 }
 //* tested
 const deleteInstallment: nextFunction = async (req, res, user) => {
-	const { id } = req.body as installments
-	if (testNumber(id)) return res.json({ error: "invalid arguments" })
+	const installments = req.body as installments | installments[]
+	let id
+	if (!checkIfValid(installments)) return res.json({ error: "invalid arguments" })
+	if (Array.isArray(installments)) id = installments.map(installment => BigInt(installment.id))
+	else id = [BigInt(installments.id)]
 	const addInstallment = await prisma.installments
-		.delete({ where: { id: BigInt(id) } })
+		.deleteMany({ where: { id: { in: id } } })
 		.then(() => ({ success: true }))
 		.catch((e) => {
 			console.log("error @ installment.ts:65\n", e)
@@ -112,7 +115,7 @@ const updateInstallment: nextFunction = async (req, res, user, installmentId) =>
 			id: d.id.toString(),
 		}))
 		.catch((e) => {
-			console.log("error in installment.ts:109 \n", e)
+			console.log("error in installment.ts:118 \n", e)
 			return { error: e }
 		})
 	if ("error" in updateInstallment) return res.json(updateInstallment)

@@ -27,7 +27,6 @@ async function getData() {
 				id: invoice.id.toString(),
 			}))
 		)
-	console.log(data)
 	return data
 }
 const page = async () => {
