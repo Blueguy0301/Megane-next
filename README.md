@@ -5,8 +5,18 @@ A point of sales system made with NextJs, Prisma and CockroachDB.
 ## Features
 
 1. Record products with barcodes or not.
-1. Creates and scans qr codes and barcodes based using your smartphone.
+1. Creates and scans QR codes and barcodes using your smartphone.
 1. Track installments and Invoices.
+
+## Goals :
+
+### 1. Creates a database of products that is easily accessible.
+
+- I saw that using an api barcode databases are not free and if they are, they have a limited bandwidth.
+
+### 2. Learning next js
+
+- Well this is self explanatory. Since I want to learn Next and what's so special about it, I tried making an app and possibly switch to it if I came to love it.
 
 #### This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
@@ -20,10 +30,9 @@ npm run dev
 yarn dev
 ```
 
-## About the cert folder
+## About the project:
 
-The `cert` folder have the ip address certificate for a secure cert (mkcert used).
-you can create your own or used the one provided.
+I am using this project to learn more about Nextjs and how SSR and ISR works. This is my first time overall to using the next environment.
 
 ## Starting the server
 
@@ -46,16 +55,6 @@ The API uses the following libraries :
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-## User Previlages
-
-1 : User is a guest
-
-2 : User is registered
-
-3 : User is a store Owner
-
-4 : User is an admin
-
 ## To do:
 
 1. Logo
@@ -70,3 +69,4 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 1. css minify
 1. Qr code on generate barcode.
 1. Add extra charge on checkout
+1. update and delete selected on `/store/inventory`
