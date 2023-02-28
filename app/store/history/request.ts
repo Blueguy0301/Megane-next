@@ -1,4 +1,4 @@
-import { deleteCheckout } from "@responses"
+import { deleteCheckout } from "../../../response.type"
 import axios from "axios"
 
 export const deleteInvoice = async (data: string[] | string,) => {

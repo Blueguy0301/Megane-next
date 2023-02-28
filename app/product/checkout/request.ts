@@ -1,6 +1,6 @@
 
 import { checkOutBody, InvoicePurchase, minCodeLength } from "@pages/types"
-import { storeProductScanner } from "@responses"
+import { storeProductScanner } from "../../../response.type"
 import axios, { AxiosError, AxiosResponse } from "axios"
 type checkOut = InvoicePurchase | InvoicePurchase[]
 type formData = {

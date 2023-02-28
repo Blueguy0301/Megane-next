@@ -10,6 +10,8 @@ import { authority } from "@pages/types"
 import { useMemo, useCallback } from "react"
 import useModal from "@components/useModal"
 import ModalForms from "./ModalForms"
+import { remove } from "./request"
+import { failed, success, warning } from "@components/crudModals"
 interface data {
 	total: number
 	customerName: string
@@ -26,16 +28,17 @@ type forms = {
 }
 function Table({ data, session }: props) {
 	//* memoize this
-	const installments = data
+	const [installments, setInstallments] = useState(data)
 	const { Modal, Open, isOpen } = useModal()
 	const [search, setSearch] = useState("")
 	const [selected, setSelected] = useState<string[]>([])
 	const [modalOpened, setModalOpened] = useState("")
+	const [id, setId] = useState("")
 	const shownProduct = useMemo(() => {
 		if (search === "") return installments
 		// else return searchInvoice(search, Invoice) as data[]
 		return installments
-	}, [search])
+	}, [search, installments])
 	const selectAll = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.checked) setSelected(installments.map((d) => d.id))
 		else setSelected([])
@@ -46,7 +49,18 @@ function Table({ data, session }: props) {
 			else setSelected((prev) => prev.filter((prevId) => prevId !== id))
 		}
 	}, [])
-
+	const handleRemove = async () => {
+		const modalRes = await warning(`delete ${selected.length} installments?`)
+		if (!modalRes.isConfirmed) return
+		const res = await remove(selected)
+		if ("e" in res) return
+		if (res.data.error) return failed(res.data.error)
+		if (res.data.success) {
+			//todo :  Refresh or add it to the table
+			setInstallments((prev) => prev.filter((prevId) => !selected.includes(prevId.id)))
+			return success("Successfully Removed.")
+		} else return failed("An error occured.")
+	}
 	return (
 		<>
 			<div className="flex w-full flex-row flex-wrap items-center justify-center gap-3">
@@ -56,12 +70,18 @@ function Table({ data, session }: props) {
 							type="button"
 							disabled={selected.length <= 0}
 							className="red disabled:opacity-50"
+							onClick={handleRemove}
 						>
 							Delete Selected
 						</Button>
 					</>
 				)}
-				<ModalForms modal={Modal} modalOpened={modalOpened} isOpen={isOpen} />
+				<ModalForms
+					modal={Modal}
+					modalOpened={modalOpened}
+					isOpen={isOpen}
+					selected={id}
+				/>
 				<Open onClick={() => setModalOpened("add")} className="green">
 					New Installment
 				</Open>
@@ -153,7 +173,13 @@ function Table({ data, session }: props) {
 										<Button type="Link" href={`/store/history/installment/${invoice.id}`}>
 											View
 										</Button>
-										<Open onClick={() => setModalOpened("update")} className="green">
+										<Open
+											onClick={() => {
+												setModalOpened("update")
+												setId(invoice.id)
+											}}
+											className="green"
+										>
 											Update
 										</Open>
 									</td>

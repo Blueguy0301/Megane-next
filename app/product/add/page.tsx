@@ -2,7 +2,7 @@
 "use client"
 import { minCodeLength } from "@pages/types"
 import type { formData } from "@app/types"
-import type { addStoreProduct, productScanner } from "@responses"
+import type { addStoreProduct, productScanner } from "../../../response.type"
 
 import { useState, useEffect } from "react"
 import { useForm, SubmitHandler } from "react-hook-form"

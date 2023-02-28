@@ -1,4 +1,4 @@
-import { addCheckout } from "@responses"
+import { addCheckout } from "../response.type"
 import type { ReactNode, MouseEventHandler, Dispatch, SetStateAction } from "react"
 
 export interface login {

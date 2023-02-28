@@ -31,7 +31,7 @@ const UserInfo = ({ data, id }: props) => {
 	}
 	const handleUpdate = useCallback(() => {
 		return async () => {
-			const response = await update(installmentValue, updateController)
+			const response = await update(installmentValue)
 			if (!response || "e" in response) return
 			const { result, error } = response.data
 			if (!result && error) return failed(error)
@@ -44,7 +44,7 @@ const UserInfo = ({ data, id }: props) => {
 	const handleDelete = async () => {
 		const response = await warning()
 		if (!response.isConfirmed) return
-		const res = await remove({ id })
+		const res = await remove(id)
 		if (!res || "e" in res) return
 		const { success: deleteSuccess, error } = res.data
 		if (!deleteSuccess && error) return failed(error)
@@ -55,7 +55,7 @@ const UserInfo = ({ data, id }: props) => {
 	}
 	return (
 		<>
-			<ModalForms modalOpened="update" modal={Modal} isOpen={isOpen} />
+			<ModalForms modalOpened="update" modal={Modal} isOpen={isOpen} selected={id} />
 			<h2>Installment history </h2>
 			<div className="flex flex-row items-start justify-center">
 				<div className="">

@@ -23,7 +23,7 @@
 			"@components/*": ["./app/components/*"],
 			"@api/*": ["./pages/api/*"],
 			"@css/*": ["./styles/*"],
-			"@responses": ["./respnose.type.ts"],
+			"@responses": ["./response.type.ts"],
 			"@app/types": ["./app/interface.ts"],
 			"@pages/types": ["./pages/interface.ts"]
 		}

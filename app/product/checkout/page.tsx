@@ -3,7 +3,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 import type { checkoutProducts } from "@app/types"
-import type { storeProductScanner } from "@responses"
+import type { storeProductScanner } from "../../../response.type"
 import { minCodeLength } from "@pages/types"
 
 import { useEffect, useMemo, useState, useRef } from "react"

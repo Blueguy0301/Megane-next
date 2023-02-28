@@ -1,7 +1,7 @@
 "use client"
 import type { ChangeEvent, Dispatch, SetStateAction, MutableRefObject } from "react"
 import type { checkoutProducts, modal } from "@app/types"
-import type { addCheckout, storeProductScanner } from "@responses"
+import type { addCheckout, storeProductScanner } from "../../../response.type"
 import { useState, useEffect } from "react"
 import { checkOut, scannerRequest } from "./request"
 import { errorModal, successModal } from "./swalModals"
@@ -27,7 +27,7 @@ const Modal = (props: Props) => {
 	const [products, setProducts] = props.products
 	const [selected, setSelected] = useState("Cash")
 	const [formData, setFormData] = useState<formData>({
-		name: "",
+		customerName: "",
 		amount: 0,
 		barcode: barcode,
 	})

@@ -1,4 +1,4 @@
-import { productScanner } from "@responses"
+import { productScanner } from "../response.type"
 import type { NextApiRequest, NextApiResponse } from "next"
 
 export type product = {

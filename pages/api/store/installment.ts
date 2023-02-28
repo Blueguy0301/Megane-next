@@ -3,6 +3,9 @@ import { nextFunction } from "../../interface"
 import { checkCredentials, checkIfValid, testNumber } from "../middleware"
 import { installments } from "../../interface"
 import prisma from "../db"
+type installment = {
+	id: string[] | string
+}
 const select = {
 	id: true,
 	customerName: true,
@@ -59,10 +62,14 @@ const addInstallment: nextFunction = async (req, res, user) => {
 }
 //* tested
 const deleteInstallment: nextFunction = async (req, res, user) => {
-	const installments = req.body as installments | installments[]
+
+	const installments: installment = req.body
 	let id
+	console.log(installments);
 	if (!checkIfValid(installments)) return res.json({ error: "invalid arguments" })
-	if (Array.isArray(installments)) id = installments.map(installment => BigInt(installment.id))
+	if (Array.isArray(installments.id)) {
+		id = installments.id.map(installment => BigInt(installment))
+	}
 	else id = [BigInt(installments.id)]
 	const addInstallment = await prisma.installments
 		.deleteMany({ where: { id: { in: id } } })
@@ -92,22 +99,15 @@ const getInstallment: nextFunction = async (req, res) => {
 }
 //* tested
 const updateInstallment: nextFunction = async (req, res, user, installmentId) => {
-	const { storeId } = user
-	let { customerName, total, isAdded, id } = req.body as installments
-	if (!checkIfValid(customerName) || testNumber(total) || testNumber(storeId))
-		return res.json({ error: "invalid arguments" })
+	console.log(req.body)
+	let { total, isAdded, id } = req.body as installments
+	if (testNumber(total)) return res.json({ error: "invalid arguments" })
 	total = isAdded ? total : -total
 	id = id ?? installmentId
 	const updateInstallment = await prisma.installments
 		.update({
 			where: { id: BigInt(id) },
-			data: {
-				total: {
-					increment: Number(total),
-				},
-				storeId: BigInt(storeId),
-				customerName: customerName,
-			},
+			data: { total: { increment: Number(total) } },
 			select,
 		})
 		.then((d) => ({

@@ -41,6 +41,7 @@ export const failed = (message: string | object) =>
 		: swalModal.fire({
 				title: "An error has occured",
 				icon: "error",
+				text: message,
 				showConfirmButton: false,
 				timer: 3000,
 				timerProgressBar: true,
