@@ -2,6 +2,7 @@
 "use client"
 ///todo : refetch data when mounted
 import TablePagination from "@components/TablePagination"
+import TableData from "@components/Table"
 import { ChangeEvent, useState } from "react"
 import type { Session } from "next-auth"
 import Button from "@components/Button"
@@ -26,7 +27,7 @@ type forms = {
 	name: string
 	amount: number
 }
-function Table({ data, session }: props) {
+function UserInfo({ data, session }: props) {
 	//* memoize this
 	const [installments, setInstallments] = useState(data)
 	const { Modal, Open, isOpen } = useModal()
@@ -104,91 +105,44 @@ function Table({ data, session }: props) {
 					/>
 				</fieldset>
 			</div>
-			<div className="flex flex-col">
-				<div className="max-w-[100%] overflow-auto">
-					<table className="min-w-full  bg-gray-800">
-						<thead className="border-b bg-white/25">
-							<tr>
-								<th
-									scope="col"
-									className="w-4 px-6 py-4 text-center text-sm  font-medium text-white"
-								>
-									<input
-										type="checkbox"
-										name="all"
-										id="all"
-										onChange={(e) => selectAll(e)}
-									/>
-								</th>
-								<th
-									scope="col"
-									className="px-6 py-4 text-center text-sm font-medium text-white "
-								>
-									Buyer
-								</th>
-								<th
-									scope="col"
-									className="px-6 py-4 text-center text-sm font-medium text-white"
-								>
-									Invoices
-								</th>
-								<th
-									scope="col"
-									className="px-6 py-4 text-center text-sm font-medium text-white"
-								>
-									Unpaid
-								</th>
-								<th
-									scope="col"
-									className="px-6 py-4 text-center text-sm font-medium text-white"
-								>
-									Action
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							{shownProduct.map((invoice, a) => (
-								<tr
-									className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
-									key={a}
-								>
-									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-white">
-										<input
-											type="checkbox"
-											name="selected"
-											onChange={select(invoice.id)}
-											checked={selected.includes(invoice.id)}
-										/>
-									</td>
-									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
-										{invoice.customerName}
-									</td>
-									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
-										{invoice.InvoiceCount}
-									</td>
-									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
-										{invoice.total}
-									</td>
-									<td className="flex items-center justify-center gap-4 whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
-										<Button type="Link" href={`/store/history/installment/${invoice.id}`}>
-											View
-										</Button>
-										<Open
-											onClick={() => {
-												setModalOpened("update")
-												setId(invoice.id)
-											}}
-											className="green"
-										>
-											Update
-										</Open>
-									</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
-				</div>
-			</div>
+			<TableData
+				headers={["Buyer", "Invoices", "Unpaid", "Action"]}
+				withSelection={true}
+				onSelect={(e) => selectAll(e)}
+			>
+				{shownProduct.map((invoice, a) => (
+					<tr
+						className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
+						key={a}
+					>
+						<td className="tr-check">
+							<input
+								type="checkbox"
+								name="selected"
+								onChange={select(invoice.id)}
+								checked={selected.includes(invoice.id)}
+							/>
+						</td>
+						<td className="tr">{invoice.customerName}</td>
+						<td className="tr">{invoice.InvoiceCount}</td>
+						<td className="tr">{invoice.total}</td>
+						<td className="tr flex items-center justify-center gap-4">
+							<Button type="Link" href={`/store/history/installment/${invoice.id}`}>
+								View
+							</Button>
+							<Open
+								onClick={() => {
+									setModalOpened("update")
+									setId(invoice.id)
+								}}
+								className="green"
+							>
+								Update
+							</Open>
+						</td>
+					</tr>
+				))}
+			</TableData>
 			<TablePagination
 				shown={installments.length}
 				current={50 > installments.length ? 1 : installments.length - 49}
@@ -197,4 +151,4 @@ function Table({ data, session }: props) {
 	)
 }
 
-export default Table
+export default UserInfo

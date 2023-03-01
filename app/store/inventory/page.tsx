@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import Table from "./Table"
+//* Table Migrated
+import UserInfo from "./UserInfo"
 import { authOptions } from "@api/auth/[...nextauth]"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
@@ -10,7 +11,7 @@ export default async function page() {
 	const tableData = await getProductStore(session.user.storeId)
 	return (
 		<div className="page flex-col gap-3 p-4 ">
-			<Table data={tableData} session={session} />
+			<UserInfo data={tableData} session={session} />
 		</div>
 	)
 }

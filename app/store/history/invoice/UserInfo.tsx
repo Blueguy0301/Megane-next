@@ -14,6 +14,7 @@ import { deleteInvoice } from "../request"
 import { deleteFailed, deleteSuccess } from "../swalModal"
 import { warning } from "@components/crudModals"
 import { failed } from "../installment/swalModal"
+import Table from "@components/Table"
 interface data {
 	id: string
 	dateTime: string
@@ -24,7 +25,7 @@ interface props {
 	data: data[]
 	session: Session
 }
-function Table({ data, session }: props) {
+function UserInfo({ data, session }: props) {
 	//* memoize this
 	const [Invoice, setInvoice] = useState(
 		data.map((value) => ({
@@ -95,88 +96,40 @@ function Table({ data, session }: props) {
 					/>
 				</fieldset>
 			</div>
-			<div className="flex flex-col">
-				<div className="max-w-[100%] overflow-auto">
-					<table className="min-w-full  bg-gray-800">
-						<thead className="border-b bg-white/25">
-							<tr>
-								<th
-									scope="col"
-									className="w-4 px-6 py-4 text-center text-sm  font-medium text-white"
-								>
-									<input
-										type="checkbox"
-										name="all"
-										id="all"
-										onChange={(e) => selectAll(e)}
-									/>
-								</th>
-								<th
-									scope="col"
-									className="px-6 py-4 text-center text-sm font-medium text-white"
-								>
-									Total
-								</th>
-								<th
-									scope="col"
-									className="px-6 py-4 text-center text-sm font-medium text-white"
-								>
-									Date
-								</th>
-								<th
-									scope="col"
-									className="px-6 py-4 text-center text-sm font-medium text-white "
-								>
-									Buyer
-								</th>
-								<th
-									scope="col"
-									className="px-6 py-4 text-center text-sm font-medium text-white "
-								>
-									Action
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							{shownProduct.map((invoice, a) => (
-								<tr
-									className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
-									key={a}
-								>
-									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-white">
-										<input
-											type="checkbox"
-											name="selected"
-											onChange={select(invoice.id)}
-											checked={selected.includes(invoice.id)}
-										/>
-									</td>
-									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
-										{invoice.total}
-									</td>
-
-									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
-										{invoice.dateTime}
-									</td>
-									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
-										{invoice.Installment}
-									</td>
-									<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white">
-										<Button
-											type="Link"
-											href={`/store/history/invoice/${invoice.id}`}
-											disabled={invoice.id ? false : true}
-											className="disabled:opacity-50"
-										>
-											View
-										</Button>
-									</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
-				</div>
-			</div>
+			<Table
+				withSelection={true}
+				onSelect={(e) => selectAll(e)}
+				headers={["Total", "Date", "Buyer", "Action"]}
+			>
+				{shownProduct.map((invoice, a) => (
+					<tr
+						className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
+						key={a}
+					>
+						<td className="tr-check">
+							<input
+								type="checkbox"
+								name="selected"
+								onChange={select(invoice.id)}
+								checked={selected.includes(invoice.id)}
+							/>
+						</td>
+						<td className="tr">{invoice.total}</td>
+						<td className="tr">{invoice.dateTime}</td>
+						<td className="tr">{invoice.Installment}</td>
+						<td className="tr">
+							<Button
+								type="Link"
+								href={`/store/history/invoice/${invoice.id}`}
+								disabled={invoice.id ? false : true}
+								className="disabled:opacity-50"
+							>
+								View
+							</Button>
+						</td>
+					</tr>
+				))}
+			</Table>
 			<TablePagination
 				shown={Invoice.length}
 				current={50 > Invoice.length ? 1 : Invoice.length - 49}
@@ -185,4 +138,4 @@ function Table({ data, session }: props) {
 	)
 }
 
-export default Table
+export default UserInfo

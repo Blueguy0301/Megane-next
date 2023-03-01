@@ -2,8 +2,7 @@ import { authOptions } from "@api/auth/[...nextauth]"
 import { getServerSession } from "next-auth"
 import prisma from "@api/db"
 import { notFound } from "next/navigation"
-import Table from "./Table"
-import Button from "@components/Button"
+import Purchases from "./Purchases"
 import UserInfo from "./UserInfo"
 async function getData(params: string) {
 	const data = await prisma.installments
@@ -44,7 +43,7 @@ const page = async ({ params }: { params: { id: string } }) => {
 		return (
 			<div className="page flex-col gap-3 p-4">
 				<UserInfo data={data} id={params.id} />
-				<Table data={data.Invoice} />
+				<Purchases data={data.Invoice} />
 			</div>
 		)
 }

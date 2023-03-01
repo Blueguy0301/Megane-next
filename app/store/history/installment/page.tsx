@@ -1,4 +1,5 @@
-import Table from "./Table"
+//* table migrated
+import UserInfo from "./UserInfo"
 import prisma from "@api/db"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@api/auth/[...nextauth]"
@@ -36,7 +37,7 @@ const page = async () => {
 	return (
 		<div className="page flex-col gap-3 p-4">
 			<h3>Installments</h3>
-			<Table data={data} session={session} />
+			<UserInfo data={data} session={session} />
 		</div>
 	)
 }

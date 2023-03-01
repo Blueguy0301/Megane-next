@@ -286,9 +286,13 @@ span.checkout h5 {
 .login-form label {
 	@apply text-white;
 }
-.dashboard {
-	/* max-height: calc(100vh - var(--nav-size)); */
-}
 .swal-popup {
 	@apply bg-slate-700 text-white !important;
+}
+
+.tr {
+	@apply whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white;
+}
+.tr-check {
+	@apply whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-white;
 }
