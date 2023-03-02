@@ -2,7 +2,7 @@
 import type { installments } from "@pages/types"
 import useModal from "@components/useModal"
 import React, { useCallback } from "react"
-import { remove, update } from "../request"
+import { removeInstallment, updateInstallment } from "@components/request"
 import Button from "@components/Button"
 import { failed, success, warning } from "../swalModal"
 import ModalForms from "../ModalForms"
@@ -31,7 +31,7 @@ const UserInfo = ({ data, id }: props) => {
 	}
 	const handleUpdate = useCallback(() => {
 		return async () => {
-			const response = await update(installmentValue)
+			const response = await updateInstallment(installmentValue)
 			if (!response || "e" in response) return
 			const { result, error } = response.data
 			if (!result && error) return failed(error)
@@ -44,7 +44,7 @@ const UserInfo = ({ data, id }: props) => {
 	const handleDelete = async () => {
 		const response = await warning()
 		if (!response.isConfirmed) return
-		const res = await remove(id)
+		const res = await removeInstallment(id)
 		if (!res || "e" in res) return
 		const { success: deleteSuccess, error } = res.data
 		if (!deleteSuccess && error) return failed(error)

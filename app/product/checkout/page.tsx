@@ -3,7 +3,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 import type { checkoutProducts } from "@app/types"
-import type { storeProductScanner } from "../../../response.type"
+import type { storeProductScanner } from "@responses"
 import { minCodeLength } from "@pages/types"
 
 import { useEffect, useMemo, useState, useRef } from "react"
@@ -12,7 +12,7 @@ import Scanner from "@components/Scanner"
 import useModal from "@components/useModal"
 import Product from "./Product"
 import ModalForm from "./Modal"
-import { scannerRequest } from "./request"
+import { scannerRequest } from "@components/request"
 function page() {
 	const { Modal, Open, setIsOpen } = useModal()
 	const [products, setProducts] = useState<checkoutProducts[]>([])

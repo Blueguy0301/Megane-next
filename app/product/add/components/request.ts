@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios"
 import { formData, sendData as dataSend } from "../../../interface"
-export const sendData = (
+export const newProduct = (
 	data: formData,
 	isStoreNew: boolean,
 	barcode: string,

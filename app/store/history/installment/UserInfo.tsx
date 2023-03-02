@@ -11,7 +11,7 @@ import { authority } from "@pages/types"
 import { useMemo, useCallback } from "react"
 import useModal from "@components/useModal"
 import ModalForms from "./ModalForms"
-import { remove } from "./request"
+import { removeInstallment } from "@components/request"
 import { failed, success, warning } from "@components/crudModals"
 interface data {
 	total: number
@@ -22,10 +22,6 @@ interface data {
 interface props {
 	data: data[]
 	session: Session
-}
-type forms = {
-	name: string
-	amount: number
 }
 function UserInfo({ data, session }: props) {
 	//* memoize this
@@ -53,7 +49,7 @@ function UserInfo({ data, session }: props) {
 	const handleRemove = async () => {
 		const modalRes = await warning(`delete ${selected.length} installments?`)
 		if (!modalRes.isConfirmed) return
-		const res = await remove(selected)
+		const res = await removeInstallment(selected)
 		if ("e" in res) return
 		if (res.data.error) return failed(res.data.error)
 		if (res.data.success) {

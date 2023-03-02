@@ -3,7 +3,7 @@ import type { ChangeEvent, Dispatch, SetStateAction, MutableRefObject } from "re
 import type { checkoutProducts, modal } from "@app/types"
 import type { addCheckout, storeProductScanner } from "../../../response.type"
 import { useState, useEffect } from "react"
-import { checkOut, scannerRequest } from "./request"
+import { checkOut, scannerRequest } from "@components/request"
 import { errorModal, successModal } from "./swalModals"
 import { minCodeLength } from "@pages/types"
 type formData = {
@@ -27,7 +27,7 @@ const Modal = (props: Props) => {
 	const [products, setProducts] = props.products
 	const [selected, setSelected] = useState("Cash")
 	const [formData, setFormData] = useState<formData>({
-		customerName: "",
+		name: "",
 		amount: 0,
 		barcode: barcode,
 	})

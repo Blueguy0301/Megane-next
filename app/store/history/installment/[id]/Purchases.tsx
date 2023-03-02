@@ -3,7 +3,7 @@
 import Table from "@components/Table"
 import { convertDate } from "@components/dateformat"
 import Button from "@components/Button"
-import { deleteInvoice } from "../../request"
+import { deleteInvoice } from "@components/request"
 import { deleteFailed, deletePrompt, deleteSuccess } from "../../swalModal"
 import { useCallback, useState } from "react"
 type props = {

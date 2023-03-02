@@ -1,7 +1,7 @@
 import { modal } from "@app/types"
 import { failed, success } from "@components/crudModals"
+import { createInstallment, updateInstallment } from "@components/request"
 import { useState, useEffect } from "react"
-import { add, update } from "./request"
 type props = {
 	modal: modal
 	modalOpened: string
@@ -21,7 +21,7 @@ const ModalForms = (props: props) => {
 	useEffect(() => setForms({ customerName: "", total: 0, isAdded: true }), [props.isOpen])
 	if (modalOpened === "add") {
 		const submitHandler = async () => {
-			const res = await add({ ...forms, isAdded: true })
+			const res = await createInstallment({ ...forms, isAdded: true })
 			console.log("e" in res)
 			if ("e" in res) return
 			if (res.data.error) return failed(res.data.error)
@@ -72,7 +72,7 @@ const ModalForms = (props: props) => {
 
 	if (modalOpened === "update") {
 		const submitHandler = async () => {
-			const res = await update({ ...forms, id: props.selected })
+			const res = await updateInstallment({ ...forms, id: props.selected })
 
 			if ("e" in res) return
 			if (res.data.error) return failed(res.data.error)

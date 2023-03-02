@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+//todo : fix the swal modals here
 "use client"
 import { minCodeLength } from "@pages/types"
 import type { formData } from "@app/types"
-import type { addStoreProduct, productScanner } from "../../../response.type"
-
+import type { addStoreProduct, productScanner } from "@responses"
 import { useState, useEffect } from "react"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { useRouter } from "next/navigation"
@@ -15,7 +15,7 @@ import swalModal from "@components/swalModal"
 import ModalScanner from "./components/Modal"
 import ProductForm from "./components/ProductForm"
 import FormData from "./components/FormData"
-import { checkBarcode, sendData } from "./components/request"
+import { scannerRequest, newProduct as sendData } from "@components/request"
 
 type responseData = { status: number; data: addStoreProduct }
 
@@ -55,7 +55,7 @@ export default function page() {
 		}
 	}
 	const searchBarcode = async () => {
-		const response = await checkBarcode(Scanned, scanController)
+		const response = await scannerRequest(Scanned, scanController)
 		if (!response || "e" in response) return
 		const { result, error } = response.data as productScanner
 		if (!result && error) {
