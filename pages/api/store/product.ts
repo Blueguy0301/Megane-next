@@ -76,22 +76,18 @@ const updateProduct: nextFunction = async (req, res, user) => {
 	if ("error" in updateProduct) return res.json(updateProduct)
 	else return res.json({ result: updateProduct })
 }
-//! todo : no error handling
 //* tested
 const deleteProduct: nextFunction = async (req, res, user) => {
 	const { pId } = req.body
+	let data
+	if (Array.isArray(pId)) data = pId.map(id => BigInt(id))
+	else data = [BigInt(pId)]
 	if (user.authorityId < authority.admin)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!pId || testNumber(pId)) return res.json({ error: "no data found" })
 	const deleteProduct = await prisma.product
-		.delete({
-			where: {
-				id: BigInt(pId),
-			},
-		})
-		.then(() => ({
-			success: true,
-		}))
+		.deleteMany({ where: { id: { in: data }, }, })
+		.then(() => ({ success: true }))
 		.catch((e) => ({ error: e, success: false }))
 	return res.json(deleteProduct)
 }
@@ -110,7 +106,6 @@ const addProductStore: nextFunction = async (req, res, user, productId: string) 
 	const countProductStore = await prisma.productStore.count({
 		where: { AND: [{ productId: BigInt(productId) }, { storeId: BigInt(user.storeId) }] },
 	})
-	console.log(countProductStore)
 	if (countProductStore > 0)
 		return res.json({ error: "product already exists on your store" })
 	const createProductStore = await prisma.productStore
@@ -179,15 +174,18 @@ const updateProductStore: nextFunction = async (req, res, user) => {
 }
 //* tested
 const deleteProductStore: nextFunction = async (req, res, user) => {
-	const { pId } = req.body
+	const { pId }: { pId: any[] | string } = req.body
+	let data
+	if (!pId || testNumber(pId)) return res.json({ error: "invalid arguments" })
 	if (user.authorityId < authority.storeOwner)
 		return res.status(401).json({ error: "unauthorized" })
-	if (!pId || testNumber(pId)) return res.json({ error: "invalid arguments" })
+	if (Array.isArray(pId)) data = pId.map(id => id)
+	else data = [BigInt(pId)]
 	const Delete = await prisma.productStore
-		.delete({ where: { id: BigInt(pId) } })
+		.deleteMany({ where: { id: { in: data } } })
 		.then(() => ({ success: true }))
 		.catch((e) => ({ error: e?.meta?.cause, success: false }))
-	return res.json({ result: Delete })
+	return res.json({ Delete })
 }
 //! todo : no error handling
 const getProductStore: nextFunction = async (req, res, user) => {

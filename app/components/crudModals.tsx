@@ -3,6 +3,7 @@ import swalModal from "@components/swalModal"
 export const warning = (text?: string) =>
 	swalModal.fire({
 		title: "Are you sure?",
+		text: text,
 		showCancelButton: true,
 		cancelButtonText: "No",
 		confirmButtonText: "Yes",
@@ -14,7 +15,6 @@ export const warning = (text?: string) =>
 		timer: 5000,
 		icon: "warning",
 	})
-
 export const success = (title?: string) =>
 	swalModal.fire({
 		title: title ?? "Succesfully Added",

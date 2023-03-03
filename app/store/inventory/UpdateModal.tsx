@@ -9,6 +9,7 @@ type props = {
 	Modal: modal
 	isOpen: boolean
 	setIsOpen: Dispatch<SetStateAction<boolean>>
+	data: { price?: number; location?: string; pId?: string }
 }
 type forms = {
 	price: number
@@ -18,7 +19,6 @@ type forms = {
 const UpdateModal = (props: props) => {
 	const { Modal, isOpen, setIsOpen } = props
 	useEffect(() => {
-		// console.log("delete modal values")
 		reset()
 		return () => {}
 	}, [isOpen])
@@ -27,13 +27,23 @@ const UpdateModal = (props: props) => {
 		handleSubmit,
 		reset,
 		formState: { errors },
-	} = useForm<forms>()
+	} = useForm<forms>({
+		values: {
+			price: props.data.price || 0,
+			location: props.data.location || "",
+			description: "",
+		},
+	})
 	return (
 		<Modal
 			title="Update Product"
-			buttonSettings={{ type: "submit", handleClick: true }}
+			buttonSettings={{
+				type: "submit",
+				disablehandle: "true",
+			}}
 			onAccept={handleSubmit(async (d) => {
-				const res = await update(d)
+				console.log("submitted")
+				const res = await update(props.data.pId, d)
 				setIsOpen((prev) => !prev)
 			})}
 		>
@@ -44,20 +54,29 @@ const UpdateModal = (props: props) => {
 			>
 				<div className="group">
 					<label htmlFor="CustomerName">Price : </label>
-					<input type="number" {...register("price", { required: "required" })} />
+					<input
+						type="number"
+						{...register("price", { required: "required" })}
+					/>
 				</div>
-				<p className="text-center text-lg">{errors.price?.message}</p>
+				<p className="text-center text-lg">
+					{errors.price?.message}
+				</p>
 				<div className="group">
 					<label htmlFor="CustomerName">Location : </label>
 					<input type="text" {...register("location")} />
 				</div>
-				<p className="text-center text-lg">{errors.location?.message}</p>
+				<p className="text-center text-lg">
+					{errors.location?.message}
+				</p>
 
 				<div className="group">
 					<label htmlFor="CustomerName">Description:</label>
 					<input type="text" {...register("description")} />
 				</div>
-				<p className="text-center text-lg">{errors.description?.message}</p>
+				<p className="text-center text-lg">
+					{errors.description?.message}
+				</p>
 			</form>
 		</Modal>
 	)

@@ -36,7 +36,6 @@ const NavbarClient = () => {
 				<Image src="/Logo.png" alt="Logo" width={90} height={64} decoding="sync" />
 				<h3>Megane</h3>
 			</div>
-			{/* search */}
 
 			{/* navigation */}
 			<div className="btn-group select-none">

@@ -9,7 +9,7 @@ type Props = {
 	onAccept?: MouseEventHandler
 	confirmText?: string | number
 	hideConfirm?: boolean
-	buttonSettings?: { [x: string]: any }
+	buttonSettings?: { disablehandle?: "true" | "false" }
 	[x: string]: any
 }
 
@@ -42,44 +42,46 @@ const useModal = (opened = false) => {
 		</Button>
 	)
 
-	const Modal = (props: Props) => (
-		<div
-			className={`fixed top-0 left-0 z-50 flex h-full w-full items-center justify-center  bg-black/50  p-4 ${
-				isOpen ? "" : "hidden"
-			}`}
-			onClick={handleClick}
-		>
+	const Modal = (props: Props) => {
+		return (
 			<div
-				className={` max-h-full w-full min-w-0 gap-4 overflow-auto rounded-md bg-slate-700 p-4 md:w-3/5 md:p-5 ${
-					props.className && props.className
+				className={`fixed top-0 left-0 z-50 flex h-full w-full items-center justify-center  bg-black/50  p-4 ${
+					isOpen ? "" : "hidden"
 				}`}
-				onClick={(e) => e.stopPropagation()}
+				onClick={handleClick}
 			>
-				<div className="flex-grow">
-					<h2 className="mb-4  ">{props.title}</h2>
-					{props.children}
-				</div>
-				<div className=" flex w-full flex-row justify-center gap-3 md:justify-end">
-					{!props.hideConfirm && (
-						<Button
-							className="green"
-							onClick={(e) => {
-								if (props.onAccept) props.onAccept(e)
+				<div
+					className={` max-h-full w-full min-w-0 gap-4 overflow-auto rounded-md bg-slate-700 p-4 md:w-3/5 md:p-5 ${
+						props.className && props.className
+					}`}
+					onClick={(e) => e.stopPropagation()}
+				>
+					<div className="flex-grow">
+						<h2 className="mb-4  ">{props.title}</h2>
+						{props.children}
+					</div>
+					<div className=" flex w-full flex-row justify-center gap-3 md:justify-end">
+						{!props.hideConfirm && (
+							<Button
+								className="green"
+								onClick={(e) => {
+									if (props.onAccept) props.onAccept(e)
 
-								props.buttonSettings?.handleClick ? null : handleClick()
-							}}
-							{...props.buttonSettings}
-						>
-							{props.confirmText ?? "Confirm"}
+									props.buttonSettings?.disablehandle ? null : handleClick()
+								}}
+								{...props.buttonSettings}
+							>
+								{props.confirmText ?? "Confirm"}
+							</Button>
+						)}
+						<Button onClick={handleClick} className="red">
+							Close
 						</Button>
-					)}
-					<Button onClick={handleClick} className="red">
-						Close
-					</Button>
+					</div>
 				</div>
 			</div>
-		</div>
-	)
+		)
+	}
 
 	return { Open, Modal, setIsOpen, isOpen }
 }

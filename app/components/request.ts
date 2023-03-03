@@ -16,7 +16,8 @@ const installmentURL = "/api/store/installment"
 const invoiceURL = "/api/store/checkout"
 const scannerURL = "/api/store/scanner"
 const checkoutURL = "/api/store/checkout"
-const productUrl = "/api/store/product"
+const productURL = "/api/store/product"
+const inventoryURL = "/api/prodcut"
 export const deleteInvoice = async (data: string[] | string,) => {
     const res = await axios.put<deleteCheckout>(invoiceURL, { data: data }).catch(e => ({ e: e }))
     return res
@@ -93,5 +94,17 @@ export const newProduct = (
             description: data.description,
         }
     }
-    return axios.post(productUrl, dataSending, { params })
+    return axios.post(productURL, dataSending, { params })
 }
+//* not yet implemented :  (requst.ts)
+// const params = { onlyStore: true }
+// export const update = async (d: { price: number; location: string; description: string }) => {
+//     const res = await axios.patch(url, d, { params })
+//     console.log("update")
+//     return res
+// }
+// export const remove = () => {
+//     axios.patch(url, {}, { params })
+
+//     console.log("delete")
+// }

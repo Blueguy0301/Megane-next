@@ -7,7 +7,7 @@ type button = {
 	disabled?: any
 	[x: string]: any
 }
-type propsTest =
+type props =
 	| (button & {
 			type?: "button" | "submit" | "reset" | undefined
 			onClick?: MouseEventHandler<HTMLButtonElement> | undefined
@@ -21,7 +21,7 @@ type propsTest =
 			href: string
 			className?: string
 	  })
-const Button = (props: propsTest) => {
+const Button = (props: props) => {
 	const { type, children, href, onClick, className, disabled, ...rest } = props
 	//todo : remove this state management. ang panget tignan
 

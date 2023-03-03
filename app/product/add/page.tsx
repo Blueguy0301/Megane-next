@@ -1,21 +1,19 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-//todo : fix the swal modals here
 "use client"
 import { minCodeLength } from "@pages/types"
 import type { formData } from "@app/types"
 import type { addStoreProduct, productScanner } from "@responses"
 import { useState, useEffect } from "react"
 import { useForm, SubmitHandler } from "react-hook-form"
-import { useRouter } from "next/navigation"
 
 import useModal from "@components/useModal"
 import Button from "@components/Button"
-import swalModal from "@components/swalModal"
+import { failed, success } from "@components/crudModals"
+import { scannerRequest, newProduct as sendData } from "@components/request"
 
 import ModalScanner from "./components/Modal"
 import ProductForm from "./components/ProductForm"
 import FormData from "./components/FormData"
-import { scannerRequest, newProduct as sendData } from "@components/request"
 
 type responseData = { status: number; data: addStoreProduct }
 
@@ -24,7 +22,6 @@ export default function page() {
 		useForm<formData>()
 	const { errors, isSubmitting, isDirty } = formState
 	const scanController = new AbortController()
-	const nav = useRouter()
 	const [isStoreNew, setIsStoreNew] = useState(true)
 	const [showSubmit, setShowSubmit] = useState(false)
 	const [scanPressed, setScanPressed] = useState(false)
@@ -33,23 +30,15 @@ export default function page() {
 		const { status, data: res }: responseData = await sendData(data, isStoreNew, Scanned)
 		const { error } = res
 		if (status === 200 && !error) {
-			swalModal.fire({
-				title: "Success",
-				showConfirmButton: false,
-				icon: "success",
-				text: "Redirecting to Inventory",
-				timer: 3000,
-				timerProgressBar: true,
-			})
-			nav.push("/store/inventory")
+			success("Product added Successfully.")
+			//*reset the forms
+			// nav.push("/store/inventory")
+			setScanned("none")
+			reset()
+			setFormDisabled([false, false])
+			setShowSubmit(true)
 		} else if (error) {
-			swalModal.fire({
-				title: "Error",
-				showConfirmButton: false,
-				text: (error as string) ?? "An error has occured",
-				timer: 3000,
-				icon: "error",
-			})
+			failed(error)
 			setFormDisabled([false, false])
 			setShowSubmit(true)
 		}
@@ -59,23 +48,10 @@ export default function page() {
 		if (!response || "e" in response) return
 		const { result, error } = response.data as productScanner
 		if (!result && error) {
-			return swalModal.fire({
-				title: "Error",
-				showConfirmButton: false,
-				text: (error as string) ?? "An error has occured",
-				timer: 5000,
-				icon: "error",
-			})
+			return failed(error)
 		}
-		if (!result?.isStoreNew) {
-			return swalModal.fire({
-				title: "Error",
-				showConfirmButton: false,
-				text: `${result?.name} is already registered to the store.`,
-				timer: 5000,
-				icon: "error",
-			})
-		}
+		if (!result?.isStoreNew)
+			return failed(`${result?.name} is already registered to the store.`)
 		if (result) {
 			setIsStoreNew(result?.isStoreNew ?? false)
 			setFormDisabled([!result?.newProduct, false])
@@ -181,7 +157,7 @@ export default function page() {
 								setScanned("none")
 								reset()
 							}}
-							id="puta"
+							id="reset"
 						>
 							Reset
 						</Button>

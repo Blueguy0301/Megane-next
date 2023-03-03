@@ -1,4 +1,3 @@
-//todo : migrate
 "use client"
 import Table from "@components/Table"
 import { convertDate } from "@components/dateformat"

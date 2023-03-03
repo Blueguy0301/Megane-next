@@ -12,7 +12,7 @@ import useModal from "@components/useModal"
 import Table from "@components/Table"
 import searchProducts from "./productSearch"
 import UpdateModal from "./UpdateModal"
-import { remove } from "./requst"
+import { remove, update } from "./requst"
 interface data {
 	Location: string
 	price: number
@@ -27,6 +27,7 @@ interface props {
 	data: data[]
 	session: Session
 }
+type selectData = { price?: number; location?: string; pId?: string }
 function UserInfo({ data, session }: props) {
 	const [current, setCurrent] = useState(1)
 	//* memoize this
@@ -41,17 +42,28 @@ function UserInfo({ data, session }: props) {
 		if (e.target.checked) setSelected(product.map((d) => d.id))
 		else setSelected([])
 	}, [])
-	const select = useCallback((id: string) => {
+	const select = useCallback((product: data) => {
 		return (e: ChangeEvent<HTMLInputElement>) => {
-			if (e.target.checked) setSelected((prev) => [...prev, id])
-			else setSelected((prev) => prev.filter((prevId) => prevId !== id))
+			if (e.target.checked) {
+				setSelected((prev) => [...prev, product.id])
+				setUpdateSelect({
+					pId: product.id,
+					price: product.price,
+					location: product.Location,
+				})
+			} else setSelected((prev) => prev.filter((prevId) => prevId !== product.id))
 		}
 	}, [])
+	const [updateSelect, setUpdateSelect] = useState<selectData>({})
 	const { Open, Modal, isOpen, setIsOpen } = useModal()
-	// use the memo hook here.
 	return (
 		<>
-			<UpdateModal Modal={Modal} isOpen={isOpen} setIsOpen={setIsOpen} />
+			<UpdateModal
+				Modal={Modal}
+				isOpen={isOpen}
+				setIsOpen={setIsOpen}
+				data={updateSelect}
+			/>
 			<div className="flex w-full flex-row flex-wrap items-center justify-center gap-3 ">
 				{session?.user.authorityId >= authority.storeOwner && (
 					<>
@@ -65,7 +77,7 @@ function UserInfo({ data, session }: props) {
 						<Button
 							className=" red disabled:opacity-50"
 							disabled={selected.length < 1}
-							onClick={remove}
+							onClick={() => remove(selected)}
 						>
 							Delete Selected
 						</Button>
@@ -111,7 +123,7 @@ function UserInfo({ data, session }: props) {
 							<input
 								type="checkbox"
 								name="selected"
-								onChange={select(i.id)}
+								onChange={select(i)}
 								checked={selected.includes(i.id)}
 							/>
 						</td>

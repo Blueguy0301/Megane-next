@@ -50,7 +50,6 @@ function UserInfo({ data, session }: props) {
 		}
 	}, [])
 	const handleDelete = async () => {
-		//! DO NOT ENABLE UNTIL YOU ADD A RECONFIRM
 		const warningRes = await warning()
 		if (!warningRes.isConfirmed) return
 		const res = await deleteInvoice(selected)
