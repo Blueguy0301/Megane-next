@@ -8,6 +8,7 @@ type props = {
 	isOpen: boolean
 	selected: string
 	isAdded?: boolean
+	handleUpdate: Function
 }
 type forms = { customerName: string; total: number; isAdded: boolean }
 const ModalForms = (props: props) => {
@@ -15,7 +16,6 @@ const ModalForms = (props: props) => {
 	const { modalOpened } = props
 	const [forms, setForms] = useState<forms>({ customerName: "", total: 0, isAdded: true })
 	const handleChange = (name: string, value: string | number | boolean) => {
-		console.log(name, value)
 		setForms((prev) => ({ ...prev, [name]: value }))
 	}
 	useEffect(() => setForms({ customerName: "", total: 0, isAdded: true }), [props.isOpen])
@@ -27,8 +27,9 @@ const ModalForms = (props: props) => {
 			if (res.data.error) return failed(res.data.error)
 			if (res.data.result) {
 				//todo :  Refresh or add it to the table
+				props.handleUpdate({ ...res.data.result })
 				return success("Added Successfully")
-			} else return failed("Putangina.")
+			} else return failed("Failed")
 		}
 		return (
 			<Modal

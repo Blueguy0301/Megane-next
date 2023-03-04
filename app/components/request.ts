@@ -1,9 +1,10 @@
 //todo: have all request put here.
 import { installments, minCodeLength } from "@pages/types"
 import type { checkOutBody, InvoicePurchase, } from "@pages/types"
-import type { addInstallment, deleteCheckout, deleteInstallment, storeProductScanner, updateInstallment as UpdateInstallment } from "@responses"
+import type { addInstallment, deleteCheckout, deleteInstallment, deleteProduct, deleteStoreProduct, storeProductScanner, updateInstallment as UpdateInstallment, updateProduct } from "@responses"
 import axios from "axios"
 import { formData, sendData } from "@app/types"
+import { failed, success, warning } from "./crudModals"
 
 type checkOut = InvoicePurchase | InvoicePurchase[]
 type checkOutData = {
@@ -17,7 +18,7 @@ const invoiceURL = "/api/store/checkout"
 const scannerURL = "/api/store/scanner"
 const checkoutURL = "/api/store/checkout"
 const productURL = "/api/store/product"
-const inventoryURL = "/api/prodcut"
+
 export const deleteInvoice = async (data: string[] | string,) => {
     const res = await axios.put<deleteCheckout>(invoiceURL, { data: data }).catch(e => ({ e: e }))
     return res
@@ -96,15 +97,17 @@ export const newProduct = (
     }
     return axios.post(productURL, dataSending, { params })
 }
-//* not yet implemented :  (requst.ts)
-// const params = { onlyStore: true }
-// export const update = async (d: { price: number; location: string; description: string }) => {
-//     const res = await axios.patch(url, d, { params })
-//     console.log("update")
-//     return res
-// }
-// export const remove = () => {
-//     axios.patch(url, {}, { params })
-
-//     console.log("delete")
-// }
+export const inventoryUpdate = async (pId?: string, d?: { price: number; location: string; description: string }) => {
+    const params = { onlyStore: true }
+    const res = await axios.put<updateProduct>(productURL, { pId, ...d }, { params }).catch(e => ({ e }))
+    return res
+}
+export const removeProduct = async (data: string[]) => {
+    const params = { onlyStore: true }
+    const userRes = await warning(`Delete ${data.length} product/s`)
+    if (!userRes.isConfirmed) return
+    const res = await axios.patch<deleteProduct | deleteStoreProduct>(productURL, { pid: data }, { params }).catch(e => ({ e }))
+    if ('e' in res) return failed(res.e)
+    if (res.data.error) return failed(res.data.error)
+    if (res.data.success) return success(`Deleted ${data.length} product/s`)
+}

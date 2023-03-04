@@ -3,13 +3,15 @@ import { useEffect } from "react"
 import type { Dispatch, SetStateAction } from "react"
 import { modal } from "@app/types"
 import { useForm } from "react-hook-form"
-import { update } from "./requst"
+import { inventoryUpdate } from "@components/request"
+import { failed, success } from "@components/crudModals"
 
 type props = {
 	Modal: modal
 	isOpen: boolean
 	setIsOpen: Dispatch<SetStateAction<boolean>>
 	data: { price?: number; location?: string; pId?: string }
+	onUpdate: Function
 }
 type forms = {
 	price: number
@@ -43,8 +45,22 @@ const UpdateModal = (props: props) => {
 			}}
 			onAccept={handleSubmit(async (d) => {
 				console.log("submitted")
-				const res = await update(props.data.pId, d)
-				setIsOpen((prev) => !prev)
+				const res = await inventoryUpdate(props.data.pId, d)
+				if ("e" in res) {
+					failed(res.e)
+					return res.e
+				}
+				if (res.data.error) {
+					failed(res.data.error)
+					return res.data.error
+				}
+				if (res.data.result) {
+					//todo : investigate why there's no productId here.
+					props.onUpdate(res.data.result)
+					setIsOpen((prev) => !prev)
+					success("Updated successfully")
+					return res.data.result
+				}
 			})}
 		>
 			<form
@@ -54,29 +70,20 @@ const UpdateModal = (props: props) => {
 			>
 				<div className="group">
 					<label htmlFor="CustomerName">Price : </label>
-					<input
-						type="number"
-						{...register("price", { required: "required" })}
-					/>
+					<input type="number" {...register("price", { required: "required" })} />
 				</div>
-				<p className="text-center text-lg">
-					{errors.price?.message}
-				</p>
+				<p className="text-center text-lg">{errors.price?.message}</p>
 				<div className="group">
 					<label htmlFor="CustomerName">Location : </label>
 					<input type="text" {...register("location")} />
 				</div>
-				<p className="text-center text-lg">
-					{errors.location?.message}
-				</p>
+				<p className="text-center text-lg">{errors.location?.message}</p>
 
 				<div className="group">
 					<label htmlFor="CustomerName">Description:</label>
 					<input type="text" {...register("description")} />
 				</div>
-				<p className="text-center text-lg">
-					{errors.description?.message}
-				</p>
+				<p className="text-center text-lg">{errors.description?.message}</p>
 			</form>
 		</Modal>
 	)

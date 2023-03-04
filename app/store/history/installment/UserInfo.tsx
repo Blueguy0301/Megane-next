@@ -47,7 +47,7 @@ function UserInfo({ data, session }: props) {
 		}
 	}, [])
 	const handleRemove = async () => {
-		const modalRes = await warning(`delete ${selected.length} installments?`)
+		const modalRes = await warning(`Delete ${selected.length} installments?`)
 		if (!modalRes.isConfirmed) return
 		const res = await removeInstallment(selected)
 		if ("e" in res) return
@@ -57,6 +57,17 @@ function UserInfo({ data, session }: props) {
 			setInstallments((prev) => prev.filter((prevId) => !selected.includes(prevId.id)))
 			return success("Successfully Removed.")
 		} else return failed("An error occured.")
+	}
+	const handleUpdate = (newInvoice: data) => {
+		setInstallments((prev) => [
+			...prev,
+			{
+				id: newInvoice.id,
+				customerName: newInvoice.customerName,
+				total: newInvoice.total,
+				InvoiceCount: newInvoice.InvoiceCount ?? 0,
+			},
+		])
 	}
 	return (
 		<>
@@ -78,6 +89,7 @@ function UserInfo({ data, session }: props) {
 					modalOpened={modalOpened}
 					isOpen={isOpen}
 					selected={id}
+					handleUpdate={handleUpdate}
 				/>
 				<Open onClick={() => setModalOpened("add")} className="green">
 					New Installment

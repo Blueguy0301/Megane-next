@@ -10,9 +10,9 @@ import TablePagination from "@components/TablePagination"
 import Button from "@components/Button"
 import useModal from "@components/useModal"
 import Table from "@components/Table"
+import { removeProduct } from "@components/request"
 import searchProducts from "./productSearch"
 import UpdateModal from "./UpdateModal"
-import { remove, update } from "./requst"
 interface data {
 	Location: string
 	price: number
@@ -27,7 +27,11 @@ interface props {
 	data: data[]
 	session: Session
 }
-type selectData = { price?: number; location?: string; pId?: string }
+type selectData = {
+	price?: number
+	location?: string
+	pId?: string
+}
 function UserInfo({ data, session }: props) {
 	const [current, setCurrent] = useState(1)
 	//* memoize this
@@ -54,6 +58,7 @@ function UserInfo({ data, session }: props) {
 			} else setSelected((prev) => prev.filter((prevId) => prevId !== product.id))
 		}
 	}, [])
+	const handleUpdate = () => {}
 	const [updateSelect, setUpdateSelect] = useState<selectData>({})
 	const { Open, Modal, isOpen, setIsOpen } = useModal()
 	return (
@@ -63,6 +68,7 @@ function UserInfo({ data, session }: props) {
 				isOpen={isOpen}
 				setIsOpen={setIsOpen}
 				data={updateSelect}
+				onUpdate={handleUpdate}
 			/>
 			<div className="flex w-full flex-row flex-wrap items-center justify-center gap-3 ">
 				{session?.user.authorityId >= authority.storeOwner && (
@@ -77,7 +83,7 @@ function UserInfo({ data, session }: props) {
 						<Button
 							className=" red disabled:opacity-50"
 							disabled={selected.length < 1}
-							onClick={() => remove(selected)}
+							onClick={() => removeProduct(selected)}
 						>
 							Delete Selected
 						</Button>

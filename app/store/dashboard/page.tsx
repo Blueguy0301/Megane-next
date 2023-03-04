@@ -6,24 +6,30 @@ import { getServerSession } from "next-auth/next"
 import { authority } from "@pages/types"
 import Card from "./Card"
 import CardInfo from "./CardInfo"
+import { notFound } from "next/navigation"
 const getData = async (storeId: any) => {
+	const date = new Date()
 	const storeInfo = await prisma.stores.findFirst({
 		where: { id: BigInt(storeId) },
 		select: {
+			name: true,
 			_count: {
 				select: {
 					productStore: true,
 					users: true,
-					Invoices: true,
 				},
 			},
 			Invoices: {
+				where: {
+					dateTime: {
+						gte: new Date(date.setHours(0, 0, 0, 0)).toISOString(), // set start time of today
+						lt: new Date(date.setHours(23, 59, 59, 999)).toISOString(), // set end time of today
+					},
+				},
 				select: {
 					total: true,
 				},
 			},
-
-			name: true,
 			Installments: {
 				select: {
 					total: true,
@@ -35,11 +41,11 @@ const getData = async (storeId: any) => {
 }
 export default async function page() {
 	const session = await getServerSession(authOptions)
-	if (!session) return
+	if (!session || !session.user.storeId) return notFound()
 	const data = await getData(session.user.storeId)
-	if (!data) return
-	const total = data.Invoices.map((t) => t.total).reduce((a, b) => a + b, 0)
-	const Installments = data.Installments.map((t) => t.total).reduce((a, b) => a + b, 0)
+	if (!data) return new Error("No data found")
+	const total = data.Invoices.reduce((a, b) => a + b.total, 0)
+	const Installments = data.Installments.reduce((a, b) => a + b.total, 0)
 	return (
 		<div className="page dashboard flex-row flex-wrap items-center gap-10  p-10">
 			<div className="flex w-full flex-row flex-wrap gap-10">
@@ -57,11 +63,16 @@ export default async function page() {
 					<div className="flex flex-row flex-wrap justify-start gap-10">
 						<CardInfo
 							src="/sold.svg"
-							alt="Total Invoices"
-							title="Total Invoices"
-							value={data._count.Invoices}
+							alt="Invoices"
+							title="Invoices"
+							value={data.Invoices.length}
 						/>
-						<CardInfo src="/revenue.svg" alt="revenue" title="Revenue" value={total} />
+						<CardInfo
+							src="/revenue.svg"
+							alt="revenue"
+							title="Revenue"
+							value={total + Installments}
+						/>
 					</div>
 				</Card>
 				<Card className="flex flex-col flex-wrap gap-10 p-3">
