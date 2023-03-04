@@ -4,7 +4,6 @@ import type { checkOutBody, InvoicePurchase, } from "@pages/types"
 import type { addInstallment, deleteCheckout, deleteInstallment, deleteProduct, deleteStoreProduct, storeProductScanner, updateInstallment as UpdateInstallment, updateProduct } from "@responses"
 import axios from "axios"
 import { formData, sendData } from "@app/types"
-import { failed, success, warning } from "./crudModals"
 
 type checkOut = InvoicePurchase | InvoicePurchase[]
 type checkOutData = {
@@ -24,15 +23,15 @@ export const deleteInvoice = async (data: string[] | string,) => {
     return res
 }
 
-export const scannerRequest = async (code: string, controller: AbortController) => {
+export const scannerRequest = async (code: string, controller: AbortController, params?: object) => {
     if (!(code.length >= minCodeLength))
         return {
             data: { result: {} },
             error: {},
         } as { data: storeProductScanner; error: any }
     const product = await axios
-        .get<{ data?: storeProductScanner }>(scannerURL, {
-            params: { barcode: code, storeScan: true },
+        .get<storeProductScanner>(scannerURL, {
+            params: params ?? { barcode: code, storeScan: true },
             signal: controller.signal,
         })
         .catch((e) => ({ e: e }))
@@ -104,10 +103,7 @@ export const inventoryUpdate = async (pId?: string, d?: { price: number; locatio
 }
 export const removeProduct = async (data: string[]) => {
     const params = { onlyStore: true }
-    const userRes = await warning(`Delete ${data.length} product/s`)
-    if (!userRes.isConfirmed) return
-    const res = await axios.patch<deleteProduct | deleteStoreProduct>(productURL, { pid: data }, { params }).catch(e => ({ e }))
-    if ('e' in res) return failed(res.e)
-    if (res.data.error) return failed(res.data.error)
-    if (res.data.success) return success(`Deleted ${data.length} product/s`)
+    const res = await axios.patch<deleteProduct | deleteStoreProduct>(productURL, { pId: data }, { params }).catch(e => ({ e }))
+    return res
+
 }

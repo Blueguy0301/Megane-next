@@ -13,6 +13,7 @@ import Table from "@components/Table"
 import { removeProduct } from "@components/request"
 import searchProducts from "./productSearch"
 import UpdateModal from "./UpdateModal"
+import { failed, success, warning } from "@components/crudModals"
 interface data {
 	Location: string
 	price: number
@@ -22,6 +23,13 @@ interface data {
 		barcode: string
 	}
 	id: string
+}
+type update = {
+	price: number
+	Location: string
+	Description: string
+	productStoreId: string
+	productId: string
 }
 interface props {
 	data: data[]
@@ -41,7 +49,7 @@ function UserInfo({ data, session }: props) {
 	const shownProduct = useMemo(() => {
 		if (search === "") return product
 		else return searchProducts(search, product) as data[]
-	}, [search])
+	}, [search, product])
 	const selectAll = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.checked) setSelected(product.map((d) => d.id))
 		else setSelected([])
@@ -58,7 +66,30 @@ function UserInfo({ data, session }: props) {
 			} else setSelected((prev) => prev.filter((prevId) => prevId !== product.id))
 		}
 	}, [])
-	const handleUpdate = () => {}
+	const handleUpdate = (d: update) => {
+		setProduct((prev) =>
+			prev.map((value) => {
+				if (value.id === d.productStoreId) {
+					return {
+						Location: d.Location,
+						price: d.price,
+						Product: value.Product,
+						id: d.productStoreId,
+					}
+				}
+				return value
+			})
+		)
+	}
+	const handleDelete = async () => {
+		const userRes = await warning(`Delete ${data.length} product/s`)
+		if (!userRes.isConfirmed) return
+		const res = await removeProduct(selected)
+		if ("e" in res) return failed(res.e)
+		if (res.data.error) return failed(res.data.error)
+		if (res.data.success) return success(`Deleted ${data.length} product/s`)
+		else return failed("An error occured")
+	}
 	const [updateSelect, setUpdateSelect] = useState<selectData>({})
 	const { Open, Modal, isOpen, setIsOpen } = useModal()
 	return (
@@ -83,7 +114,7 @@ function UserInfo({ data, session }: props) {
 						<Button
 							className=" red disabled:opacity-50"
 							disabled={selected.length < 1}
-							onClick={() => removeProduct(selected)}
+							onClick={handleDelete}
 						>
 							Delete Selected
 						</Button>

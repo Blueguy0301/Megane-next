@@ -161,9 +161,10 @@ const updateProductStore: nextFunction = async (req, res, user) => {
 			},
 		})
 		.then((d) => ({
-			...d,
-			id: d.id.toString(),
-			storeId: d.storeId.toString(),
+			price: d.price,
+			Location: d.Location,
+			Description: d.Description,
+			productStoreId: d.id.toString(),
 			productId: d.productId.toString(),
 		}))
 		.catch((e) => ({ error: e }))
@@ -176,15 +177,18 @@ const updateProductStore: nextFunction = async (req, res, user) => {
 const deleteProductStore: nextFunction = async (req, res, user) => {
 	const { pId }: { pId: any[] | string } = req.body
 	let data
-	if (!pId || testNumber(pId)) return res.json({ error: "invalid arguments" })
+	if (!pId) return res.json({ error: "invalid arguments" })
 	if (user.authorityId < authority.storeOwner)
 		return res.status(401).json({ error: "unauthorized" })
-	if (Array.isArray(pId)) data = pId.map(id => id)
-	else data = [BigInt(pId)]
+	if (Array.isArray(pId)) data = pId.map(id => BigInt(id))
+	else if (testNumber(pId)) data = [BigInt(pId)]
 	const Delete = await prisma.productStore
 		.deleteMany({ where: { id: { in: data } } })
 		.then(() => ({ success: true }))
-		.catch((e) => ({ error: e?.meta?.cause, success: false }))
+		.catch((e) => {
+			console.log('error @ product.tss:188', e)
+			return { error: e?.meta?.cause, success: false }
+		})
 	return res.json({ Delete })
 }
 //! todo : no error handling

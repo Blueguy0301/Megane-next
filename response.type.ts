@@ -49,10 +49,11 @@ export interface addProduct {
 export interface updateProduct {
 	error?: string | object
 	result?: {
-		name: string
-		barcode: string
-		Category: string
-		mass: string
+		price: number
+		Location: string,
+		Description: string,
+		productStoreId: string,
+		productId: string,
 	}
 }
 export interface deleteProduct {

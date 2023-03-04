@@ -16,7 +16,7 @@ import ProductForm from "./components/ProductForm"
 import FormData from "./components/FormData"
 
 type responseData = { status: number; data: addStoreProduct }
-
+type responseType = { data: productScanner }
 export default function page() {
 	const { register, handleSubmit, formState, watch, setValue, reset } =
 		useForm<formData>()
@@ -44,22 +44,23 @@ export default function page() {
 		}
 	}
 	const searchBarcode = async () => {
-		const response = await scannerRequest(Scanned, scanController)
-		if (!response || "e" in response) return
-		const { result, error } = response.data as productScanner
-		if (!result && error) {
-			return failed(error)
-		}
-		if (!result?.isStoreNew)
+		const response = (await scannerRequest(Scanned, scanController, {
+			barcode: Scanned,
+			productScan: true,
+		})) as responseType
+
+		if ("e" in response) return
+		if (response.data.error) return failed(response.data.error)
+		const { result } = response.data as productScanner
+		if (!result) return failed("No data found")
+		if (!result.isStoreNew)
 			return failed(`${result?.name} is already registered to the store.`)
-		if (result) {
-			setIsStoreNew(result?.isStoreNew ?? false)
-			setFormDisabled([!result?.newProduct, false])
-			setValue("name", result?.name)
-			setValue("Category", result?.Category)
-			setValue("mass", result?.mass)
-			return
-		}
+		setIsStoreNew(result?.isStoreNew ?? false)
+		setFormDisabled([!result?.newProduct, false])
+		setValue("name", result?.name)
+		setValue("Category", result?.Category)
+		setValue("mass", result?.mass)
+		return
 	}
 	const onSubmit: SubmitHandler<formData> = (data) => {
 		//* submit to api here.
