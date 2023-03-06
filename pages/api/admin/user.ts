@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import prisma from "../db"
 import { checkCredentials, hash, testNumber } from "../middleware"
-import { authority, nextFunction, user, userData } from "../../interface"
-
+import { authority, nextFunction, user, userData } from "@pages/types"
 function checkIfValid({ userName, password, storeId }: user, res: NextApiResponse) {
 	if (!userName || !password || !storeId) return res.json({ error: "no data found" })
 	if (testNumber(storeId) || userName.length > 20) {
@@ -17,7 +16,6 @@ export default async function handleUser(req: NextApiRequest, res: NextApiRespon
 	const credentials = await checkCredentials(req, res, authority.admin)
 	if (!credentials) return
 	if (verb === "POST") return addUser(req, res, credentials)
-	// if (verb === "UPDATE") return updateUser(req, res)
 	if (verb === "DELETE") return deleteUser(req, res, credentials)
 	else return res.status(405).end()
 }
@@ -25,7 +23,6 @@ export default async function handleUser(req: NextApiRequest, res: NextApiRespon
 const addUser: nextFunction = async (req, res) => {
 	const { userName, password, storeId, authorityId }: userData = req.body
 	if (!checkIfValid({ userName, password, storeId }, res)) return
-
 	const create = await prisma.users
 		.create({
 			data: {
@@ -46,7 +43,7 @@ const addUser: nextFunction = async (req, res) => {
 				return e.code
 			}
 		})
-	return res.json({ result: create })
+	return res.json(create)
 }
 
 //* tested

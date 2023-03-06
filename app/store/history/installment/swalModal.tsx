@@ -27,7 +27,7 @@ export const success = (title?: string) =>
 			popup: "swal-popup",
 		},
 	})
-export const failed = (message: string | object) =>
+export const failed = (message?: string | object) =>
 	typeof message === "object"
 		? swalModal.fire({
 				title: "An error has occured",
@@ -36,11 +36,22 @@ export const failed = (message: string | object) =>
 				showConfirmButton: false,
 				timer: 3000,
 				timerProgressBar: true,
+				customClass: {
+					cancelButton: "red",
+					confirmButton: "green",
+					popup: "swal-popup",
+				},
 		  })
 		: swalModal.fire({
 				title: "An error has occured",
 				icon: "error",
+				text: message ?? undefined,
 				showConfirmButton: false,
 				timer: 3000,
 				timerProgressBar: true,
+				customClass: {
+					cancelButton: "red",
+					confirmButton: "green",
+					popup: "swal-popup",
+				},
 		  })

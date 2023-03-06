@@ -15,7 +15,7 @@ export default async function handleStore(req: NextApiRequest, res: NextApiRespo
 	if (!credentials) return
 	if (verb === "POST") return addStore(req, res, credentials)
 	if (verb === "PUT") return updateStore(req, res, credentials)
-	if (verb === "DELETE") return deleteStore(req, res, credentials)
+	if (verb === "PATCH") return deleteStore(req, res, credentials)
 	else return res.status(405).end()
 }
 //* tested
@@ -33,10 +33,11 @@ const addStore: nextFunction = async (req, res) => {
 			id: v.id.toString(),
 		}))
 		.catch((e) => {
-			if (e.code === "P2002") return `${storeName} already exists`
-			else return e.code
+			if (e.code === "P2002") return { error: `${storeName} already exists` }
+			else return { error: e.code }
 		})
-	return res.json({ result: createStore })
+	if ("error" in createStore) return res.json(createStore)
+	else return res.json({ result: createStore })
 }
 //* tested
 const updateStore: nextFunction = async (req, res) => {
@@ -66,8 +67,8 @@ const deleteStore: nextFunction = async (req, res) => {
 			},
 		})
 		.then(() => ({
-			deleted: true,
+			success: true,
 		}))
-		.catch((e) => e)
-	return res.json({ result: removeStore })
+		.catch((e) => ({ success: false, error: e }))
+	return res.json(removeStore)
 }

@@ -9,7 +9,7 @@ type Props = {
 	onAccept?: MouseEventHandler
 	confirmText?: string | number
 	hideConfirm?: boolean
-	buttonSettings?: { disablehandle?: "true" | "false" }
+	buttonSettings?: { disablehandle?: "true" | "false"; [x: string]: any }
 	[x: string]: any
 }
 

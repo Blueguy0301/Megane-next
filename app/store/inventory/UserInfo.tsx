@@ -82,13 +82,16 @@ function UserInfo({ data, session }: props) {
 		)
 	}
 	const handleDelete = async () => {
-		const userRes = await warning(`Delete ${data.length} product/s`)
+		const userRes = await warning(`Delete ${selected.length} product/s`)
 		if (!userRes.isConfirmed) return
 		const res = await removeProduct(selected)
+		console.log(res)
 		if ("e" in res) return failed(res.e)
 		if (res.data.error) return failed(res.data.error)
-		if (res.data.success) return success(`Deleted ${data.length} product/s`)
-		else return failed("An error occured")
+		if (res.data.success) {
+			setProduct((prev) => prev.filter((d) => !selected.includes(d.id)))
+			return success(`Deleted ${selected.length} product/s`)
+		} else return failed("An error occured")
 	}
 	const [updateSelect, setUpdateSelect] = useState<selectData>({})
 	const { Open, Modal, isOpen, setIsOpen } = useModal()

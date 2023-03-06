@@ -1,4 +1,3 @@
-//* successfully migrated to nextAuth and added to response.type
 import { NextApiRequest, NextApiResponse } from "next"
 import { checkCredentials, checkIfValid, filter, testNumber } from "../middleware"
 import {
@@ -189,7 +188,7 @@ const deleteProductStore: nextFunction = async (req, res, user) => {
 			console.log('error @ product.tss:188', e)
 			return { error: e?.meta?.cause, success: false }
 		})
-	return res.json({ Delete })
+	return res.json(Delete)
 }
 //! todo : no error handling
 const getProductStore: nextFunction = async (req, res, user) => {

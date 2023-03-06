@@ -2,6 +2,10 @@
 
 A point of sales system made with NextJs, Prisma and CockroachDB.
 
+## About the project:
+
+I am using this project to learn more about Nextjs and how SSR and ISR works. This is my first time overall to using the next environment.
+
 ## Features
 
 1. Record products with barcodes or not.
@@ -29,10 +33,6 @@ npm run dev
 # or
 yarn dev
 ```
-
-## About the project:
-
-I am using this project to learn more about Nextjs and how SSR and ISR works. This is my first time overall to using the next environment.
 
 ## Starting the server
 
@@ -69,4 +69,3 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 1. css minify
 1. Qr code on generate barcode.
 1. Add extra charge on checkout
-1. update and delete selected on `/store/inventory`

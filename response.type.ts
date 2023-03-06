@@ -139,3 +139,20 @@ export interface getCheckOut {
 		date: Date
 	}
 }
+export interface createStore {
+	error?: string | object
+	result?: {
+		id: string;
+		name: string;
+	}
+}
+export type deleteStore = {
+	success: boolean,
+	error?: string | object
+}
+export type createUser = {
+	success: boolean,
+	error?: string | object
+
+}
+

@@ -55,7 +55,6 @@ const UpdateModal = (props: props) => {
 					return res.data.error
 				}
 				if (res.data.result) {
-					//todo : investigate why there's no productId here.
 					props.onUpdate(res.data.result)
 					setIsOpen((prev) => !prev)
 					success("Updated successfully")
