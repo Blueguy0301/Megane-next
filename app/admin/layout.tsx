@@ -1,5 +1,5 @@
 "use client"
-import { ReactNode, Suspense } from "react"
+import type { ReactNode } from "react"
 import Navbar from "@components/Navbar"
 import Scan from "@components/Scan"
 import { SessionProvider } from "next-auth/react"
