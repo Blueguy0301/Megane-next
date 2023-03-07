@@ -6,7 +6,6 @@ export default withAuth(
 	// `withAuth` augments your `Request` with the user's token.
 	// todo: fix this. it's working but not as intended
 	function middleware(req) {
-		// console.log("req: ", req)
 		if (!req.nextauth.token && req.nextUrl.pathname.startsWith("/login"))
 			return NextResponse.rewrite(new URL("/auth/login", req.url))
 		if (!req.nextauth.token)
@@ -41,5 +40,5 @@ export default withAuth(
 )
 
 export const config = {
-	matcher: ["/admin/:path*", "/store/:path*", "/product/:path*"],
+	matcher: ["/admin/:path", "/store/:path", "/product/:path"],
 }
