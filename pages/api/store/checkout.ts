@@ -1,6 +1,6 @@
 //* successfully migrated to nextAuth added types
 import { NextApiRequest, NextApiResponse } from "next"
-import { checkOutBody, authority, Invoice, nextFunction } from "../../interface"
+import { checkOutBody, authority, Invoice, nextFunction } from "@pages/types"
 import prisma from "../db"
 import { checkCredentials, checkIfValid, testNumber } from "../middleware"
 

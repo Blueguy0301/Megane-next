@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import bcrypt from "bcryptjs"
 import Jwt from "jsonwebtoken"
-import { authority, error, payload, userData } from "../interface"
+import { authority, error, payload, userData } from "@pages/types"
 import { authOptions } from "./auth/[...nextauth]"
 import { getServerSession, Session } from "next-auth"
 const secret = process.env.secret_key as string

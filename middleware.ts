@@ -1,6 +1,6 @@
 import { withAuth } from "next-auth/middleware"
-import { NextRequest, NextResponse } from "next/server"
-import { authority } from "./pages/interface"
+import { NextResponse } from "next/server"
+import { authority } from "@pages/types"
 
 export default withAuth(
 	// `withAuth` augments your `Request` with the user's token.
@@ -14,7 +14,7 @@ export default withAuth(
 
 		if (
 			req.nextUrl.pathname.startsWith("/admin") &&
-			req.nextauth.token.authorityId < authority.admin
+			req.nextauth.token?.authorityId < authority.admin
 		)
 			return NextResponse.rewrite(new URL("/auth/login?message=unauthorized", req.url))
 		if (

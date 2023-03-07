@@ -1,4 +1,4 @@
-import { productScanner } from "../response.type"
+import { productScanner } from "./response.type"
 import type { NextApiRequest, NextApiResponse } from "next"
 
 export type product = {
@@ -91,3 +91,4 @@ export type checkOutBody = {
 	customerName?: string
 	creditTotal: number
 }
+export const numberRegex = /^\d+$/

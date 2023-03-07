@@ -1,7 +1,7 @@
 "use client"
 import Scanner from "@components/Scanner"
 import Button from "@components/Button"
-import type { addProps } from "../../../interface"
+import type { addProps } from "@app/types"
 const Modal = (props: addProps) => {
 	const { Modal, Scanned, setScanned, errors, scanPressed } = props
 	const genRanHex = (size = 2) =>

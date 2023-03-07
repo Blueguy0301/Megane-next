@@ -4,7 +4,10 @@ import prisma from "@api/db"
 import { notFound } from "next/navigation"
 import Purchases from "./Purchases"
 import UserInfo from "./UserInfo"
+import { numberRegex } from "@pages/types"
+export const dynamic = "force-dynamic"
 async function getData(params: string) {
+	if (!numberRegex.test(params)) return
 	const data = await prisma.installments
 		.findFirst({
 			where: {

@@ -21,7 +21,6 @@ type props = {
 	id: string
 }
 const UserInfo = ({ data, id }: props) => {
-	const updateController = new AbortController()
 	const { Modal, setIsOpen, isOpen, Open } = useModal()
 	const installmentValue: installments = {
 		id,
@@ -55,7 +54,13 @@ const UserInfo = ({ data, id }: props) => {
 	}
 	return (
 		<>
-			<ModalForms modalOpened="update" modal={Modal} isOpen={isOpen} selected={id} />
+			<ModalForms
+				modalOpened="update"
+				modal={Modal}
+				isOpen={isOpen}
+				selected={id}
+				handleUpdate={() => {}}
+			/>
 			<h2>Installment history </h2>
 			<div className="flex flex-row items-start justify-center">
 				<div className="">

@@ -25,7 +25,7 @@
 			"@css/*": ["./styles/*"],
 			"@responses": ["./response.type.ts"],
 			"@app/types": ["./app/interface.ts"],
-			"@pages/types": ["./pages/interface.ts"]
+			"@pages/types": ["./interface.ts"]
 		}
 	},
 	"include": [
@@ -33,7 +33,7 @@
 		"**/*.ts",
 		"**/*.tsx",
 		".next/types/**/*.ts",
-		"types/next-auth.d.ts "
+		"./types/next-auth.d.ts "
 	],
 	"exclude": ["node_modules"]
 }

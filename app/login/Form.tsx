@@ -3,7 +3,7 @@
 import { signIn, useSession } from "next-auth/react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import Button from "@components/Button"
-import { login } from "../interface"
+import { login } from "@app/types"
 import Image from "next/image"
 import React from "react"
 const Form = () => {

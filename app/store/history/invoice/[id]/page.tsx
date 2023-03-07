@@ -4,7 +4,11 @@ import prisma from "@api/db"
 import { convertDate } from "@components/dateformat"
 import { notFound } from "next/navigation"
 import Link from "next/link"
+import { numberRegex } from "@pages/types"
+export const dynamic = "force-dynamic"
 async function getData(params: string) {
+	if (!numberRegex.test(params)) return
+
 	const data = await prisma.invoice
 		.findFirst({
 			where: {

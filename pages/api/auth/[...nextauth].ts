@@ -3,7 +3,7 @@ import NextAuth, { User } from "next-auth"
 import type { NextAuthOptions } from "next-auth"
 import prisma from "../db"
 import { compare } from "../middleware"
-import { userDetails } from "../../interface"
+import { userDetails } from "@pages/types"
 export const authOptions: NextAuthOptions = {
 	providers: [
 		CredentialsProvider({

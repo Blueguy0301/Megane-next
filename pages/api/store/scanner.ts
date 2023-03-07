@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { authority, nextFunction, product } from "../../interface"
+import { authority, nextFunction, product } from "@pages/types"
 import prisma from "../db"
 import { checkCredentials } from "@api/middleware"
 export default async function handleProducts(req: NextApiRequest, res: NextApiResponse) {

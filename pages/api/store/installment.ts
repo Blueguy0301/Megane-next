@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { nextFunction } from "../../interface"
+import { nextFunction } from "@pages/types"
 import { checkCredentials, checkIfValid, testNumber } from "../middleware"
-import { installments } from "../../interface"
+import { installments } from "@pages/types"
 import prisma from "../db"
 type installment = {
 	id: string[] | string
