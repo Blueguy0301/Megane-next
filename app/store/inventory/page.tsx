@@ -2,12 +2,11 @@
 //* Table Migrated
 import UserInfo from "./UserInfo"
 import { authOptions } from "@api/auth/[...nextauth]"
-import { getServerSession } from "next-auth"
+import { getServerSession, Session } from "next-auth"
 import { redirect } from "next/navigation"
 import prisma from "@api/db"
 export default async function page() {
-	const session = await getServerSession(authOptions)
-	if (!session) redirect("/login")
+	const session = (await getServerSession(authOptions)) as Session
 	const tableData = await getProductStore(session.user.storeId)
 	return (
 		<div className="page flex-col gap-3 p-4 ">
@@ -15,7 +14,7 @@ export default async function page() {
 		</div>
 	)
 }
-async function getProductStore(storeId: number) {
+async function getProductStore(storeId: string) {
 	const products = await prisma.productStore
 		.findMany({
 			where: { storeId: BigInt(storeId) },

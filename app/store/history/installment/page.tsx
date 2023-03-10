@@ -1,13 +1,15 @@
 //* table migrated
 import UserInfo from "./UserInfo"
 import prisma from "@api/db"
-import { getServerSession } from "next-auth"
+import { getServerSession, Session } from "next-auth"
 import { authOptions } from "@api/auth/[...nextauth]"
 import { redirect } from "next/navigation"
-async function getData() {
+async function getData(storeId: string) {
 	const data = await prisma.installments
 		.findMany({
-			where: {},
+			where: {
+				storeId: BigInt(storeId),
+			},
 			take: 50,
 			select: {
 				id: true,
@@ -31,9 +33,8 @@ async function getData() {
 	return data
 }
 const page = async () => {
-	const data = await getData()
-	const session = await getServerSession(authOptions)
-	if (!session) redirect("/login")
+	const session = (await getServerSession(authOptions)) as Session
+	const data = await getData(session.user.storeId)
 	return (
 		<div className="page flex-col gap-3 p-4">
 			<h3>Installments</h3>

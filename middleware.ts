@@ -6,31 +6,37 @@ export default withAuth(
 	// `withAuth` augments your `Request` with the user's token.
 	// todo: fix this. it's working but not as intended
 	function middleware(req) {
-		if (!req.nextauth.token && req.nextUrl.pathname.startsWith("/login"))
-			return NextResponse.rewrite(new URL("/auth/login", req.url))
+		if (!req.nextauth.token && req.nextUrl.pathname.startsWith("/login")) {
+			console.log('pasok');
+			return NextResponse.redirect(new URL("/login", req.url))
+		}
 		if (!req.nextauth.token)
-			return NextResponse.rewrite(new URL("/auth/login?message=invalid token", req.url))
+			return NextResponse.redirect(new URL("/login?message=invalid token", req.url))
 
 		if (
 			req.nextUrl.pathname.startsWith("/admin") &&
 			req.nextauth.token?.authorityId < authority.admin
-		)
-			return NextResponse.rewrite(new URL("/auth/login?message=unauthorized", req.url))
+		) {
+			console.log('redirect to store/dashboard');
+			return NextResponse.redirect(new URL("/store/dashboard?message=unauthorized", req.url),)
+		}
 		if (
 			req.nextUrl.pathname.startsWith("/stores") &&
 			req.nextauth.token?.authorityId < authority.registered
 		)
-			return NextResponse.rewrite(new URL("/auth/login?message=unauthorized", req.url))
+			return NextResponse.redirect(new URL("/login?message=unauthorized", req.url))
 		if (
 			req.nextUrl.pathname.startsWith("/product") &&
 			req.nextauth.token?.authorityId < authority.storeOwner
-		)
-			return NextResponse.rewrite(new URL("/auth/login?message=unauthorized", req.url))
+		) {
+			console.log('nasa products');
+			return NextResponse.redirect(new URL("/login?message=unauthorized", req.url))
+		}
 		if (
 			req.nextUrl.pathname.startsWith("/login") &&
 			req.nextauth.token?.authorityId >= authority.registered
 		)
-			return NextResponse.rewrite(new URL("/store/dashboard", req.url))
+			return NextResponse.redirect(new URL("/store/dashboard", req.url))
 	},
 	{
 		callbacks: {
@@ -40,5 +46,5 @@ export default withAuth(
 )
 
 export const config = {
-	matcher: ["/admin/:path", "/store/:path", "/product/:path"],
+	matcher: ["/admin/:path*", "/store/:path*", "/product/:path*"],
 }

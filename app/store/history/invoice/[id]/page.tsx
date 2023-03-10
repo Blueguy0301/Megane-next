@@ -41,9 +41,7 @@ async function getData(params: string) {
 	return data
 }
 const page = async ({ params }: { params: { id: string } }) => {
-	const session = getServerSession(authOptions)
 	const data = await getData(params.id)
-	if (!session) return
 	if (!data || !data.InvoicePurchases) return notFound()
 	return (
 		<div className="page flex-col gap-3 p-4">

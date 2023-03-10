@@ -33,7 +33,7 @@ export interface payload {
 export interface userDetails {
 	id: string
 	authorityId: number
-	storeId: number
+	storeId: string
 	userName: string
 	password?: string
 }
