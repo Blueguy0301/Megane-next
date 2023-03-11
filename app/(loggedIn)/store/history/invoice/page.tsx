@@ -3,7 +3,6 @@ import UserInfo from "./UserInfo"
 import prisma from "@api/db"
 import { getServerSession, Session } from "next-auth"
 import { authOptions } from "@api/auth/[...nextauth]"
-import { redirect } from "next/navigation"
 async function getData(storeId: string) {
 	const data = await prisma.invoice
 		.findMany({

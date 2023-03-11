@@ -5,13 +5,18 @@ import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
 import Image from "next/image"
 import Form from "./Form"
-const page = async () => {
-	//! change this when a neww update  comes.
+type props = {
+	searchParams?: {
+		callbackUrl?: string
+		error?: string
+	}
+}
+const page = async (props: props) => {
 	const session = await getServerSession(authOptions)
 	if (session) redirect("/store/dashboard")
 	return (
 		<div className="page flex flex-col items-center justify-end">
-			<Form />
+			<Form error={props.searchParams?.error} />
 		</div>
 	)
 }

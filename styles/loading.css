@@ -21,7 +21,15 @@
 	border: 10px solid;
 	border-color: rgb(29 78 216) transparent;
 }
+.small {
+	width: 1.5rem;
+	height: 1.5rem;
+}
 
+.small.loader::after {
+	width: 0.75rem;
+	height: 0.75rem;
+}
 @keyframes rotation {
 	0% {
 		transform: rotate(0deg);

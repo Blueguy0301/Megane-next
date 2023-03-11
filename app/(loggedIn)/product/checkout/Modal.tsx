@@ -1,7 +1,7 @@
 "use client"
 import type { ChangeEvent, Dispatch, SetStateAction, MutableRefObject } from "react"
 import type { checkoutProducts, modal } from "@app/types"
-import type { addCheckout, storeProductScanner } from "../../../response.type"
+import type { addCheckout, storeProductScanner } from "@responses"
 import { useState, useEffect } from "react"
 import { checkOut, scannerRequest } from "@components/request"
 import { minCodeLength } from "@pages/types"

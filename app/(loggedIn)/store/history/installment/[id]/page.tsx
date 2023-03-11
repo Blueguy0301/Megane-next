@@ -1,5 +1,3 @@
-import { authOptions } from "@api/auth/[...nextauth]"
-import { getServerSession } from "next-auth"
 import prisma from "@api/db"
 import { notFound } from "next/navigation"
 import Purchases from "./Purchases"

@@ -1,5 +1,4 @@
 "use client"
-import React from "react"
 import { formData } from "@app/types"
 
 const FormData = (props: { formData: formData; Scanned: string }) => {

@@ -34,7 +34,7 @@ const Button = (props: props) => {
 		return (
 			<Link
 				href={props.href}
-				className={`${props.className ?? ""} button`}
+				className={`${props.className ?? ""} button disabled:opacity-50`}
 				type="button"
 				{...onClick}
 			>

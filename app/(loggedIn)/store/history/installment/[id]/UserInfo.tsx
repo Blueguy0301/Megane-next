@@ -1,7 +1,7 @@
 "use client"
 import type { installments } from "@pages/types"
 import useModal from "@components/useModal"
-import React, { useCallback } from "react"
+import { useCallback } from "react"
 import { removeInstallment, updateInstallment } from "@components/request"
 import Button from "@components/Button"
 import { failed, success, warning } from "@components/crudModals"
