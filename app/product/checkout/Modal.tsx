@@ -4,8 +4,8 @@ import type { checkoutProducts, modal } from "@app/types"
 import type { addCheckout, storeProductScanner } from "../../../response.type"
 import { useState, useEffect } from "react"
 import { checkOut, scannerRequest } from "@components/request"
-import { errorModal, successModal } from "./swalModals"
 import { minCodeLength } from "@pages/types"
+import { success, failed } from "@components/crudModals"
 type formData = {
 	name?: string
 	amount?: number
@@ -35,10 +35,11 @@ const Modal = (props: Props) => {
 		const res = await checkOut(products, Total, formData, selected !== "Cash")
 		if ("e" in res) return
 		const { result, error: serverError } = res.data as addCheckout
-		if (serverError) return errorModal(serverError)
+		if (serverError) return failed(serverError)
 		else if (result) {
+			const change = (formData.amount ?? 0) - Total
 			setProducts([])
-			return successModal(result, (formData.amount ?? 0) - Total)
+			return success(`Checkout success! \n Total :${result.total} \n Change : ${change}`)
 		}
 		return
 	}

@@ -10,8 +10,7 @@ import useModal from "@components/useModal"
 import Table from "@components/Table"
 import UserModal from "./UserModal"
 import { addUser, newStore } from "./adminRequests"
-import { failed } from "../store/history/installment/swalModal"
-import { success } from "@components/crudModals"
+import { success, failed } from "@components/crudModals"
 import { userDetails } from "@pages/types"
 interface data {
 	id: string

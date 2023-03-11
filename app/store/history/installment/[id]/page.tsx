@@ -39,7 +39,7 @@ async function getData(params: string) {
 }
 const page = async ({ params }: { params: { id: string } }) => {
 	const data = await getData(params.id)
-	if (!data || !data.customerName || !data.total) return notFound()
+	if (!data || !data.customerName) return notFound()
 	else
 		return (
 			<div className="page flex-col gap-3 p-4">

@@ -13,6 +13,7 @@ import useModal from "@components/useModal"
 import ModalForms from "./ModalForms"
 import { removeInstallment } from "@components/request"
 import { failed, success, warning } from "@components/crudModals"
+import Loading from "@components/Loading"
 interface data {
 	total: number
 	customerName: string
@@ -69,6 +70,7 @@ function UserInfo({ data, session }: props) {
 			},
 		])
 	}
+
 	return (
 		<>
 			<div className="flex w-full flex-row flex-wrap items-center justify-center gap-3">

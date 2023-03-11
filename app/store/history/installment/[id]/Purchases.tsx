@@ -3,7 +3,7 @@ import Table from "@components/Table"
 import { convertDate } from "@components/dateformat"
 import Button from "@components/Button"
 import { deleteInvoice } from "@components/request"
-import { deleteFailed, deletePrompt, deleteSuccess } from "../../swalModal"
+import { failed, warning, success } from "@components/crudModals"
 import { useCallback, useState } from "react"
 type props = {
 	data?: {
@@ -17,14 +17,14 @@ const UserInfo = (props: props) => {
 	const [data, setData] = useState(initialData)
 	const handleDelete = useCallback((id: string) => {
 		return async () => {
-			const modalRes = await deletePrompt("Delete this invoice?")
+			const modalRes = await warning("Delete this invoice?")
 			if (!modalRes.isConfirmed) return
 			const res = await deleteInvoice(id)
 			if ("e" in res || "error" in res.data) return
 			if (res.data.success) {
 				setData((prev) => prev?.filter((invoice) => !data?.includes(invoice)))
-				deleteSuccess(res.data.count)
-			} else deleteFailed()
+				success(`Deleted Successfully`)
+			} else failed("An error Has occured")
 		}
 	}, [])
 	return (

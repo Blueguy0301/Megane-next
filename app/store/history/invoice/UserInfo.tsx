@@ -11,9 +11,7 @@ import { useMemo, useCallback } from "react"
 import { convertDate } from "@components/dateformat"
 import searchInvoice from "./invoiceSearch"
 import { deleteInvoice } from "@components/request"
-import { deleteFailed, deleteSuccess } from "../swalModal"
-import { warning } from "@components/crudModals"
-import { failed } from "../installment/swalModal"
+import { failed, success, warning } from "@components/crudModals"
 import Table from "@components/Table"
 interface data {
 	id: string
@@ -53,12 +51,12 @@ function UserInfo({ data, session }: props) {
 		const warningRes = await warning()
 		if (!warningRes.isConfirmed) return
 		const res = await deleteInvoice(selected)
-		if ("e" in res || "error" in res.data) return deleteFailed()
+		if ("e" in res || "error" in res.data) return success()
 		if (res.data.success) {
 			setInvoice((prev) => prev.filter((data) => !selected.includes(data.id)))
 			setSelected([])
-			deleteSuccess(res.data.count)
-		} else deleteFailed()
+			success(`Deleted ${res.data.count} invoices`)
+		} else failed("An error occured")
 	}
 	return (
 		<>

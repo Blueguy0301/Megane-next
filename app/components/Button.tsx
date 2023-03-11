@@ -9,8 +9,8 @@ type button = {
 }
 type props =
 	| (button & {
-			type?: "button" | "submit" | "reset" | undefined
-			onClick?: MouseEventHandler<HTMLButtonElement> | undefined
+			type?: "button" | "submit" | "reset"
+			onClick?: MouseEventHandler<HTMLButtonElement>
 			className?: string
 			children: ReactNode
 			disabled?: any
@@ -20,6 +20,7 @@ type props =
 			type: "Link"
 			href: string
 			className?: string
+			onClick?: MouseEventHandler
 	  })
 const Button = (props: props) => {
 	const { type, children, href, onClick, className, disabled, ...rest } = props
@@ -31,22 +32,27 @@ const Button = (props: props) => {
 	}, [disabled])
 	if (props.type === "Link") {
 		return (
-			<Link href={props.href} className={`${props.className ?? ""} button`} type="button">
+			<Link
+				href={props.href}
+				className={`${props.className ?? ""} button`}
+				type="button"
+				{...onClick}
+			>
 				{props.children}
 			</Link>
 		)
-	}
-	return (
-		<button
-			type={props.type ?? "button"}
-			className={`${props.className ?? ""} button`}
-			onClick={onClick}
-			disabled={isDisabled}
-			{...rest}
-		>
-			{props.children}
-		</button>
-	)
+	} else
+		return (
+			<button
+				type={props.type ?? "button"}
+				className={`${props.className ?? ""} button`}
+				onClick={onClick}
+				disabled={isDisabled}
+				{...rest}
+			>
+				{props.children}
+			</button>
+		)
 }
 
 export default Button

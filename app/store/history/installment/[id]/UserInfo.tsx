@@ -4,7 +4,7 @@ import useModal from "@components/useModal"
 import React, { useCallback } from "react"
 import { removeInstallment, updateInstallment } from "@components/request"
 import Button from "@components/Button"
-import { failed, success, warning } from "../swalModal"
+import { failed, success, warning } from "@components/crudModals"
 import ModalForms from "../ModalForms"
 type props = {
 	data: {

@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -51,7 +52,7 @@ const NavbarClient = () => {
 								</Link>
 							</>
 						)}
-						<Link className="nav-button" href="/profile">
+						<Link className="nav-button" href="/store/settings">
 							Settings
 						</Link>
 						<button

@@ -1,9 +1,8 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 //* Table Migrated
 import UserInfo from "./UserInfo"
 import { authOptions } from "@api/auth/[...nextauth]"
-import { getServerSession, Session } from "next-auth"
-import { redirect } from "next/navigation"
+import { getServerSession } from "next-auth"
+import type { Session } from "next-auth"
 import prisma from "@api/db"
 export default async function page() {
 	const session = (await getServerSession(authOptions)) as Session

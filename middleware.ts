@@ -27,9 +27,9 @@ export default withAuth(
 			return NextResponse.redirect(new URL("/login?message=unauthorized", req.url))
 		if (
 			req.nextUrl.pathname.startsWith("/product") &&
-			req.nextauth.token?.authorityId < authority.storeOwner
+			req.nextauth.token?.authorityId < authority.registered
 		) {
-			console.log('nasa products');
+			console.log('nasa products', req.nextauth.token?.authorityId);
 			return NextResponse.redirect(new URL("/login?message=unauthorized", req.url))
 		}
 		if (
