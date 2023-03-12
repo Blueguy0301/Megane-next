@@ -47,7 +47,6 @@ The API uses the following libraries :
 ```json
 "@prisma/client": "^4.9.0",
 "bcryptjs": "^2.4.3",
-"jsonwebtoken": "^9.0.0",
 "next-auth": "^4.18.7",
 ```
 
