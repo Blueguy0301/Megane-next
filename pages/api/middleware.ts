@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import bcrypt from "bcryptjs"
-import Jwt from "jsonwebtoken"
 import { authority, error, payload, userData } from "@pages/types"
 import { authOptions } from "./auth/[...nextauth]"
 import { getServerSession, Session } from "next-auth"
@@ -50,23 +49,7 @@ export function filter(data: object) {
 		{}
 	)
 }
-/**
- *
- * @param data the new payload
- * @returns new token
- */
-export function renewToken(data: object) {
-	try {
-		const token = Jwt.sign(
-			{ data: data, cty: "application/json", iat: Date.now() },
-			secret,
-			{ expiresIn: "7 days" }
-		)
-		return token
-	} catch (e) {
-		return ""
-	}
-}
+
 export const hash = (password: string) => bcrypt.hashSync(password, salt)
 export const compare = (password: string, passwordDB: string) =>
 	bcrypt.compareSync(password, passwordDB)
