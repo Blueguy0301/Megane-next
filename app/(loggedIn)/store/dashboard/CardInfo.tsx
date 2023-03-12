@@ -1,7 +1,6 @@
 import type { ReactNode } from "react"
-import Image from "next/image"
 type props = {
-	src: string
+	icon: ReactNode
 	alt: string
 	title: string
 	value: string | number
@@ -16,7 +15,8 @@ export default function CardInfo(props: props) {
 			}`}
 		>
 			<div className="icon">
-				<Image src={props.src} alt={props.alt} width="27" height="27" decoding="async" />
+				{props.icon}
+				{/* <Image src={props.src} alt={props.alt} width="27" height="27" decoding="async" /> */}
 			</div>
 			<div className="card-row">
 				<h4 className="min-w-[10ch]">{props.title}</h4>

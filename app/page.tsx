@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth"
 import React from "react"
 import Button from "@components/Button"
 import { authOptions } from "@api/auth/[...nextauth]"
+
 const page = async () => {
 	const session = await getServerSession(authOptions)
 	return (
@@ -21,6 +22,7 @@ const page = async () => {
 					Login
 				</Button>
 			)}
+			<div className=""></div>
 		</div>
 	)
 }

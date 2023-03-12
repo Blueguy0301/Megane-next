@@ -4,6 +4,8 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import type { MouseEvent } from "react"
 import { signOut } from "next-auth/react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faCaretDown, faSun } from "@fortawesome/free-solid-svg-icons"
 //todo : rework.
 const NavbarClient = () => {
 	const [isShown, setIsShown] = useState(false)
@@ -75,13 +77,13 @@ const NavbarClient = () => {
 					</>
 				)}
 				<button type="button" onClick={handleDropdown} className="nav-button">
-					<Image src="/down.svg" height={23} width={14} alt="Dropdown" />
+					<FontAwesomeIcon icon={faCaretDown} size="1x" />
 				</button>
 			</div>
 			{/* theme */}
 			<div className="theme select-none">
 				<button type="button">
-					<Image src="/light.svg" height={30} width={30} alt="theme switch" />
+					<FontAwesomeIcon icon={faSun} inverse size="2x" />
 				</button>
 			</div>
 		</>

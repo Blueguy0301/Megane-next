@@ -12,6 +12,8 @@ import UserModal from "./UserModal"
 import { addUser, newStore } from "./adminRequests"
 import { success, failed } from "@components/crudModals"
 import { userDetails } from "@pages/types"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faSearch } from "@fortawesome/free-solid-svg-icons"
 interface data {
 	id: string
 	name: string
@@ -112,15 +114,9 @@ function Content({ data }: props) {
 				>
 					Delete Selected
 				</Button>
+
 				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-3 md:ml-auto">
-					<Image
-						src="/search.svg"
-						width="27"
-						height="27"
-						decoding="async"
-						alt=""
-						className="mr-3"
-					/>
+					<FontAwesomeIcon icon={faSearch} className="fa-inverse mr-3" />
 					<input
 						type="search"
 						id="table-search"

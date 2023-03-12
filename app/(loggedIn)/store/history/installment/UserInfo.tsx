@@ -6,14 +6,15 @@ import TableData from "@components/Table"
 import { ChangeEvent, useState } from "react"
 import type { Session } from "next-auth"
 import Button from "@components/Button"
-import Image from "next/image"
 import { authority } from "@pages/types"
 import { useMemo, useCallback } from "react"
 import useModal from "@components/useModal"
 import ModalForms from "./ModalForms"
 import { removeInstallment } from "@components/request"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+
 import { failed, success, warning } from "@components/crudModals"
-import Loading from "@components/Loading"
+import { faSearch } from "@fortawesome/free-solid-svg-icons"
 interface data {
 	total: number
 	customerName: string
@@ -97,14 +98,7 @@ function UserInfo({ data, session }: props) {
 					New Installment
 				</Open>
 				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-3 md:ml-auto">
-					<Image
-						src="/search.svg"
-						width="27"
-						height="27"
-						decoding="async"
-						alt="Search"
-						className="mr-3"
-					/>
+					<FontAwesomeIcon icon={faSearch} className="mr-3" inverse />
 					<input
 						type="search"
 						id="table-search"

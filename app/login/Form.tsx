@@ -7,6 +7,8 @@ import { login } from "@app/types"
 import Image from "next/image"
 import { useState } from "react"
 import "@css/loading.css"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUser } from "@fortawesome/free-solid-svg-icons"
 type props = {
 	error?: string
 }
@@ -39,7 +41,7 @@ const Form = (props: props) => {
 						disabled={isLoggingIn}
 						className="flex flex-col items-center gap-4 p-5 disabled:opacity-50  "
 					>
-						<Image src="/user.svg" alt="user" width={40} height={40} />
+						<FontAwesomeIcon icon={faUser} className="fa-3x fa-inverse" />
 
 						<label htmlFor="username">Username</label>
 						<input type="text" {...register("username")} className="login-input" />

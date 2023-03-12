@@ -7,6 +7,18 @@ import { authority } from "@pages/types"
 import Card from "./Card"
 import CardInfo from "./CardInfo"
 import { notFound } from "next/navigation"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import {
+	faBagShopping,
+	faCartPlus,
+	faCartShopping,
+	faChartArea,
+	faChartLine,
+	faCoins,
+	faPesoSign,
+	faStore,
+	faUser,
+} from "@fortawesome/free-solid-svg-icons"
 const getData = async (storeId: any) => {
 	const date = new Date()
 	const storeInfo = await prisma.stores.findFirst({
@@ -53,22 +65,27 @@ export default async function page() {
 					<div className="flex flex-row flex-wrap justify-start gap-10">
 						<h2 className="w-full">Overview</h2>
 						<CardInfo
-							src="/sales.svg"
+							icon={<FontAwesomeIcon icon={faCoins} size="2x" inverse />}
 							alt="sales"
 							title="Unpaid Credits"
 							value={Installments}
 						/>
-						<CardInfo src="/profit.svg" alt="profit" title="Profit" value={total} />
+						<CardInfo
+							icon={<FontAwesomeIcon icon={faPesoSign} size="2x" inverse />}
+							alt="profit"
+							title="Profit"
+							value={total}
+						/>
 					</div>
 					<div className="flex flex-row flex-wrap justify-start gap-10">
 						<CardInfo
-							src="/sold.svg"
 							alt="Invoices"
 							title="Invoices"
 							value={data.Invoices.length}
+							icon={<FontAwesomeIcon icon={faCartShopping} size="2x" inverse />}
 						/>
 						<CardInfo
-							src="/revenue.svg"
+							icon={<FontAwesomeIcon icon={faChartLine} size="2x" inverse />}
 							alt="revenue"
 							title="Revenue"
 							value={total + Installments}
@@ -79,6 +96,7 @@ export default async function page() {
 					<div className="flex flex-row flex-wrap justify-start gap-10">
 						<h2 className="w-full">About the Store</h2>
 						<CardInfo
+							icon={<FontAwesomeIcon icon={faStore} size="2x" inverse />}
 							className="side"
 							src="/store.svg"
 							alt=" store"
@@ -86,6 +104,7 @@ export default async function page() {
 							value={data.name}
 						/>
 						<CardInfo
+							icon={<FontAwesomeIcon icon={faUser} size="2x" inverse />}
 							className="side"
 							src="/user.svg"
 							alt="users"
@@ -95,7 +114,7 @@ export default async function page() {
 					</div>
 					<CardInfo
 						className="side"
-						src="/products.svg"
+						icon={<FontAwesomeIcon icon={faBagShopping} size="2x" inverse />}
 						alt="products"
 						title="No. of Products"
 						value={data._count.productStore}

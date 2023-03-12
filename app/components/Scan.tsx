@@ -1,20 +1,14 @@
-import Image from "next/image"
+import { faBarcode } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import Link from "next/link"
 
 export default function Scan() {
 	return (
 		<Link
-			href="/product/checkout"
-			className="scan fixed flex items-center rounded-full bg-blue-700 "
+			href="/store/checkout"
+			className="scan fixed flex max-h-20 flex-col items-center justify-center rounded-full bg-blue-700 p-2 "
 		>
-			<Image
-				className=""
-				src="/bar.svg"
-				width="33"
-				height="29"
-				alt="scan"
-				decoding="async"
-			/>
+			<FontAwesomeIcon icon={faBarcode} color="white" size="2x" />
 		</Link>
 	)
 }

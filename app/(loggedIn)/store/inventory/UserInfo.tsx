@@ -14,6 +14,8 @@ import { removeProduct } from "@components/request"
 import searchProducts from "./productSearch"
 import UpdateModal from "./UpdateModal"
 import { failed, success, warning } from "@components/crudModals"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faSearch } from "@fortawesome/free-solid-svg-icons"
 interface data {
 	Location: string
 	price: number
@@ -109,7 +111,7 @@ function UserInfo({ data, session }: props) {
 					<>
 						<Button
 							type="Link"
-							href="/product/add"
+							href="/store/add"
 							className="flex items-center justify-center"
 						>
 							Add Product
@@ -131,14 +133,7 @@ function UserInfo({ data, session }: props) {
 					</>
 				)}
 				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-3 md:ml-auto">
-					<Image
-						src="/search.svg"
-						width="27"
-						height="27"
-						decoding="async"
-						alt=""
-						className="mr-3"
-					/>
+					<FontAwesomeIcon icon={faSearch} className="mr-3" inverse />
 					<input
 						type="search"
 						id="table-search"
