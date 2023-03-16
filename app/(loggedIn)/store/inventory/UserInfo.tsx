@@ -55,9 +55,7 @@ function UserInfo({ data, session }: props) {
 		else return searchProducts(search, product) as data[]
 	}, [search, product])
 	const page = current * maxPageNumber
-	console.log(page)
 	const lastPage = page - maxPageNumber
-	console.log(lastPage)
 	const selectAll = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.checked) setSelected(product.map((d) => d.id))
 		else setSelected([])
@@ -190,9 +188,9 @@ function UserInfo({ data, session }: props) {
 			</Table>
 
 			<TablePagination
-				shown={page}
+				shown={allProducts.length % 50 !== 0 ? allProducts.length : page}
 				current={lastPage + 1}
-				total={allProducts.length}
+				total={allProducts.length || 1}
 				setPage={setCurrent}
 				page={current}
 			/>

@@ -5,7 +5,6 @@ import TablePagination from "@components/TablePagination"
 import { ChangeEvent, useState } from "react"
 import type { Session } from "next-auth"
 import Button from "@components/Button"
-import Image from "next/image"
 import { authority } from "@pages/types"
 import { useMemo, useCallback } from "react"
 import { convertDate } from "@components/dateformat"
@@ -15,6 +14,7 @@ import { failed, success, warning } from "@components/crudModals"
 import Table from "@components/Table"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSearch } from "@fortawesome/free-solid-svg-icons"
+import { maxPageNumber } from "@app/types"
 interface data {
 	id: string
 	dateTime: string
@@ -26,6 +26,7 @@ interface props {
 	session: Session
 }
 function UserInfo({ data, session }: props) {
+	const [page, setPage] = useState(1)
 	//* memoize this
 	const [Invoice, setInvoice] = useState(
 		data.map((value) => ({
@@ -35,7 +36,7 @@ function UserInfo({ data, session }: props) {
 	)
 	const [search, setSearch] = useState("")
 	const [selected, setSelected] = useState<string[]>([])
-	const shownProduct = useMemo(() => {
+	const allInvoice = useMemo(() => {
 		if (search === "") return Invoice
 		else return searchInvoice(search, Invoice) as data[]
 	}, [search, Invoice])
@@ -60,6 +61,9 @@ function UserInfo({ data, session }: props) {
 			success(`Deleted ${res.data.count} invoices`)
 		} else failed("An error occured")
 	}
+	const firstPage = page * maxPageNumber
+	const lastPage = firstPage - maxPageNumber
+	const shownInvoice = allInvoice.slice(lastPage, page)
 	return (
 		<>
 			<div className="flex w-full flex-row flex-wrap items-center justify-center  gap-3">
@@ -93,7 +97,7 @@ function UserInfo({ data, session }: props) {
 				onSelect={(e) => selectAll(e)}
 				headers={["Total", "Date", "Buyer", "Action"]}
 			>
-				{shownProduct.map((invoice, a) => (
+				{shownInvoice.map((invoice, a) => (
 					<tr
 						className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
 						key={a}
@@ -123,8 +127,11 @@ function UserInfo({ data, session }: props) {
 				))}
 			</Table>
 			<TablePagination
-				shown={Invoice.length}
-				current={50 > Invoice.length ? 1 : Invoice.length - 49}
+				shown={page}
+				current={lastPage + 1}
+				page={page}
+				setPage={setPage}
+				total={allInvoice.length || 1}
 			/>
 		</>
 	)

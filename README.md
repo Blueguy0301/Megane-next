@@ -59,8 +59,6 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 1. Logo
 1. optimize addProduct on `/api/product.ts`. It takes 1.5s to create a product
 1. optimize installments on `/api/installment.ts`. It takes 500ms to create,update and delete an installment
-1. seperate server components to client compontents
-1. have page to be a server component by default. ON ALL FILES
 1. change Swal color schemes
 1. fix svgs
 1. Button hover efffects
@@ -68,4 +66,4 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 1. Qr code on generate barcode.
 1. Add extra charge on checkout
 1. loading screen when a Link is pressed
-1. next-pwa
+1. edit product barcode on admin panel

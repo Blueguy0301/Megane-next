@@ -177,10 +177,13 @@ function Content({ data }: props) {
 				))}
 				{Stores.length < 1 && <td className="tr">No Data found</td>}
 			</Table>
-			<TablePagination
+			{/* <TablePagination
 				shown={Stores.length}
 				current={50 > Stores.length ? 1 : Stores.length - 49}
-			/>
+						page={}
+				setPage={}
+				total={}
+			/> */}
 		</>
 	)
 }

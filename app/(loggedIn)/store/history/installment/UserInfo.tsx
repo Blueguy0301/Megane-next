@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import { failed, success, warning } from "@components/crudModals"
 import { faSearch } from "@fortawesome/free-solid-svg-icons"
+import { maxPageNumber } from "@app/types"
 interface data {
 	total: number
 	customerName: string
@@ -33,7 +34,8 @@ function UserInfo({ data, session }: props) {
 	const [selected, setSelected] = useState<string[]>([])
 	const [modalOpened, setModalOpened] = useState("")
 	const [id, setId] = useState("")
-	const shownProduct = useMemo(() => {
+	const [page, setPage] = useState(1)
+	const allInstallments = useMemo(() => {
 		if (search === "") return installments
 		// else return searchInvoice(search, Invoice) as data[]
 		return installments
@@ -71,7 +73,9 @@ function UserInfo({ data, session }: props) {
 			},
 		])
 	}
-
+	const firstPage = page * maxPageNumber
+	const lastPage = firstPage - maxPageNumber
+	const shownInstallments = allInstallments.slice(lastPage, firstPage)
 	return (
 		<>
 			<div className="flex w-full flex-row flex-wrap items-center justify-center gap-3">
@@ -114,7 +118,7 @@ function UserInfo({ data, session }: props) {
 				withSelection={true}
 				onSelect={(e) => selectAll(e)}
 			>
-				{shownProduct.map((invoice, a) => (
+				{shownInstallments.map((installment, a) => (
 					<tr
 						className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
 						key={a}
@@ -123,21 +127,21 @@ function UserInfo({ data, session }: props) {
 							<input
 								type="checkbox"
 								name="selected"
-								onChange={select(invoice.id)}
-								checked={selected.includes(invoice.id)}
+								onChange={select(installment.id)}
+								checked={selected.includes(installment.id)}
 							/>
 						</td>
-						<td className="tr">{invoice.customerName}</td>
-						<td className="tr">{invoice.InvoiceCount}</td>
-						<td className="tr">{invoice.total}</td>
+						<td className="tr">{installment.customerName}</td>
+						<td className="tr">{installment.InvoiceCount}</td>
+						<td className="tr">{installment.total}</td>
 						<td className="tr flex items-center justify-center gap-4">
-							<Button type="Link" href={`/store/history/installment/${invoice.id}`}>
+							<Button type="Link" href={`/store/history/installment/${installment.id}`}>
 								View
 							</Button>
 							<Open
 								onClick={() => {
 									setModalOpened("update")
-									setId(invoice.id)
+									setId(installment.id)
 								}}
 								className="green"
 							>
@@ -148,8 +152,11 @@ function UserInfo({ data, session }: props) {
 				))}
 			</TableData>
 			<TablePagination
-				shown={installments.length}
-				current={50 > installments.length ? 1 : installments.length - 49}
+				shown={allInstallments.length % 50 !== 0 ? allInstallments.length : page}
+				current={lastPage + 1}
+				total={allInstallments.length || 1}
+				setPage={setPage}
+				page={page}
 			/>
 		</>
 	)
