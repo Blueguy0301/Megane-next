@@ -44,7 +44,7 @@ const Scanner = (props: props) => {
 			qrcodeRegionId,
 			{
 				fps: 30,
-				rememberLastUsedCamera: false,
+				rememberLastUsedCamera: true,
 				supportedScanTypes: [],
 				experimentalFeatures: {
 					useBarCodeDetectorIfSupported: true,
