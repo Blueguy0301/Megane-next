@@ -146,7 +146,7 @@ function PageContent() {
 						-
 					</Button>
 				</div>
-				<Scanner setLastCode={setBarcode} />
+				<Scanner setLastCode={setBarcode} addChecking={true} />
 				<h4> Last barcode : {barcode}</h4>
 			</div>
 		</div>
