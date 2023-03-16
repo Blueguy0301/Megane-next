@@ -46,3 +46,4 @@ export type checkoutProducts = {
 	mass: string
 	quantity: number
 }
+export const maxPageNumber = 50

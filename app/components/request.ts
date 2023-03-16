@@ -12,6 +12,16 @@ type checkOutData = {
     barcode?: string
 
 }
+interface data {
+    Location: string
+    price: number
+    Product: {
+        name: string
+        mass: string
+        barcode: string
+    }
+    id: string
+}
 const installmentURL = "/api/store/installment"
 const invoiceURL = "/api/store/checkout"
 const scannerURL = "/api/store/scanner"
@@ -106,4 +116,10 @@ export const removeProduct = async (data: string[]) => {
     const res = await axios.patch<deleteProduct | deleteStoreProduct>(productURL, { pId: data }, { params }).catch(e => ({ e }))
     return res
 
+}
+export const getNextProducts = async (page: number) => {
+    const params = { page }
+    //todo : add controller later
+    const res = await axios.get(productURL, { params })
+    return res.data.result as unknown as data[]
 }

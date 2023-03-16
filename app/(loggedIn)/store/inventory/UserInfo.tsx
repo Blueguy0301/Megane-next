@@ -4,18 +4,18 @@
 import type { Session } from "next-auth"
 import type { ChangeEvent } from "react"
 import { authority } from "@pages/types"
-import { useMemo, useState, useCallback } from "react"
-import Image from "next/image"
+import { useMemo, useState, useCallback, useEffect } from "react"
 import TablePagination from "@components/TablePagination"
 import Button from "@components/Button"
 import useModal from "@components/useModal"
 import Table from "@components/Table"
-import { removeProduct } from "@components/request"
+import { getNextProducts, removeProduct } from "@components/request"
 import searchProducts from "./productSearch"
 import UpdateModal from "./UpdateModal"
 import { failed, success, warning } from "@components/crudModals"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSearch } from "@fortawesome/free-solid-svg-icons"
+import { maxPageNumber } from "@app/types"
 interface data {
 	Location: string
 	price: number
@@ -45,17 +45,24 @@ type selectData = {
 function UserInfo({ data, session }: props) {
 	const [current, setCurrent] = useState(1)
 	//* memoize this
+
 	const [product, setProduct] = useState(data)
 	const [search, setSearch] = useState("")
 	const [selected, setSelected] = useState<string[]>([])
-	const shownProduct = useMemo(() => {
+	const allProducts = useMemo(() => {
+		console.log("allProducts ran", product.length)
 		if (search === "") return product
 		else return searchProducts(search, product) as data[]
 	}, [search, product])
+	const page = current * maxPageNumber
+	console.log(page)
+	const lastPage = page - maxPageNumber
+	console.log(lastPage)
 	const selectAll = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.checked) setSelected(product.map((d) => d.id))
 		else setSelected([])
 	}, [])
+	const shownProduct = allProducts.slice(lastPage, page)
 	const select = useCallback((product: data) => {
 		return (e: ChangeEvent<HTMLInputElement>) => {
 			if (e.target.checked) {
@@ -95,6 +102,17 @@ function UserInfo({ data, session }: props) {
 			return success(`Deleted ${selected.length} product/s`)
 		} else return failed("An error occured")
 	}
+	useEffect(() => {
+		const request = async () => {
+			if (product.length % maxPageNumber !== 0) return
+			const res = await getNextProducts(current)
+			setProduct((prev) => [...prev, ...res])
+		}
+		if (current + 1 > 1) request()
+		console.log("request", allProducts.length)
+		return () => {}
+	}, [current])
+
 	const [updateSelect, setUpdateSelect] = useState<selectData>({})
 	const { Open, Modal, isOpen, setIsOpen } = useModal()
 	return (
@@ -172,8 +190,11 @@ function UserInfo({ data, session }: props) {
 			</Table>
 
 			<TablePagination
-				shown={product.length}
-				current={50 > product.length ? 1 : product.length - 49}
+				shown={page}
+				current={lastPage + 1}
+				total={allProducts.length}
+				setPage={setCurrent}
+				page={current}
 			/>
 		</>
 	)

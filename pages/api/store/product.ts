@@ -8,6 +8,7 @@ import {
 	authority,
 } from "@pages/types"
 import prisma from "../db"
+import { maxPageNumber } from "@app/types"
 export default async function handleProducts(req: NextApiRequest, res: NextApiResponse) {
 	const verb = req.method
 	const credentials = await checkCredentials(req, res, authority.registered)
@@ -193,12 +194,31 @@ const deleteProductStore: nextFunction = async (req, res, user) => {
 //! todo : no error handling
 const getProductStore: nextFunction = async (req, res, user) => {
 	const { id, barcode } = req.query as { [x: string]: string }
-	if (user.authorityId < authority.registered)
-		return res.status(401).json({ error: "unauthorized" })
+	const { page } = req.query as { [x: string]: string }
+	if (page) {
+		const products = await prisma.productStore
+			.findMany({
+				where: { storeId: BigInt(user.storeId) },
+				select: {
+					Product: {
+						select: {
+							name: true,
+							mass: true,
+							barcode: true,
+						},
+					},
+					Location: true,
+					price: true,
+					id: true,
+				},
+				take: maxPageNumber,
+				skip: Number(page) * maxPageNumber
+			})
+			.then((data) => data.map((d) => ({ ...d, id: d.id.toString() })))
+		return res.json(products ? { result: products } : { error: "Nothing found" })
+	}
 	if (!id && !checkIfValid(user.storeId, barcode))
 		return res.json({ error: "invalid arguments" })
-	if (user.authorityId < authority.registered)
-		return res.status(401).json({ error: "unauthorized" })
 	if (barcode && user.storeId && !id) {
 		// todo  : add id of product here
 		const productId = await prisma.product
