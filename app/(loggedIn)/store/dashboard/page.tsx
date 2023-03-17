@@ -10,9 +10,7 @@ import { notFound } from "next/navigation"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
 	faBagShopping,
-	faCartPlus,
 	faCartShopping,
-	faChartArea,
 	faChartLine,
 	faCoins,
 	faPesoSign,
@@ -64,32 +62,46 @@ export default async function page() {
 				<Card className="flex flex-col flex-wrap gap-10 p-3">
 					<div className="flex flex-row flex-wrap justify-start gap-10">
 						<h2 className="w-full">Overview</h2>
+
+						<CardInfo
+							icon={<FontAwesomeIcon icon={faPesoSign} size="2x" inverse />}
+							title="Profit"
+							value={total}
+						/>
 						<CardInfo
 							icon={<FontAwesomeIcon icon={faCoins} size="2x" inverse />}
 							alt="sales"
-							title="Unpaid Credits"
+							title="Credits"
 							value={Installments}
-						/>
-						<CardInfo
-							icon={<FontAwesomeIcon icon={faPesoSign} size="2x" inverse />}
-							alt="profit"
-							title="Profit"
-							value={total}
 						/>
 					</div>
 					<div className="flex flex-row flex-wrap justify-start gap-10">
 						<CardInfo
-							alt="Invoices"
+							icon={<FontAwesomeIcon icon={faChartLine} size="2x" inverse />}
+							title="Revenue"
+							value={total + Installments}
+						/>
+						<CardInfo
 							title="Invoices"
 							value={data.Invoices.length}
 							icon={<FontAwesomeIcon icon={faCartShopping} size="2x" inverse />}
 						/>
-						<CardInfo
-							icon={<FontAwesomeIcon icon={faChartLine} size="2x" inverse />}
-							alt="revenue"
-							title="Revenue"
-							value={total + Installments}
-						/>
+					</div>
+					<div className="flex flex-row flex-wrap gap-5">
+						<Button
+							type="Link"
+							href="/store/history/invoice"
+							className="flex-grow text-center "
+						>
+							Invoice History
+						</Button>
+						<Button
+							type="Link"
+							href="/store/history/installment"
+							className="flex-grow text-center "
+						>
+							Credit List
+						</Button>
 					</div>
 				</Card>
 				<Card className="flex flex-col flex-wrap gap-10 p-3">
@@ -97,52 +109,35 @@ export default async function page() {
 						<h2 className="w-full">About the Store</h2>
 						<CardInfo
 							icon={<FontAwesomeIcon icon={faStore} size="2x" inverse />}
-							className="side"
-							src="/store.svg"
-							alt=" store"
 							title="Store Name"
 							value={data.name}
 						/>
+
 						<CardInfo
 							icon={<FontAwesomeIcon icon={faUser} size="2x" inverse />}
-							className="side"
-							src="/user.svg"
-							alt="users"
-							title="Registered Users"
-							value={data._count.users}
+							title="Current User"
+							value={session.user.userName}
 						/>
 					</div>
-					<CardInfo
-						className="side"
-						icon={<FontAwesomeIcon icon={faBagShopping} size="2x" inverse />}
-						alt="products"
-						title="No. of Products"
-						value={data._count.productStore}
-					/>
+					<div className="flex flex-row flex-wrap justify-start gap-10">
+						<CardInfo
+							icon={<FontAwesomeIcon icon={faBagShopping} size="2x" inverse />}
+							title="Total Products"
+							value={data._count.productStore}
+							className="ml-2"
+						/>
+						<CardInfo
+							icon={<FontAwesomeIcon icon={faUser} size="2x" inverse />}
+							title="Total Users"
+							value={data._count.users}
+							className="ml-4"
+						/>
+					</div>
 					{session.user.authorityId >= authority.admin && (
 						<Button type="Link" href="/admin" className="text-center">
 							Admin Panel
 						</Button>
 					)}
-				</Card>
-				<Card className="flex flex-wrap gap-4 p-3">
-					<h2 className="w-full">History</h2>
-					<div className="flex w-full flex-wrap items-center justify-evenly gap-4">
-						<Button
-							type="Link"
-							href="/store/history/invoice"
-							className="flex-grow text-center md:flex-grow-0"
-						>
-							Invoice History
-						</Button>
-						<Button
-							type="Link"
-							href="/store/history/installment"
-							className="flex-grow text-center md:flex-grow-0"
-						>
-							Credit List
-						</Button>
-					</div>
 				</Card>
 			</div>
 		</div>

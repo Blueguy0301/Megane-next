@@ -81,14 +81,19 @@ p {
 .icon {
 	@apply bg-blue-800;
 	height: 100%;
-	max-height: 80px;
+	max-height: 64px;
 	aspect-ratio: 1/1;
 	justify-content: center;
 	align-items: center;
 	display: flex;
 	border-radius: 50%;
+	width: 64px;
+	height: 64px;
+	max-width: 64px;
 }
-.icon img {
+.icon svg {
+	max-width: 32px !important;
+	max-height: 32px !important;
 	display: block;
 }
 .side {

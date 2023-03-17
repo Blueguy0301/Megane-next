@@ -37,6 +37,11 @@ export const failed = (message: string | object) =>
 				showConfirmButton: false,
 				timer: 3000,
 				timerProgressBar: true,
+				customClass: {
+					cancelButton: "red",
+					confirmButton: "green",
+					popup: "swal-popup",
+				},
 		  })
 		: swalModal.fire({
 				title: "An error has occured",
@@ -45,4 +50,9 @@ export const failed = (message: string | object) =>
 				showConfirmButton: false,
 				timer: 3000,
 				timerProgressBar: true,
+				customClass: {
+					cancelButton: "red",
+					confirmButton: "green",
+					popup: "swal-popup",
+				},
 		  })
