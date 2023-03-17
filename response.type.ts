@@ -156,3 +156,13 @@ export type createUser = {
 
 }
 
+export type tempGetProductOnly = {
+	result?: {
+		id: string;
+		name: string;
+		barcode: string;
+		Category: string;
+		mass: string;
+	}[]
+	error?: string | object
+}

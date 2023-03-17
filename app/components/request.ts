@@ -1,7 +1,7 @@
 //todo: have all request put here.
-import { installments, minCodeLength } from "@pages/types"
+import { installments, minCodeLength, product } from "@pages/types"
 import type { checkOutBody, InvoicePurchase, } from "@pages/types"
-import type { addInstallment, deleteCheckout, deleteInstallment, deleteProduct, deleteStoreProduct, storeProductScanner, updateInstallment as UpdateInstallment, updateProduct } from "@responses"
+import { addInstallment, addProduct, deleteCheckout, deleteInstallment, deleteProduct, deleteStoreProduct, storeProductScanner, tempGetProductOnly, updateInstallment as UpdateInstallment, updateProduct } from "@responses"
 import axios from "axios"
 import { formData, sendData } from "@app/types"
 
@@ -122,4 +122,14 @@ export const getNextProducts = async (page: number) => {
     //todo : add controller later
     const res = await axios.get(productURL, { params })
     return res.data.result as unknown as data[]
+}
+//! temp. add to adminReques.ts
+export const updateProductCode = async (barcode: string, newBarcode: string) => {
+    const res = await axios.put<addProduct>(productURL, { barcode, newBarcode }).catch(e => ({ e }))
+
+    return res
+}
+export const getProductOnly = async (page: number) => {
+    const res = await axios.get<tempGetProductOnly>(productURL, { params: { adminOnly: true, page } }).catch(e => ({ e }))
+    return res
 }

@@ -12,8 +12,10 @@ import { maxPageNumber } from "@app/types"
 export default async function handleProducts(req: NextApiRequest, res: NextApiResponse) {
 	const verb = req.method
 	const credentials = await checkCredentials(req, res, authority.registered)
-	const { isStoreNew, onlyStore, pId } = req.query as unknown as productQuery
+	const { isStoreNew, onlyStore, pId, adminOnly } = req.query as unknown as productQuery
 	if (!credentials) return
+	// temp. fix this. todo.
+	if (verb === "GET" && adminOnly) return getProduct(req, res, credentials)
 	if (verb === "GET") return getProductStore(req, res, credentials)
 	if (verb === "POST" && isStoreNew && pId)
 		return addProductStore(req, res, credentials, pId)
@@ -58,11 +60,11 @@ const addProduct: nextFunction = async (req, res, user, isStoreNew = false) => {
 }
 //* tested
 const updateProduct: nextFunction = async (req, res, user) => {
-	const { barcode, name, category, mass } = req.body as product
+	const { barcode, name, category, mass, newBarcode } = req.body as product
 	if (user.authorityId < authority.admin)
 		return res.status(401).json({ error: "unauthorized" })
 	if (!checkIfValid(barcode)) return res.json({ error: "an error occured" })
-	const data = filter({ barcode, name, Category: category, mass })
+	const data = filter({ barcode: newBarcode, name, Category: category, mass })
 	if (!data) return res.json({ error: "no data found" })
 	const updateProduct = await prisma.product
 		.update({ where: { barcode: barcode }, data })
@@ -285,4 +287,18 @@ const getProductStore: nextFunction = async (req, res, user) => {
 			}))
 		return res.json(searchStore ? { result: searchStore } : { error: "Nothing found" })
 	} else return res.json({ error: "invalid arguments" })
+}
+const getProduct: nextFunction = async (req, res, user) => {
+	const { page } = req.query as { [x: string]: string }
+	if (page && user.authorityId >= authority.admin) {
+		const products = await prisma.product
+			.findMany({
+
+				skip: Number(page) * maxPageNumber,
+				take: maxPageNumber,
+			})
+			.then((data) => data.map((d) => ({ ...d, id: d.id.toString() })))
+		return res.json(products ? { result: products } : { error: "Nothing found" })
+	}
+
 }

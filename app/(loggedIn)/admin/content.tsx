@@ -114,7 +114,9 @@ function Content({ data }: props) {
 				>
 					Delete Selected
 				</Button>
-
+				<Button type="Link" href="/admin/products">
+					Product List
+				</Button>
 				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-3 md:ml-auto">
 					<FontAwesomeIcon icon={faSearch} className="fa-inverse mr-3" />
 					<input

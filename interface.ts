@@ -2,6 +2,7 @@ import { productScanner } from "./response.type"
 import type { NextApiRequest, NextApiResponse } from "next"
 
 export type product = {
+	newBarcode: string
 	name: string
 	barcode: string
 	category: string
@@ -62,6 +63,7 @@ export type productQuery = {
 	storeSearch?: boolean
 	onlyStore?: boolean
 	pId?: number | string
+	adminOnly: boolean
 }
 export type nextFunction = (
 	req: NextApiRequest,
