@@ -156,7 +156,7 @@ export type createUser = {
 
 }
 
-export type tempGetProductOnly = {
+export type GetProductOnly = {
 	result?: {
 		id: string;
 		name: string;

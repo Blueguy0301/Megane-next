@@ -80,12 +80,13 @@ function UserInfo({ data, session }: props) {
 						</Button>
 					</>
 				)}
-				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-3 md:ml-auto">
+
+				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-1 md:ml-auto">
 					<FontAwesomeIcon icon={faSearch} className="mr-3" inverse />
 					<input
 						type="search"
 						id="table-search"
-						className="ml-auto h-full bg-white/0"
+						className="ml-auto h-full bg-white/0 px-3 py-2"
 						placeholder="search"
 						onChange={(e) => setSearch(e.target.value)}
 						value={search}

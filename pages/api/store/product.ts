@@ -15,8 +15,8 @@ export default async function handleProducts(req: NextApiRequest, res: NextApiRe
 	const { isStoreNew, onlyStore, pId, adminOnly } = req.query as unknown as productQuery
 	if (!credentials) return
 	// temp. fix this. todo.
-	if (verb === "GET" && adminOnly) return getProduct(req, res, credentials)
-	if (verb === "GET") return getProductStore(req, res, credentials)
+	if (verb === "GET" && adminOnly) return getProductPage(req, res, credentials)
+	if (verb === "GET") return getProductStorePage(req, res, credentials)
 	if (verb === "POST" && isStoreNew && pId)
 		return addProductStore(req, res, credentials, pId)
 	if (verb === "POST") return addProduct(req, res, credentials, isStoreNew)
@@ -93,7 +93,6 @@ const deleteProduct: nextFunction = async (req, res, user) => {
 		.catch((e) => ({ error: e, success: false }))
 	return res.json(deleteProduct)
 }
-
 //* test pass 2/2
 const addProductStore: nextFunction = async (req, res, user, productId: string) => {
 	const { price, location, description } = req.body as productStore
@@ -193,112 +192,45 @@ const deleteProductStore: nextFunction = async (req, res, user) => {
 		})
 	return res.json(Delete)
 }
-//! todo : no error handling
-const getProductStore: nextFunction = async (req, res, user) => {
-	const { id, barcode } = req.query as { [x: string]: string }
+const getProductStorePage: nextFunction = async (req, res, user) => {
 	const { page } = req.query as { [x: string]: string }
-	if (page) {
-		const products = await prisma.productStore
-			.findMany({
-				where: { storeId: BigInt(user.storeId) },
-				select: {
-					Product: {
-						select: {
-							name: true,
-							mass: true,
-							barcode: true,
-						},
-					},
-					Location: true,
-					price: true,
-					id: true,
-				},
-				take: maxPageNumber,
-				skip: Number(page) * maxPageNumber
-			})
-			.then((data) => data.map((d) => ({ ...d, id: d.id.toString() })))
-		return res.json(products ? { result: products } : { error: "Nothing found" })
-	}
-	if (!id && !checkIfValid(user.storeId, barcode))
-		return res.json({ error: "invalid arguments" })
-	if (barcode && user.storeId && !id) {
-		// todo  : add id of product here
-		const productId = await prisma.product
-			.findFirst({
-				where: { barcode: barcode },
-				select: {
-					id: true,
-					name: true,
-					barcode: true,
-					ProductStore: {
-						where: {
-							storeId: BigInt(user.storeId),
-						},
-						select: {
-							id: true,
-							price: true,
-							Location: true,
-							Description: true,
-						},
+	if (!page) return res.json({ error: "Invalid Parameters" })
+	const products = await prisma.productStore
+		.findMany({
+			where: { storeId: BigInt(user.storeId) },
+			select: {
+				Product: {
+					select: {
+						name: true,
+						mass: true,
+						barcode: true,
 					},
 				},
-			})
-			.then((d) => {
-				if (!d || d?.ProductStore?.length === 0) return false
-				else
-					return {
-						name: d?.name,
-						barcode: d?.barcode,
-						price: d.ProductStore[0].price,
-						location: d?.ProductStore[0]?.Location,
-						description: d?.ProductStore[0]?.Description,
-						productStoreId: d?.ProductStore[0]?.id?.toString(),
-						productId: d?.id?.toString(),
-					}
-			})
-		return res.json(productId ? { result: productId } : { error: "Nothing found" })
-	}
-	if (id && !testNumber(id)) {
-		const searchStore = await prisma.productStore
-			.findFirst({
-				where: { id: BigInt(id) },
-				select: {
-					id: true,
-					storeId: false,
-					price: true,
-					Location: true,
-					Description: true,
-					Product: {
-						select: {
-							name: true,
-							barcode: true,
-						},
-					},
-					productId: true,
-				},
-			})
-			.then((d) => ({
-				...d?.Product,
-				price: d?.price,
-				location: d?.Location,
-				description: d?.Description,
-				productStoreId: d?.id.toString(),
-				productId: d?.productId.toString(),
-			}))
-		return res.json(searchStore ? { result: searchStore } : { error: "Nothing found" })
-	} else return res.json({ error: "invalid arguments" })
+				Location: true,
+				price: true,
+				id: true,
+			},
+			take: maxPageNumber,
+			skip: Number(page) * maxPageNumber
+		})
+		.then((data) => data.map((d) => ({ ...d, id: d.id.toString() }))).catch(e => ({ error: e }))
+	if ("error" in products) return res.json(products)
+	else return res.json(products ? { result: products } : { error: "Nothing found" })
+
 }
-const getProduct: nextFunction = async (req, res, user) => {
+
+const getProductPage: nextFunction = async (req, res, user) => {
 	const { page } = req.query as { [x: string]: string }
-	if (page && user.authorityId >= authority.admin) {
-		const products = await prisma.product
-			.findMany({
+	if (!page) return res.json({ error: "Invalid parameters" })
+	if (user.authorityId < authority.admin)
+		return res.status(401).json({ error: "unauthorized" })
+	const products = await prisma.product
+		.findMany({
 
-				skip: Number(page) * maxPageNumber,
-				take: maxPageNumber,
-			})
-			.then((data) => data.map((d) => ({ ...d, id: d.id.toString() })))
-		return res.json(products ? { result: products } : { error: "Nothing found" })
-	}
-
+			skip: Number(page) * maxPageNumber,
+			take: maxPageNumber,
+		})
+		.then((data) => data.map((d) => ({ ...d, id: d.id.toString() }))).catch(e => ({ error: e }))
+	if ('error' in products) return res.json(products)
+	else return res.json(products ? { result: products } : { error: "Nothing found" })
 }

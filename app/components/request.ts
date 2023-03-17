@@ -1,10 +1,9 @@
 //todo: have all request put here.
 import { installments, minCodeLength, product } from "@pages/types"
 import type { checkOutBody, InvoicePurchase, } from "@pages/types"
-import { addInstallment, addProduct, deleteCheckout, deleteInstallment, deleteProduct, deleteStoreProduct, storeProductScanner, tempGetProductOnly, updateInstallment as UpdateInstallment, updateProduct } from "@responses"
+import { addInstallment, addProduct, deleteCheckout, deleteInstallment, deleteProduct, deleteStoreProduct, storeProductScanner, GetProductOnly, updateInstallment as UpdateInstallment, updateProduct } from "@responses"
 import axios from "axios"
 import { formData, sendData } from "@app/types"
-
 type checkOut = InvoicePurchase | InvoicePurchase[]
 type checkOutData = {
     name?: string
@@ -130,6 +129,6 @@ export const updateProductCode = async (barcode: string, newBarcode: string) => 
     return res
 }
 export const getProductOnly = async (page: number) => {
-    const res = await axios.get<tempGetProductOnly>(productURL, { params: { adminOnly: true, page } }).catch(e => ({ e }))
+    const res = await axios.get<GetProductOnly>(productURL, { params: { adminOnly: true, page } }).catch(e => ({ e }))
     return res
 }
