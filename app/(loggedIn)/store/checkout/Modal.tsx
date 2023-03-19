@@ -2,29 +2,37 @@
 import type { ChangeEvent, Dispatch, SetStateAction, MutableRefObject } from "react"
 import type { checkoutProducts, modal } from "@app/types"
 import type { addCheckout, storeProductScanner } from "@responses"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { checkOut, scannerRequest } from "@components/request"
 import { minCodeLength } from "@pages/types"
 import { success, failed } from "@components/crudModals"
+import { useForm } from "react-hook-form"
 type formData = {
 	name?: string
 	amount?: number
 	barcode: string
 }
+type charges = {
+	key: string
+	value: number
+}
 type Props = {
 	Modal: modal
 	Total: number
 	modalOpened?: string
-	barcode: string
-	setBarcode: Dispatch<SetStateAction<string>>
+	barcode: [barcode: string, setBarcode: Dispatch<SetStateAction<string>>]
+	charges: [charge: charges[], setCharge: Dispatch<SetStateAction<charges[]>>]
 	products: [checkoutProducts[], Dispatch<SetStateAction<checkoutProducts[]>>]
 	quantity: number
 	audio: MutableRefObject<HTMLAudioElement | undefined>
-	setIsOpen: Dispatch<SetStateAction<boolean>>
+	open: [boolean, Dispatch<SetStateAction<boolean>>]
 }
 const Modal = (props: Props) => {
-	const { Modal, Total, modalOpened, barcode, quantity, audio } = props
+	const { Modal, Total, modalOpened, quantity, audio } = props
+	const [barcode, setBarcode] = props.barcode
+	const [charges, setCharges] = props.charges
 	const [products, setProducts] = props.products
+	const [isOpen, setIsOpen] = props.open
 	const [selected, setSelected] = useState("Cash")
 	const [formData, setFormData] = useState<formData>({
 		name: "",
@@ -43,11 +51,14 @@ const Modal = (props: Props) => {
 		}
 		return
 	}
+	const { register, handleSubmit, reset, formState: errors } = useForm<charges>()
+	useEffect(() => {
+		reset()
+	}, [isOpen])
 	const [error, setError] = useState<{ error: any }>({ error: "" })
 	const scannerController = new AbortController()
 	const fetchData = async () => {
 		const response = await scannerRequest(formData.barcode, scannerController)
-		console.log("response", response)
 		if ("e" in response) return
 		const { data } = response
 		if ("error" in data) return setError({ error: error })
@@ -71,8 +82,8 @@ const Modal = (props: Props) => {
 			}
 			return [...prev, { name, price, productStoreId, mass, quantity }]
 		})
-		props.setBarcode("")
-		props.setIsOpen(false)
+		setBarcode("")
+		setIsOpen(false)
 	}
 	useEffect(() => {
 		console.log("dan")
@@ -82,7 +93,9 @@ const Modal = (props: Props) => {
 			scannerController.abort()
 		}
 	}, [formData.barcode])
-	const handleFormData = (name: string) => {
+
+	const handleFormData = useCallback((name: string, charge = false) => {
+		console.log("ran")
 		return async (e: ChangeEvent<HTMLInputElement>) => {
 			const { value } = e.target
 			setFormData((prev) => {
@@ -98,8 +111,9 @@ const Modal = (props: Props) => {
 				}
 				return prev
 			})
+			// setCharges((prev) => {})
 		}
-	}
+	}, [])
 	if (modalOpened === "Manual Add") {
 		return (
 			<Modal
@@ -217,6 +231,64 @@ const Modal = (props: Props) => {
 						</div>
 					</div>
 				</div>
+			</Modal>
+		)
+	}
+	if (modalOpened === "Add Charge") {
+		return (
+			<Modal
+				title="Extra Charge"
+				className="relative flex flex-wrap"
+				confirmText="Confirm"
+				onAccept={handleSubmit(
+					({ key, value }) => {
+						console.log(key, value)
+						setCharges((prev) => [...prev, { key, value }])
+						return setIsOpen(false)
+					},
+					() => failed("Description and amount is required")
+				)}
+				buttonSettings={{ type: "submit", disablehandle: "true" }}
+			>
+				<form
+					className="relative flex flex-col-reverse flex-wrap gap-4 lg:w-3/4"
+					onSubmit={handleSubmit((v) => console.log(v))}
+				>
+					{charges.map((charge, i) => {
+						return (
+							<fieldset className="customer" disabled={true} key={`disabled ${i}`}>
+								<div className="checkout group">
+									<input
+										type="text"
+										placeholder="Description"
+										value={charge.key}
+										readOnly
+									/>
+									<input
+										type="number"
+										value={charge.value}
+										placeholder="Amount"
+										readOnly
+									/>
+								</div>
+							</fieldset>
+						)
+					})}
+					<fieldset className="customer">
+						<div className="checkout group">
+							<input
+								type="text"
+								placeholder="Description"
+								{...register("key", { required: true })}
+							/>
+							<input
+								type="number"
+								{...register("value", { required: true })}
+								placeholder="Amount"
+							/>
+						</div>
+					</fieldset>
+				</form>
 			</Modal>
 		)
 	} else return <></>

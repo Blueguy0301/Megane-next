@@ -22,7 +22,7 @@ const Scanner = (props: props) => {
 	let scanner: Html5QrcodeScanner
 	const qrCodeSuccessCallback = (data: string) => {
 		if (data !== temp && addChecking) {
-			console.log("temp is not equal to data and addChecking.")
+			// console.log("temp is not equal to data and addChecking.")
 			audio.current?.play()
 			setLastCode(data)
 

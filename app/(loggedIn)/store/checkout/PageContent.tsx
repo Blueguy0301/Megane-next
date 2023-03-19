@@ -11,18 +11,24 @@ import useModal from "@components/useModal"
 import Product from "./Product"
 import ModalForm from "./Modal"
 import { scannerRequest } from "@components/request"
+type charges = {
+	key: string
+	value: number
+}
 function PageContent() {
-	const { Modal, Open, setIsOpen } = useModal()
+	const { Modal, Open, setIsOpen, isOpen } = useModal()
 	const [products, setProducts] = useState<checkoutProducts[]>([])
 	const [quantity, setQuantity] = useState(1)
 	const [barcode, setBarcode] = useState("none")
 	const [modalOpened, setModalOpened] = useState<string | undefined>()
+	const [charges, setCharges] = useState<charges[]>([])
+
 	const audio = useRef(
 		typeof Audio !== "undefined" ? new Audio("/assets/success.mp3") : undefined
 	)
 	//* memoize this
 	let lastCode = ""
-
+	// const charge = useMemo(() => {}, [])
 	const scannerController = new AbortController()
 	const fetchData = async () => {
 		const response = await scannerRequest(barcode, scannerController)
@@ -51,10 +57,13 @@ function PageContent() {
 		setBarcode("")
 		setIsOpen(false)
 	}
-	const Total = useMemo(
-		() => products.reduce((a: any, b: any) => a + b.price * b.quantity, 0),
-		[products]
-	)
+	const Total = useMemo(() => {
+		const totalProducts = products.reduce((a: any, b: any) => a + b.price * b.quantity, 0)
+
+		const totalCharges = charges.reduce((a, b) => a + b.value * 1, 0)
+		console.log(totalProducts, totalCharges)
+		return totalProducts + totalCharges
+	}, [products, charges])
 	useEffect(() => {
 		const scanButton = document.getElementsByClassName("scan")[0] as HTMLElement
 		scanButton.style.opacity = "0"
@@ -66,8 +75,8 @@ function PageContent() {
 	}, [])
 	useEffect(() => {
 		if (barcode !== lastCode && barcode !== "none") {
-			fetchData()
 			lastCode = barcode
+			fetchData()
 		}
 		return () => scannerController.abort()
 	}, [barcode.length >= minCodeLength])
@@ -77,12 +86,12 @@ function PageContent() {
 				Modal={Modal}
 				Total={Total}
 				modalOpened={modalOpened}
-				barcode={barcode}
-				setBarcode={setBarcode}
+				barcode={[barcode, setBarcode]}
 				products={[products, setProducts]}
 				quantity={quantity}
-				setIsOpen={setIsOpen}
 				audio={audio}
+				charges={[charges, setCharges]}
+				open={[isOpen, setIsOpen]}
 			/>
 			<div className="min-w-1/2 flex flex-grow flex-col p-4 md:max-w-[50%]">
 				<div className="relative flex flex-grow flex-col gap-4 border border-solid border-white p-4">
@@ -102,6 +111,19 @@ function PageContent() {
 									/>
 								)
 							})}
+							{charges.map((charge, i) => {
+								return (
+									<Product
+										product={`${charge.key}`}
+										price={Number(charge.value)}
+										qty={1}
+										key={`${i} charge`}
+										onDelete={() => {
+											setCharges((prev) => prev.filter((_, index) => i !== index))
+										}}
+									/>
+								)
+							})}
 						</div>
 						<div className="total mt-auto  flex border-t p-4">
 							<h4>Total : </h4>
@@ -116,13 +138,12 @@ function PageContent() {
 					<Open className="flex-grow" onClick={() => setModalOpened("Manual Add")}>
 						Manual Add
 					</Open>
-					<Button
-						className=" red flex-grow text-center"
-						type="Link"
-						href="/store/dashboard"
+					<Open
+						className=" flex-grow text-center"
+						onClick={() => setModalOpened("Add Charge")}
 					>
-						Cancel
-					</Button>
+						Add Extra Charge
+					</Open>
 				</div>
 			</div>
 			<div className="min-w-1/2 flex flex-grow flex-col p-4 md:max-w-[50%]">
@@ -146,7 +167,7 @@ function PageContent() {
 						-
 					</Button>
 				</div>
-				<Scanner setLastCode={setBarcode} addChecking={true} />
+				<Scanner setLastCode={setBarcode} />
 				<h4> Last barcode : {barcode}</h4>
 			</div>
 		</div>
