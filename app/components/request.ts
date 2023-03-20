@@ -50,14 +50,17 @@ export const checkOut = async (
     products: checkOut,
     total: number,
     formData: checkOutData,
-    isCredited = false
+    isCredited = false,
+    charges: string
 ) => {
     const body: checkOutBody = {
         productList: products,
         total,
         customerName: formData.name,
         isCredited,
-        creditTotal: isCredited ? total - (formData.amount ?? 0) : 0
+        creditTotal: isCredited ? total - (formData.amount ?? 0) : 0,
+        extraCharges: charges
+
     }
     const result = await axios.post(checkoutURL, body).catch((e) => ({ e: e }))
     return result

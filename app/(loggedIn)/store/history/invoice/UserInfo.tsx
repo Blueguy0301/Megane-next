@@ -61,9 +61,10 @@ function UserInfo({ data, session }: props) {
 			success(`Deleted ${res.data.count} invoices`)
 		} else failed("An error occured")
 	}
+	console.log("data", data)
 	const firstPage = page * maxPageNumber
 	const lastPage = firstPage - maxPageNumber
-	const shownInvoice = allInvoice.slice(lastPage, page)
+	const shownInvoice = allInvoice.slice(lastPage, firstPage)
 	return (
 		<>
 			<div className="flex w-full flex-row flex-wrap items-center justify-center  gap-3">

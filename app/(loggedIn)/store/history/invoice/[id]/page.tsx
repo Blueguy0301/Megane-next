@@ -1,11 +1,10 @@
-import { authOptions } from "@api/auth/[...nextauth]"
-import { getServerSession } from "next-auth"
 import prisma from "@api/db"
 import { convertDate } from "@components/dateformat"
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { numberRegex } from "@pages/types"
+import { charges, numberRegex } from "@pages/types"
 export const dynamic = "force-dynamic"
+import Table from "@components/Table"
 async function getData(params: string) {
 	if (!numberRegex.test(params)) return
 
@@ -31,18 +30,21 @@ async function getData(params: string) {
 						},
 					},
 				},
+				extraCharges: true,
 				Installment: {
 					select: { customerName: true },
 				},
 			},
 		})
 		.then((d) => ({ ...d, dateTime: d?.dateTime.toISOString() }))
-	console.log("last")
 	return data
 }
 const page = async ({ params }: { params: { id: string } }) => {
 	const data = await getData(params.id)
 	if (!data || !data.InvoicePurchases) return notFound()
+	let charges: charges[] | undefined
+	const extraCharges = data.extraCharges
+	if (extraCharges) charges = JSON.parse(extraCharges) as charges[]
 	return (
 		<div className="page flex-col gap-3 p-4">
 			<h2>Purchase History</h2>
@@ -56,56 +58,46 @@ const page = async ({ params }: { params: { id: string } }) => {
 			<p>Total : PHP {data?.total}</p>
 			<p>Date Purchased : {convertDate(data?.dateTime as string)} </p>
 			<h3>Purchases :</h3>
-			<div className="flex flex-col">
-				<div className="max-w-[100%] overflow-auto">
-					<table className="min-w-full  bg-gray-800">
-						<thead className="border-b bg-white/25">
-							<tr>
-								<th
-									scope="col"
-									className="px-6 py-4 text-left text-sm font-medium text-white"
-								>
-									Product
-								</th>
-								<th
-									scope="col"
-									className="px-6 py-4 text-center text-sm font-medium text-white"
-								>
-									Quantity
-								</th>
-								<th
-									scope="col"
-									className="px-6 py-4 text-center text-sm font-medium text-white "
-								>
-									Price
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							{data.InvoicePurchases.map((purchase, i) => {
-								return (
-									<tr
-										className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
-										key={i}
-									>
-										<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white ">
-											{purchase.ProductStore.Product.name}(
-											{purchase.ProductStore.Product.mass})
-										</td>
+			<Table headers={["Name", "Quantity", "Price"]}>
+				{data.InvoicePurchases.map((purchase, i) => {
+					return (
+						<tr
+							className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
+							key={i}
+						>
+							<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white ">
+								{purchase.ProductStore.Product.name}({purchase.ProductStore.Product.mass})
+							</td>
 
-										<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white ">
-											{purchase.quantity}
-										</td>
-										<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light  text-white">
-											PHP {purchase.quantity * purchase.ProductStore.price}
-										</td>
-									</tr>
-								)
-							})}
-						</tbody>
-					</table>
-				</div>
-			</div>
+							<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white ">
+								{purchase.quantity}
+							</td>
+							<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light  text-white">
+								PHP {purchase.quantity * purchase.ProductStore.price}
+							</td>
+						</tr>
+					)
+				})}
+				{charges?.map((charge, i) => {
+					return (
+						<tr
+							className="border-b transition duration-300 ease-in-out hover:bg-gray-600"
+							key={i}
+						>
+							<td className="whitespace-nowrap px-6 py-4 text-sm font-light text-white ">
+								{charge.key}
+							</td>
+
+							<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-white ">
+								1
+							</td>
+							<td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light  text-white">
+								PHP {charge.value}
+							</td>
+						</tr>
+					)
+				})}
+			</Table>
 		</div>
 	)
 }

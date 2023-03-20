@@ -40,13 +40,20 @@ const Modal = (props: Props) => {
 		barcode: barcode,
 	})
 	const handleCheckout = async () => {
-		const res = await checkOut(products, Total, formData, selected !== "Cash")
+		const res = await checkOut(
+			products,
+			Total,
+			formData,
+			selected !== "Cash",
+			JSON.stringify(charges)
+		)
 		if ("e" in res) return
 		const { result, error: serverError } = res.data as addCheckout
 		if (serverError) return failed(serverError)
 		else if (result) {
 			const change = (formData.amount ?? 0) - Total
 			setProducts([])
+			setCharges([])
 			return success(`Checkout success! \n Total :${result.total} \n Change : ${change}`)
 		}
 		return
@@ -94,8 +101,7 @@ const Modal = (props: Props) => {
 		}
 	}, [formData.barcode])
 
-	const handleFormData = useCallback((name: string, charge = false) => {
-		console.log("ran")
+	const handleFormData = useCallback((name: string) => {
 		return async (e: ChangeEvent<HTMLInputElement>) => {
 			const { value } = e.target
 			setFormData((prev) => {

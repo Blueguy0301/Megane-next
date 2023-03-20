@@ -43,6 +43,7 @@ export type Invoice = {
 	installmentId?: bigint
 	dateTime: Date
 	total: number
+	extraCharges?: string
 }
 export type InvoicePurchase = {
 	productStoreId: bigint | string
@@ -92,5 +93,11 @@ export type checkOutBody = {
 	isCredited?: boolean
 	customerName?: string
 	creditTotal: number
+	extraCharges?: string
+
+}
+export type charges = {
+	key: string
+	value: number
 }
 export const numberRegex = /^\d+$/

@@ -20,7 +20,8 @@ export default async function handleCheckout(req: NextApiRequest, res: NextApiRe
 //todo : if productList is 0, return an error
 //todo : add creditTotal
 const addCheckOut: nextFunction = async (req, res, user) => {
-	const { productList, isCredited, total, customerName, creditTotal } = req.body as checkOutBody
+	const { productList, isCredited, total, customerName, creditTotal, } = req.body as checkOutBody
+	let { extraCharges } = req.body as checkOutBody
 	let products: { productStoreId: bigint, quantity: number }[]
 	if (testNumber(user.storeId) || testNumber(total) || testNumber(creditTotal))
 		return res.json({ error: "invalid arguments" })
@@ -34,9 +35,10 @@ const addCheckOut: nextFunction = async (req, res, user) => {
 	else if (testNumber(productList?.productStoreId))
 		return res.json({ error: "invalid arguments" })
 	else products = [{
-		productStoreId: BigInt(productList.productStoreId), quantity: Number(productList.quantity ?? 0)
+		productStoreId: BigInt(productList.productStoreId), quantity: Number(productList.quantity ?? 1)
 	}]
-	let data: Invoice = { storeId: BigInt(user.storeId), dateTime: new Date(), total }
+	if (typeof extraCharges !== "string" && typeof extraCharges !== "undefined") extraCharges = JSON.stringify(extraCharges)
+	let data: Invoice = { storeId: BigInt(user.storeId), dateTime: new Date(), total, extraCharges }
 	if (isCredited && customerName) {
 		const count = await prisma.installments
 			.updateMany({
