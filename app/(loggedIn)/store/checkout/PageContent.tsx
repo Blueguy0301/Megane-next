@@ -11,6 +11,7 @@ import useModal from "@components/useModal"
 import Product from "./Product"
 import ModalForm from "./Modal"
 import { scannerRequest } from "@components/request"
+import { failed } from "@components/crudModals"
 type charges = {
 	key: string
 	value: number
@@ -36,10 +37,9 @@ function PageContent() {
 		const { data } = response
 		if ("error" in data) return
 		const { result, error: serverError } = response.data as storeProductScanner
-		if (serverError) return
-		if (!result || Object.keys(result).length === 0) return
+		if (serverError) return failed(serverError)
+		if (!result || Object.keys(result).length === 0) return failed("No products found")
 		const { name, mass, price, productStoreId } = result
-		audio.current?.play()
 		setProducts((prev) => {
 			const existingProductIndex = prev.findIndex(
 				(v) => v.productStoreId === productStoreId
@@ -74,12 +74,12 @@ function PageContent() {
 		}
 	}, [])
 	useEffect(() => {
+		if (!(barcode.length >= minCodeLength)) return
 		if (barcode !== lastCode && barcode !== "none") {
-			lastCode = barcode
 			fetchData()
+			lastCode = barcode
 		}
-		return () => scannerController.abort()
-	}, [barcode.length >= minCodeLength])
+	}, [barcode])
 	return (
 		<div className="page flex-col-reverse flex-wrap md:flex-row md:flex-nowrap">
 			<ModalForm
@@ -167,7 +167,7 @@ function PageContent() {
 						-
 					</Button>
 				</div>
-				<Scanner setLastCode={setBarcode} />
+				<Scanner setLastCode={setBarcode} addChecking />
 				<h4> Last barcode : {barcode}</h4>
 			</div>
 		</div>

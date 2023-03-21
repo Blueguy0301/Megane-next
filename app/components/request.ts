@@ -33,11 +33,12 @@ export const deleteInvoice = async (data: string[] | string,) => {
 }
 
 export const scannerRequest = async (code: string, controller: AbortController, params?: object) => {
-    if (!(code.length >= minCodeLength))
+    if (!(code.length >= minCodeLength)) {
         return {
             data: { result: {} },
             error: {},
         } as { data: storeProductScanner; error: any }
+    }
     const product = await axios
         .get<storeProductScanner>(scannerURL, {
             params: params ?? { barcode: code, storeScan: true },
