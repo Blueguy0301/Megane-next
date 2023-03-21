@@ -25,7 +25,8 @@
 			"@css/*": ["./styles/*"],
 			"@responses": ["./response.type.ts"],
 			"@app/types": ["./app/interface.ts"],
-			"@pages/types": ["./interface.ts"]
+			"@pages/types": ["./interface.ts"],
+			"@public/*": ["./public/*"]
 		}
 	},
 	"include": [

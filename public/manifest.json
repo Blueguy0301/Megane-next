@@ -3,10 +3,10 @@
     "background_color": "#0f172a",
     "display": "fullscreen",
     "scope": "/",
-    "start_url": "/",
-    "name": "Megane-Next",
-    "short_name": "Megane",
-    "description": "A point of sales system ",
+    "start_url": "/store/dashboard",
+    "description": "A point of sales system",
+    "short_name": "\u773c\u93e1",
+    "name": "Megane",
     "icons": [
         {
             "src": "/icon-192x192.png",
