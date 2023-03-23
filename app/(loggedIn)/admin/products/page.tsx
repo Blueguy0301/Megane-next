@@ -11,7 +11,7 @@ const getProducts = async () => {
 const page = async () => {
 	const products = await getProducts()
 	return (
-		<div className="page flex-col gap-3 p-4">
+		<div className="page relative flex-col gap-3 p-4">
 			<Content data={products} />
 		</div>
 	)

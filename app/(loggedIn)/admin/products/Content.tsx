@@ -33,7 +33,10 @@ const Content = (props: props) => {
 	const [search, setSearch] = useState("")
 	const allProducts = useMemo(() => {
 		if (search === "") return products
-		else return searchProducts(search, products) as data[]
+		else {
+			setPage(1)
+			return searchProducts(search, products) as data[]
+		}
 	}, [products, search])
 	const selectAll = useCallback(
 		(e: ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +89,7 @@ const Content = (props: props) => {
 		} else return failed("An error occured.")
 	}
 	useEffect(() => {
-		asyncGetProduct()
+		if (page >= 1 && allProducts.length % maxPageNumber === 0) asyncGetProduct()
 		return () => {}
 	}, [page])
 
@@ -102,24 +105,17 @@ const Content = (props: props) => {
 				setScanned={setScanned}
 				onAccept={() => handleUpdate()}
 			/>
-			<div className="flex w-full flex-row flex-wrap items-center justify-center gap-3 ">
+			<div className="sticky top-16 flex flex-wrap items-center justify-center gap-3 py-3">
 				<Button
-					type="Link"
-					href="/store/add"
-					className="flex items-center justify-center"
-				>
-					Add Product
-				</Button>
-				<Button
-					className=" red disabled:opacity-50"
+					className=" red disabled:opacity-50 max-md:flex-grow"
 					disabled={selected.length < 1}
 					onClick={handleDelete}
 				>
 					Delete Selected
 				</Button>
 
-				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-1 md:ml-auto">
-					<FontAwesomeIcon icon={faSearch} className="mr-3" inverse />
+				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-1 max-md:flex-grow md:ml-auto">
+					<FontAwesomeIcon icon={faSearch} className="2x  m-auto" inverse />
 					<input
 						type="search"
 						id="table-search"
@@ -130,6 +126,7 @@ const Content = (props: props) => {
 					/>
 				</fieldset>
 			</div>
+
 			<Table
 				withSelection={true}
 				onSelect={(e) => selectAll(e)}

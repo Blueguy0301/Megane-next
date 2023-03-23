@@ -1,17 +1,15 @@
+//* no pagination for now
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 ///todo : refetch data when mounted
-import TablePagination from "@components/TablePagination"
 import { ChangeEvent, useState } from "react"
 import Button from "@components/Button"
-import Image from "next/image"
 import { useMemo, useCallback } from "react"
 import useModal from "@components/useModal"
 import Table from "@components/Table"
 import UserModal from "./UserModal"
 import { addUser, newStore } from "./adminRequests"
 import { success, failed } from "@components/crudModals"
-import { userDetails } from "@pages/types"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSearch } from "@fortawesome/free-solid-svg-icons"
 interface data {

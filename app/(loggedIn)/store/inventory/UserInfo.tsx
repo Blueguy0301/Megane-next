@@ -43,24 +43,22 @@ type selectData = {
 	pId?: string
 }
 function UserInfo({ data, session }: props) {
-	const [current, setCurrent] = useState(1)
-	//* memoize this
+	const [page, setPage] = useState(1)
 
 	const [product, setProduct] = useState(data)
 	const [search, setSearch] = useState("")
 	const [selected, setSelected] = useState<string[]>([])
 	const allProducts = useMemo(() => {
-		console.log("allProducts ran", product.length)
 		if (search === "") return product
 		else return searchProducts(search, product) as data[]
 	}, [search, product])
-	const page = current * maxPageNumber
-	const lastPage = page - maxPageNumber
+	const firstPage = page * maxPageNumber
+	const lastPage = firstPage - maxPageNumber
 	const selectAll = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.checked) setSelected(product.map((d) => d.id))
 		else setSelected([])
 	}, [])
-	const shownProduct = allProducts.slice(lastPage, page)
+	const shownProduct = allProducts.slice(lastPage, firstPage)
 	const select = useCallback((product: data) => {
 		return (e: ChangeEvent<HTMLInputElement>) => {
 			if (e.target.checked) {
@@ -103,14 +101,14 @@ function UserInfo({ data, session }: props) {
 	useEffect(() => {
 		const request = async () => {
 			if (product.length % maxPageNumber !== 0) return
-			const res = await getNextProducts(current)
+			const res = await getNextProducts(page)
 			setProduct((prev) => [...prev, ...res])
 		}
-		if (current + 1 > 1) request()
+		if (page + 1 > 1) request()
 		console.log("request", allProducts.length)
 		return () => {}
-	}, [current])
-
+	}, [page])
+	console.log(selected)
 	const [updateSelect, setUpdateSelect] = useState<selectData>({})
 	const { Open, Modal, isOpen, setIsOpen } = useModal()
 	return (
@@ -122,35 +120,28 @@ function UserInfo({ data, session }: props) {
 				data={updateSelect}
 				onUpdate={handleUpdate}
 			/>
-			<div className="flex w-full flex-row flex-wrap items-center justify-center gap-3 ">
+			<div className="flex w-full flex-row flex-wrap items-center justify-center gap-3 py-3">
 				{session?.user.authorityId >= authority.storeOwner && (
 					<>
 						<Button
 							type="Link"
 							href="/store/add"
-							className="flex items-center justify-center"
+							className="flex items-center justify-center max-md:flex-grow"
 						>
 							Add Product
 						</Button>
 						<Button
-							className=" red disabled:opacity-50"
-							disabled={selected.length < 1}
+							className=" red disabled:opacity-50 max-md:flex-grow"
+							disabled={!(selected.length > 1)}
 							onClick={handleDelete}
 						>
 							Delete Selected
 						</Button>
-						<Open
-							type="button"
-							className="green disabled:opacity-50"
-							disabled={selected.length !== 1}
-						>
-							Update Existsing
-						</Open>
 					</>
 				)}
 
-				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-1 md:ml-auto">
-					<FontAwesomeIcon icon={faSearch} className="mr-3" inverse />
+				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-1 max-md:flex-grow md:ml-auto">
+					<FontAwesomeIcon icon={faSearch} className="2x  m-auto" inverse />
 					<input
 						type="search"
 						id="table-search"
@@ -164,7 +155,7 @@ function UserInfo({ data, session }: props) {
 			<Table
 				withSelection={true}
 				onSelect={(e) => selectAll(e)}
-				headers={["name", "Mass", "Barcode", "Location", "Price"]}
+				headers={["name", "Mass", "Barcode", "Location", "Price", "Action"]}
 			>
 				{shownProduct.map((i, a) => (
 					<tr
@@ -184,16 +175,25 @@ function UserInfo({ data, session }: props) {
 						<td className="tr">{i.Product.barcode}</td>
 						<td className="tr">{i.Location}</td>
 						<td className="tr">PHP {i.price}</td>
+						<td className="tr">
+							<Open
+								type="button max-md:flex-grow"
+								className="green disabled:opacity-50 max-md:flex-grow"
+								onClick={() => setSelected([i.id])}
+							>
+								Update
+							</Open>
+						</td>
 					</tr>
 				))}
 			</Table>
 
 			<TablePagination
-				shown={allProducts.length % 50 !== 0 ? allProducts.length : page}
+				shown={allProducts.length % 50 !== 0 ? allProducts.length : firstPage}
 				current={lastPage + 1}
 				total={allProducts.length || 1}
-				setPage={setCurrent}
-				page={current}
+				setPage={setPage}
+				page={page}
 			/>
 		</>
 	)

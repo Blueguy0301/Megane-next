@@ -15,7 +15,7 @@ const TablePagination = (props: props) => {
 			behavior: "smooth",
 			top: 0,
 		})
-	}, [props.page > 1])
+	}, [props.page])
 
 	return (
 		<div className="flex flex-col items-center">

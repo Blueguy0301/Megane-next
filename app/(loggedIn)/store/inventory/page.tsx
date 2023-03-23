@@ -8,7 +8,7 @@ export default async function page() {
 	const session = (await getServerSession(authOptions)) as Session
 	const tableData = await getProductStore(session.user.storeId)
 	return (
-		<div className="page flex-col gap-3 p-4 ">
+		<div className="page relative flex-col gap-3 p-4">
 			<UserInfo data={tableData} session={session} />
 		</div>
 	)

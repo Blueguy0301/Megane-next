@@ -27,10 +27,10 @@ const Modal = (props: addProps) => {
 		)
 	} else
 		return (
-			<Modal title="Scan" className="flex flex-col gap-4" hideConfrim={true}>
+			<Modal title="Scan" className="flex flex-col gap-4" hideConfirm>
 				<div className="flex flex-row flex-wrap">
 					<div className="min-w-[50%] flex-grow">
-						<Scanner setLastCode={setScanned} addChecking={true} />
+						<Scanner setLastCode={setScanned} addChecking />
 					</div>
 					<div className="flex min-w-[50%] max-w-full flex-grow  flex-row flex-wrap items-center justify-center gap-4 md:flex-col">
 						<div className="w-full text-center">

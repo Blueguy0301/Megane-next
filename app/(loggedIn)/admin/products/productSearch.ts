@@ -10,7 +10,7 @@ interface data {
 export default function searchProducts(productName: string, productsArray: data[]) {
 	let cache = JSON.parse(localStorage.getItem("cache") as string) || {}
 	if (cache[productName]) {
-		return cache[productName]
+		return JSON.parse(cache[productName])
 	}
 	productName = productName.toLowerCase()
 	productsArray.forEach((product) => {

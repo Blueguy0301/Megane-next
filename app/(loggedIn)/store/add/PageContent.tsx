@@ -52,14 +52,17 @@ export default function page() {
 		if ("e" in response) return
 		if (response.data.error) return failed(response.data.error)
 		const { result } = response.data as productScanner
-		if (!result) return failed("No data found")
+		if (!result) return failed("No product found")
 		if (!result.isStoreNew)
-			return failed(`${result?.name} is already registered to the store.`)
-		setIsStoreNew(result?.isStoreNew ?? false)
-		setFormDisabled([!result?.newProduct, false])
-		setValue("name", result?.name)
-		setValue("Category", result?.Category)
-		setValue("mass", result?.mass)
+			return failed(`${result?.name} is already registered to this store.`)
+		if (!response.data.result?.newProduct) {
+			setIsStoreNew(result?.isStoreNew ?? false)
+			setFormDisabled([!result?.newProduct, false])
+			setValue("name", result?.name)
+			setValue("Category", result?.Category)
+			setValue("mass", result?.mass)
+		}
+
 		return
 	}
 	const onSubmit: SubmitHandler<formData> = (data) => {
@@ -156,7 +159,8 @@ export default function page() {
 							className="red flex-grow"
 							onClick={() => {
 								setScanned("none")
-								reset()
+								setFormDisabled([false, false])
+								reset
 							}}
 							id="reset"
 						>
