@@ -45,7 +45,7 @@ const Button = (props: props) => {
 		return (
 			<button
 				type={props.type ?? "button"}
-				className={`${props.className ?? ""} button`}
+				className={`${props.className ?? ""} button disabled:opacity-50`}
 				onClick={onClick}
 				disabled={isDisabled}
 				{...rest}

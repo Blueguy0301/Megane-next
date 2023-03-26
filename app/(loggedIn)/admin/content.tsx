@@ -90,7 +90,8 @@ function Content({ data }: props) {
 			password: password,
 			storeId: selected[0],
 		})
-		console.log(res)
+		if (res.data.success) return success("Added successfully")
+		if (res.data.error) return failed(res.data.error)
 	}
 	return (
 		<>

@@ -130,7 +130,9 @@ const Modal = (props: Props) => {
 			>
 				<fieldset className="flex flex-grow  flex-wrap gap-4">
 					<div className="checkout group flex-grow">
-						<label htmlFor="code">Barcode</label>
+						<label htmlFor="code" className="max-md:text-center">
+							Barcode
+						</label>
 						<div className="flex flex-grow items-center justify-center gap-4">
 							<input
 								type="text"
@@ -260,28 +262,8 @@ const Modal = (props: Props) => {
 					className="relative flex flex-col-reverse flex-wrap gap-4 lg:w-3/4"
 					onSubmit={handleSubmit((v) => console.log(v))}
 				>
-					{charges.map((charge, i) => {
-						return (
-							<fieldset className="customer" disabled={true} key={`disabled ${i}`}>
-								<div className="checkout group">
-									<input
-										type="text"
-										placeholder="Description"
-										value={charge.key}
-										readOnly
-									/>
-									<input
-										type="number"
-										value={charge.value}
-										placeholder="Amount"
-										readOnly
-									/>
-								</div>
-							</fieldset>
-						)
-					})}
 					<fieldset className="customer">
-						<div className="checkout group">
+						<div className="group">
 							<input
 								type="text"
 								placeholder="Description"

@@ -84,8 +84,8 @@ const UserModal = (props: props) => {
 						<label htmlFor="">Account Type : </label>
 						<select
 							id="name"
-							{...register("authority", { required: true })}
-							onChange={(e) => setValue("authority", e.target.value)}
+							{...register("authorityId", { required: true })}
+							onChange={(e) => setValue("authorityId", e.target.value)}
 						>
 							<option value={authority.storeOwner}>Store Owner</option>
 							<option value={authority.registered}>User</option>

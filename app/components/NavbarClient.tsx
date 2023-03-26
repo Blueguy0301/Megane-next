@@ -80,12 +80,6 @@ const NavbarClient = () => {
 					<FontAwesomeIcon icon={faCaretDown} size="1x" />
 				</button>
 			</div>
-			{/* theme */}
-			<div className="theme select-none">
-				<button type="button">
-					<FontAwesomeIcon icon={faSun} inverse size="2x" />
-				</button>
-			</div>
 		</>
 	)
 }
