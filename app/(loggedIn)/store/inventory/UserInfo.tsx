@@ -44,7 +44,6 @@ type selectData = {
 }
 function UserInfo({ data, session }: props) {
 	const [page, setPage] = useState(1)
-
 	const [product, setProduct] = useState(data)
 	const [search, setSearch] = useState("")
 	const [selected, setSelected] = useState<string[]>([])
@@ -179,7 +178,7 @@ function UserInfo({ data, session }: props) {
 							<Open
 								type="button max-md:flex-grow"
 								className="green disabled:opacity-50 max-md:flex-grow"
-								onClick={() => setSelected([i.id])}
+								onClick={() => setUpdateSelect(i)}
 							>
 								Update
 							</Open>

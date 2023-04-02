@@ -10,7 +10,7 @@ type props = {
 	Modal: modal
 	isOpen: boolean
 	setIsOpen: Dispatch<SetStateAction<boolean>>
-	data: { price?: number; location?: string; pId?: string }
+	data: { price?: number; location?: string; id?: string }
 	onUpdate: Function
 }
 type forms = {
@@ -45,7 +45,8 @@ const UpdateModal = (props: props) => {
 			}}
 			onAccept={handleSubmit(async (d) => {
 				console.log("submitted")
-				const res = await inventoryUpdate(props.data.pId, d)
+				console.log(props.data)
+				const res = await inventoryUpdate(props.data.id, d)
 				if ("e" in res) {
 					failed(res.e)
 					return res.e
