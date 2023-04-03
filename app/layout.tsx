@@ -12,12 +12,25 @@ declare global {
 	}
 }
 export default function RootLayout({ children }: { children: ReactNode }) {
+	let sw: ServiceWorkerContainer | undefined
+	if (typeof window !== "undefined") {
+		sw = window?.navigator?.serviceWorker
+	}
+
 	useEffect(() => {
-		if ("serviceWorker" in navigator && window.workbox !== undefined) {
-			const wb = window.workbox
-			wb.register()
+		if (sw) {
+			sw.register("/sw.js", { scope: "/" })
+				.then((registration) => {
+					console.log(
+						"Service Worker registration successful with scope: ",
+						registration.scope
+					)
+				})
+				.catch((err) => {
+					console.log("Service Worker registration failed: ", err)
+				})
 		}
-	}, [])
+	}, [sw])
 
 	return (
 		<html lang="en">
