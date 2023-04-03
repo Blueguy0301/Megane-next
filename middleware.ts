@@ -17,7 +17,6 @@ export default withAuth(
 			req.nextUrl.pathname.startsWith("/admin") &&
 			req.nextauth.token?.authorityId < authority.admin
 		) {
-			console.log('redirect to store/dashboard');
 			return NextResponse.redirect(new URL("/store/dashboard?message=unauthorized", req.url),)
 		}
 		if (

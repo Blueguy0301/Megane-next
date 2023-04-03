@@ -20,7 +20,7 @@ async function getData() {
 const page = async () => {
 	const data = await getData()
 	const user = (await getServerSession(authOptions)) as Session
-	if (user.user.authorityId <= authority.admin) return redirect("/store/dashboard")
+	if (user.user.authorityId < authority.admin) return redirect("/store/dashboard")
 	return (
 		<div className="page flex-col gap-3 p-4">
 			<h2>Admin</h2>
