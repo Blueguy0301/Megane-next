@@ -26,17 +26,17 @@ const addCheckOut: nextFunction = async (req, res, user) => {
 	if (testNumber(user.storeId) || testNumber(total) || testNumber(creditTotal))
 		return res.json({ error: "invalid arguments" })
 	if (Array.isArray(productList)) {
-		if (productList.length <= 0) return res.json({ error: "no products listed" })
+		if (productList.length <= 0 && !extraCharges) return res.json({ error: "no products listed" })
 		products = productList.map((product) => ({
 			productStoreId: BigInt(product.productStoreId),
 			quantity: Number(product.quantity ?? 0)
 		}))
 	}
-	else if (testNumber(productList?.productStoreId))
-		return res.json({ error: "invalid arguments" })
-	else products = [{
+	else if (!testNumber(productList?.productStoreId)) products = [{
 		productStoreId: BigInt(productList.productStoreId), quantity: Number(productList.quantity ?? 1)
 	}]
+	else return res.json({ error: "invalid arguments" })
+
 	if (typeof extraCharges !== "string" && typeof extraCharges !== "undefined") extraCharges = JSON.stringify(extraCharges)
 	let data: Invoice = { storeId: BigInt(user.storeId), dateTime: new Date(), total, extraCharges }
 	if (isCredited && customerName) {
