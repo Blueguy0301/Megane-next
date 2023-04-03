@@ -54,6 +54,7 @@ function PageContent() {
 			}
 			return [...prev, { name, price, productStoreId, mass, quantity }]
 		})
+		setQuantity(1)
 		setBarcode("")
 		setIsOpen(false)
 	}

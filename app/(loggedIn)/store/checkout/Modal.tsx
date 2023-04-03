@@ -54,6 +54,7 @@ const Modal = (props: Props) => {
 			const change = (formData.amount ?? 0) - Total
 			setProducts([])
 			setCharges([])
+			reset()
 			return success(`Checkout success! \n Total :${result.total} \n Change : ${change}`)
 		}
 		return
@@ -61,7 +62,7 @@ const Modal = (props: Props) => {
 	const { register, handleSubmit, reset, formState: errors } = useForm<charges>()
 	useEffect(() => {
 		reset()
-	}, [isOpen])
+	}, [isOpen, products])
 	const [error, setError] = useState<{ error: any }>({ error: "" })
 	const scannerController = new AbortController()
 	const fetchData = async () => {
