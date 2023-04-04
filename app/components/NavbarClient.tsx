@@ -9,7 +9,6 @@ import { faCaretDown, faSun } from "@fortawesome/free-solid-svg-icons"
 //todo : rework.
 const NavbarClient = () => {
 	const [isShown, setIsShown] = useState(false)
-	const [darkMode, setDarkMode] = useState(true)
 	const [navOptions, setNavOptions] = useState<boolean>()
 	const [modalOptions, setModalOptions] = useState<boolean>()
 	const checkSize = (e?: UIEvent) => {
@@ -24,7 +23,7 @@ const NavbarClient = () => {
 	}
 	useEffect(() => {
 		checkSize()
-		const listener = window.addEventListener("resize", checkSize)
+		window.addEventListener("resize", checkSize)
 		return () => window.removeEventListener("resize", checkSize)
 	}, [])
 	const handleDropdown = (e: MouseEvent<HTMLElement>) => {
@@ -32,7 +31,6 @@ const NavbarClient = () => {
 		setIsShown(!isShown)
 		e.preventDefault()
 	}
-
 	return (
 		<>
 			<div className="mr-auto flex select-none flex-row items-center gap-4 p-4">
@@ -46,15 +44,27 @@ const NavbarClient = () => {
 					<div className="dropdown absolute">
 						{modalOptions && (
 							<>
-								<Link className="nav-button" href="/store/dashboard">
+								<Link
+									className="nav-button"
+									href="/store/dashboard"
+									onClick={() => setIsShown(false)}
+								>
 									Home
 								</Link>
-								<Link className="nav-button" href="/store/inventory">
+								<Link
+									className="nav-button"
+									href="/store/inventory"
+									onClick={() => setIsShown(false)}
+								>
 									Inventory
 								</Link>
 							</>
 						)}
-						<Link className="nav-button" href="/store/settings">
+						<Link
+							className="nav-button"
+							href="/store/settings"
+							onClick={() => setIsShown(false)}
+						>
 							Settings
 						</Link>
 						<button
