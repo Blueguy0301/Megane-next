@@ -1,4 +1,3 @@
-//* Table Migrated
 import UserInfo from "./UserInfo"
 import { authOptions } from "@api/auth/[...nextauth]"
 import { getServerSession } from "next-auth"

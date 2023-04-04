@@ -139,7 +139,7 @@ function UserInfo({ data, session }: props) {
 					</>
 				)}
 
-				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-1 max-md:flex-grow md:ml-auto">
+				{/* <fieldset className="flex items-center justify-center bg-gray-700 px-3 py-1 max-md:flex-grow md:ml-auto">
 					<FontAwesomeIcon icon={faSearch} className="2x  m-auto" inverse />
 					<input
 						type="search"
@@ -149,7 +149,7 @@ function UserInfo({ data, session }: props) {
 						onChange={(e) => setSearch(e.target.value)}
 						value={search}
 					/>
-				</fieldset>
+				</fieldset> */}
 			</div>
 			<Table
 				withSelection={true}

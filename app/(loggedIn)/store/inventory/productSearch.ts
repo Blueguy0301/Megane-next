@@ -44,7 +44,9 @@ export default function searchProducts(productName: string, productsArray: data[
 			end = middle - 1
 		}
 	}
-	cache[productName] = result
+	if (result.length < 1) {
+		//* search api db
+	} else cache[productName] = result
 	localStorage.setItem("cache", JSON.stringify(cache))
 	return result
 }
