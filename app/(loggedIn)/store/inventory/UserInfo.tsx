@@ -48,8 +48,13 @@ function UserInfo({ data, session }: props) {
 	const [search, setSearch] = useState("")
 	const [selected, setSelected] = useState<string[]>([])
 	const allProducts = useMemo(() => {
-		if (search === "") return product
-		else return searchProducts(search, product) as data[]
+		if (search === "") {
+			setPage((prev) => prev)
+			return product
+		} else {
+			setPage(1)
+			return searchProducts(search, product) as data[]
+		}
 	}, [search, product])
 	const firstPage = page * maxPageNumber
 	const lastPage = firstPage - maxPageNumber
@@ -139,7 +144,7 @@ function UserInfo({ data, session }: props) {
 					</>
 				)}
 
-				{/* <fieldset className="flex items-center justify-center bg-gray-700 px-3 py-1 max-md:flex-grow md:ml-auto">
+				<fieldset className="flex items-center justify-center bg-gray-700 px-3 py-1 max-md:flex-grow md:ml-auto">
 					<FontAwesomeIcon icon={faSearch} className="2x  m-auto" inverse />
 					<input
 						type="search"
@@ -149,7 +154,7 @@ function UserInfo({ data, session }: props) {
 						onChange={(e) => setSearch(e.target.value)}
 						value={search}
 					/>
-				</fieldset> */}
+				</fieldset>
 			</div>
 			<Table
 				withSelection={true}
